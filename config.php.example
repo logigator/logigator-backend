@@ -1,0 +1,13 @@
+<?php
+$config = [
+    'settings' => [
+        'displayErrorDetails' => true,
+        'determineRouteBeforeAppMiddleware' => true
+    ]
+];
+
+define('TWITTER_CALLBACK_URL', 'http://localhost:4200/auth-callback');
+define('TWITTER_CONSUMER_SECRET', '--SECRET--');
+define('TWITTER_CONSUMER_KEY', '--KEY--');
+
+define('JWT_SECRET_KEY', '--KEY--');

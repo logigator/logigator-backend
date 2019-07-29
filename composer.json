@@ -1,0 +1,13 @@
+{
+    "name": "logigator/backend",
+    "autoload": {
+        "psr-4": {
+            "Logigator\\": "src/"
+        }
+    },
+    "require": {
+        "slim/slim": "^3.12",
+        "abraham/twitteroauth": "^1.0",
+        "firebase/php-jwt": "^5.0"
+    }
+}
