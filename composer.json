@@ -8,6 +8,7 @@
     "require": {
         "slim/slim": "^3.12",
         "abraham/twitteroauth": "^1.0",
-        "firebase/php-jwt": "^5.0"
+        "firebase/php-jwt": "^5.0",
+        "google/apiclient": "^2.2"
     }
 }

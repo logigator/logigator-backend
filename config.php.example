@@ -10,4 +10,9 @@ define('TWITTER_CALLBACK_URL', 'http://localhost:4200/auth-callback');
 define('TWITTER_CONSUMER_SECRET', '--SECRET--');
 define('TWITTER_CONSUMER_KEY', '--KEY--');
 
+define('GOOGLE_CALLBACK_URL', 'http://localhost:4200/auth-callback');
+define('GOOGLE_APPLICATION_NAME', '--NAME--');
+define('GOOGLE_CLIENT_ID', '--ID--');
+define('GOOGLE_CLIENT_SECRET', '--SECRET--');
+
 define('JWT_SECRET_KEY', '--KEY--');

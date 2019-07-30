@@ -27,7 +27,7 @@ class VerifyTwitterCredentials extends BaseController
             // save user data to db
             $this->container->get('AuthenticationService')->setUserAuthenticated($content->id_str, 'twitter');
         } catch (\Exception $e) {
-            return ApiHelper::createJsonResponse($response, null, 403, 'Error verifying oauth-tokens');
+            return ApiHelper::createJsonResponse($response, null, 401, 'Error verifying oauth-tokens');
         }
         return ApiHelper::createJsonResponse($response, ['loggedIn' => 'true']);
     }
