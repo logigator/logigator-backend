@@ -32,7 +32,7 @@ class VerifyGoogleCredentials extends BaseController
             $client->setAccessToken($token);
             $content = $serviceOAuth->userinfo->get();
 
-            // save user data to db
+            // TODO: save user data to db
             $this->container->get('AuthenticationService')->setUserAuthenticated($content->id, 'google');
         } catch (\Exception $e) {
             return ApiHelper::createJsonResponse($response, null, 401, 'Error verifying oauth-tokens');

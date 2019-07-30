@@ -24,7 +24,7 @@ class VerifyTwitterCredentials extends BaseController
             $connection = new TwitterOAuth(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET, $access_token['oauth_token'], $access_token['oauth_token_secret']);
             $content = $connection->get("account/verify_credentials", ['include_email' => 'true', 'include_entities' => 'false', 'skip_status' => 'true']);
 
-            // save user data to db
+            //TODO:  save user data to db
             $this->container->get('AuthenticationService')->setUserAuthenticated($content->id_str, 'twitter');
         } catch (\Exception $e) {
             return ApiHelper::createJsonResponse($response, null, 401, 'Error verifying oauth-tokens');
