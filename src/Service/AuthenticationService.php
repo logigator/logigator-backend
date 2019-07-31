@@ -23,10 +23,10 @@ class AuthenticationService extends BaseService
     }
 
     public function verifyToken(): ?object {
-        if (!isset($_COOKIE['auth-token']) || $_COOKIE['auth-token'] == '') {
+        $token = $this->getUserToken();
+        if($token == null) {
             return null;
         }
-        $token = $_COOKIE['auth-token'];
 
         //TODO:  check if token is in database
 
@@ -37,9 +37,16 @@ class AuthenticationService extends BaseService
         }
     }
 
-    public function logoutUser(string $userId, string $loginType, string $token) {
-        setcookie('auth-token', '', time() - 3600);
-        setcookie('isLoggedIn', 'true', time() - 3600);
+    public function getUserToken(): ?string {
+        if (!isset($_COOKIE['auth-token']) || $_COOKIE['auth-token'] == '') {
+            return null;
+        }
+        return $_COOKIE['auth-token'];
+    }
+
+    public function logoutUser(string $token) {
+        setcookie('auth-token', '', time() - 3600, '/', '', false, true);
+        setcookie('isLoggedIn', '', time() - 3600, '/', '', false, false);
         //TODO: remove current token from database
     }
 }

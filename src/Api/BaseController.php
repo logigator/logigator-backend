@@ -29,4 +29,8 @@ abstract class BaseController
         $this->isUserAuthenticated();
         return $this->tokenPayload;
     }
+
+    protected function getUserToken(): ?string {
+        return $this->container->get('AuthenticationService')->getUserToken();
+    }
 }

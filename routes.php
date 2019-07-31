@@ -6,4 +6,10 @@ $app->group('/auth', function (\Slim\App $app) {
 
     $app->get('/twitter-auth-url', \Logigator\Api\Auth\GetTwitterAuthUrl::class);
     $app->post('/verify-twitter-credentials', \Logigator\Api\Auth\VerifyTwitterCredentials::class);
+
+    $app->post('/register-email', \Logigator\Api\Auth\RegisterEmail::class);
+    $app->post('/login-email', \Logigator\Api\Auth\LoginEmail::class);
+
+
+    $app->get('/logout', \Logigator\Api\Auth\Logout::class);
 });

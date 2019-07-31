@@ -37,6 +37,6 @@ class VerifyGoogleCredentials extends BaseController
         } catch (\Exception $e) {
             return ApiHelper::createJsonResponse($response, null, 401, 'Error verifying oauth-tokens');
         }
-        return ApiHelper::createJsonResponse($response, $content);
+        return ApiHelper::createJsonResponse($response, ['loggedIn' => 'true']);
     }
 }
