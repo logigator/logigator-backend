@@ -17,9 +17,8 @@ class AuthenticationService extends BaseService
             'login_type' => $loginType
         ];
         $token = JWT::encode($keyPayload, JWT_SECRET_KEY, 'HS512');
-        setcookie('auth-token', $token, $expireTime, '/', '', false, true);
-        setcookie('isLoggedIn', 'true', $expireTime, '/', '', false, false);
-        //TODO: check for expired tokens in db and delete them
+        setcookie('auth-token', $token, $expireTime, '/', ROOT_DOMAIN, false, true);
+        setcookie('isLoggedIn', 'true', $expireTime, '/', ROOT_DOMAIN, false, false);
     }
 
     public function verifyToken(): ?object {
@@ -27,8 +26,6 @@ class AuthenticationService extends BaseService
         if($token == null) {
             return null;
         }
-
-        //TODO:  check if token is in database
 
         try {
             return JWT::decode($token, JWT_SECRET_KEY, ['HS512']);
@@ -45,8 +42,7 @@ class AuthenticationService extends BaseService
     }
 
     public function logoutUser(string $token) {
-        setcookie('auth-token', '', time() - 3600, '/', '', false, true);
-        setcookie('isLoggedIn', '', time() - 3600, '/', '', false, false);
-        //TODO: remove current token from database
+        setcookie('auth-token', '', time() - 3600, '/', ROOT_DOMAIN, false, true);
+        setcookie('isLoggedIn', '', time() - 3600, '/', ROOT_DOMAIN, false, false);
     }
 }

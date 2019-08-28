@@ -15,4 +15,10 @@ define('GOOGLE_APPLICATION_NAME', '--NAME--');
 define('GOOGLE_CLIENT_ID', '--ID--');
 define('GOOGLE_CLIENT_SECRET', '--SECRET--');
 
+//for development
+define('ROOT_DOMAIN', '.logigator-local-dev.com');
+
+//for production
+define('ROOT_DOMAIN', '.logigator.com');
+
 define('JWT_SECRET_KEY', '--KEY--');
