@@ -3,6 +3,13 @@ $config = [
     'settings' => [
         'displayErrorDetails' => true,
         'determineRouteBeforeAppMiddleware' => true
+    ],
+    'doctrine-dbal' => [
+        'dbname' => '--',
+        'user' => '--',
+        'password' => 'password',
+        'host' => 'localhost',
+        'driver' => 'pdo_mysql',
     ]
 ];
 

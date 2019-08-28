@@ -20,4 +20,8 @@ require_once 'routes.php';
 require_once 'services.php';
 require_once 'middleware.php';
 
+createRoutes($app);
+createServices($app, $config);
+createMiddleware($app);
+
 $app->run();

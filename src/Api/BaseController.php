@@ -2,6 +2,7 @@
 
 namespace Logigator\Api;
 
+use Doctrine\DBAL\Query\QueryBuilder;
 use Psr\Container\ContainerInterface;
 
 abstract class BaseController
@@ -32,5 +33,9 @@ abstract class BaseController
 
     protected function getUserToken(): ?string {
         return $this->container->get('AuthenticationService')->getUserToken();
+    }
+
+    protected function getDbalQueryBuilder(): QueryBuilder {
+        return $this->container->get('DbalService')->getQueryBuilder();
     }
 }

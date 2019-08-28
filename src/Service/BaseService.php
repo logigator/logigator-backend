@@ -8,8 +8,10 @@ abstract class BaseService
 {
 
     protected $container;
+    protected $config;
 
-    public function __construct(ContainerInterface $container) {
+    public function __construct(ContainerInterface $container, $config) {
         $this->container = $container;
+        $this->config = $config;
     }
 }

@@ -1,3 +1,4 @@
 <?php
-
-$app->add(new \Logigator\Middleware\JsonValidationMiddleware());
+function createMiddleware($app) {
+    $app->add(new \Logigator\Middleware\JsonValidationMiddleware());
+}
