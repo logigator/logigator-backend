@@ -4,14 +4,14 @@ require_once 'config.php';
 
 $container = new \Slim\Container($config);
 $container['notFoundHandler'] = function ($c) {
-  return function ($request, $response) {
-    return \Logigator\Api\ApiHelper::createJsonResponse($response, null, 404, 'Path not found');
-  };
+	return function ($request, $response) {
+		return \Logigator\Api\ApiHelper::createJsonResponse($response, null, 404, 'Path not found');
+	};
 };
 $container['notAllowedHandler'] = function ($c) {
-    return function ($request, $response) {
-        return \Logigator\Api\ApiHelper::createJsonResponse($response, null, 405, 'Method not allowed');
-    };
+	return function ($request, $response) {
+		return \Logigator\Api\ApiHelper::createJsonResponse($response, null, 405, 'Method not allowed');
+	};
 };
 
 $app = new Slim\App($container);

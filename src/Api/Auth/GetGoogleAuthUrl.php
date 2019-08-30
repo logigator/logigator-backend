@@ -11,17 +11,17 @@ use Slim\Http\Response;
 
 class GetGoogleAuthUrl extends BaseController
 {
-    public function __invoke(ServerRequestInterface $request, Response $response, array $args) {
-        $client = new Google_Client();
-        $client->setApplicationName(GOOGLE_APPLICATION_NAME);
-        $client->setClientId(GOOGLE_CLIENT_ID);
-        $client->setClientSecret(GOOGLE_CLIENT_SECRET);
-        $client->setRedirectUri(GOOGLE_CALLBACK_URL);
+	public function __invoke(ServerRequestInterface $request, Response $response, array $args) {
+		$client = new Google_Client();
+		$client->setApplicationName(GOOGLE_APPLICATION_NAME);
+		$client->setClientId(GOOGLE_CLIENT_ID);
+		$client->setClientSecret(GOOGLE_CLIENT_SECRET);
+		$client->setRedirectUri(GOOGLE_CALLBACK_URL);
 
-        $url = $client->createAuthUrl(['email', 'profile']);
+		$url = $client->createAuthUrl(['email', 'profile']);
 
-        $data = ['url' => $url];
+		$data = ['url' => $url];
 
-        return ApiHelper::createJsonResponse($response, $data);
-    }
+		return ApiHelper::createJsonResponse($response, $data);
+	}
 }

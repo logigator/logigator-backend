@@ -12,20 +12,20 @@ use Psr\Container\ContainerInterface;
 class DbalService extends BaseService
 {
 
-    private $dbConnection;
+	private $dbConnection;
 
-    public function __construct(ContainerInterface $container, $config) {
-        parent::__construct($container, $config);
+	public function __construct(ContainerInterface $container, $config) {
+		parent::__construct($container, $config);
 
-        $dbalConfig = new Configuration();
-        $this->dbConnection = DriverManager::getConnection($config['doctrine-dbal'], $dbalConfig);
-    }
+		$dbalConfig = new Configuration();
+		$this->dbConnection = DriverManager::getConnection($config['doctrine-dbal'], $dbalConfig);
+	}
 
-    public function getConnection(): Connection {
-        return $this->dbConnection;
-    }
+	public function getConnection(): Connection {
+		return $this->dbConnection;
+	}
 
-    public function getQueryBuilder(): QueryBuilder {
-        return $this->dbConnection->createQueryBuilder();
-    }
+	public function getQueryBuilder(): QueryBuilder {
+		return $this->dbConnection->createQueryBuilder();
+	}
 }
