@@ -15,5 +15,7 @@ function createRoutes($app) {
 	});
 	$app->group('/project', function(\Slim\App $app){
 		$app->get('/create', \Logigator\Api\Projects\CreateProject::class);
+		$app->get('/open', \Logigator\Api\Projects\OpenProject::class);
+
 	});
 }

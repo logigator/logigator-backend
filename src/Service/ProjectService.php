@@ -14,7 +14,6 @@ use Ramsey\Uuid\Uuid;
 class ProjectService extends BaseService
 {
 	private const DEFAULT_IMAGE_LOCATION = "";
-
 	// TODO: set a default image location
 
 	public function createProject($name, $isComponent, $fk_user)
@@ -31,7 +30,8 @@ class ProjectService extends BaseService
 			->setParameter(1, $isComponent)
 			->setParameter(2, $fk_user)
 			->setParameter(3, $location)
-			->setParameter(4, self::DEFAULT_IMAGE_LOCATION);
+			->setParameter(4, self::DEFAULT_IMAGE_LOCATION)
+			->execute()
 		;
 	}
 
@@ -39,10 +39,24 @@ class ProjectService extends BaseService
 		try {
 			$uuid1 = Uuid::uuid1();
 			return $name.$uuid1->toString();
+			//TODO edit to real path
 		} catch (UnsatisfiedDependencyException $e) {
 			echo 'Caught exception: ' . $e->getMessage() . "\n";
 		}
 		return "errorFile";
+	}
+
+	public function openProject($id){
+		$location = $this->container->get('DbalService')
+			->select('location')
+			->from('projects')
+			->where('pk_id', '?')
+			->setParamter(0,$id)
+			->getQuery()
+			->getResults()
+		;
+
+		return file_get_contents($location);
 	}
 
 }
