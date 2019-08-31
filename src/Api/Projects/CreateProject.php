@@ -14,7 +14,7 @@ use Logigator\Api\BaseController;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Http\Response;
 
-class CreateProject
+class CreateProject extends BaseController
 {
 	public function __invoke(ServerRequestInterface $request, Response $response, array $args) {
 		$body = $request->getParsedBody();
