@@ -9,6 +9,8 @@
 namespace Logigator\Service;
 
 
+use Psr\Container\ContainerInterface;
+
 class ProjectService extends DbalService
 {
 
