@@ -26,7 +26,7 @@ class CreateProject extends BaseController
 			return ApiHelper::createJsonResponse($response, null, 400, 'Not all required args were given');
 		}
 
-		$this->container->get('ProjectService')->createProject($body['name'],$body['isComponent']);
+		$this->container->get('ProjectService')->createProject($body['name'],$body['isComponent'],$this->getTokenPayload()['sub']);
 		return ApiHelper::createJsonResponse($response, ['createdProject' => 'true']);
 	}
 }
