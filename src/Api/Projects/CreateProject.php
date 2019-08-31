@@ -19,6 +19,9 @@ class CreateProject extends BaseController
 	public function __invoke(ServerRequestInterface $request, Response $response, array $args) {
 		$body = $request->getParsedBody();
 
+		if(!$this->isUserAuthenticated()) {
+			return ApiHelper::createJsonResponse($response, null, 401, 'Not logged in');
+		}
 		if(!ApiHelper::checkRequiredArgs($body, ['name','isComponent'])) {
 			return ApiHelper::createJsonResponse($response, null, 400, 'Not all required args were given');
 		}
