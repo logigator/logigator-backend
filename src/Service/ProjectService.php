@@ -8,22 +8,11 @@
 
 namespace Logigator\Service;
 
-
-use Psr\Container\ContainerInterface;
-
-class ProjectService extends DbalService
+class ProjectService extends BaseService
 {
 
-	private $dbConnection;
-
-	public function __construct(ContainerInterface $container, $config) {
-		parent::__construct($container, $config);
-
-		$this->dbConnection = parent::getConnection();
-	}
-
 	public function createProject($name, $isComponent){
-		parent::getQueryBuilder()
+		$this->container->get('DbalService')
 			->insert('projects')
 			->setValue('name', '?')
 			->setValue('isComponent', '?')
