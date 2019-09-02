@@ -10,7 +10,19 @@ $config = [
         'password' => 'password',
         'host' => 'localhost',
         'driver' => 'pdo_mysql',
-    ]
+    ],
+         'smtp' => [
+         	'{accountName}' => [
+         		'emailAddress' => 'noreply@yourdomain.com',
+     		    'displayName' => 'noreply',
+     		    'hostname' => 'mail.yourdomain.com',
+     		    'port' => '587',
+     		    'secure' => 'tls',
+     		    'authentication' => true,
+     		    'username' => '',
+     		    'password' => ''
+     	    ]
+         ]
 ];
 
 define('TWITTER_CALLBACK_URL', 'http://localhost:4200/auth-callback');
@@ -23,9 +35,9 @@ define('GOOGLE_CLIENT_ID', '--ID--');
 define('GOOGLE_CLIENT_SECRET', '--SECRET--');
 
 //for development
-define('ROOT_DOMAIN', '.logigator-local-dev.com');
+define('ROOT_DOMAIN', 'logigator-local-dev.com');
 
 //for production
-define('ROOT_DOMAIN', '.logigator.com');
+define('ROOT_DOMAIN', 'logigator.com');
 
 define('JWT_SECRET_KEY', '--KEY--');
