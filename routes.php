@@ -14,8 +14,8 @@ function createRoutes($app) {
 		$app->get('/logout', \Logigator\Api\Auth\Logout::class);
 	});
 	$app->group('/project', function(\Slim\App $app){
-		$app->get('/create', \Logigator\Api\Projects\CreateProject::class);
-		$app->get('/open', \Logigator\Api\Projects\OpenProject::class);
+		$app->post('/create', \Logigator\Api\Projects\CreateProject::class);
+		$app->post('/open', \Logigator\Api\Projects\OpenProject::class);
 
 	});
 }

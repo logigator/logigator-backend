@@ -9,4 +9,7 @@ function createServices($app, $config) {
 	$app->getContainer()['ProjectService'] = function ($c) use ($config) {
 		return new \Logigator\Service\ProjectService($c, $config);
 	};
+	$app->getContainer()['UserService'] = function ($c) use ($config) {
+		return new \Logigator\Service\UserService($c, $config);
+	};
 }

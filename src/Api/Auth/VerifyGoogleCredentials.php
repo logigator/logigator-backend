@@ -3,6 +3,7 @@
 namespace Logigator\Api\Auth;
 
 
+use Exception;
 use Google_Client;
 use Google_Service_Oauth2;
 use Logigator\Api\ApiHelper;
@@ -32,9 +33,13 @@ class VerifyGoogleCredentials extends BaseController
 			$client->setAccessToken($token);
 			$content = $serviceOAuth->userinfo->get();
 
-			// TODO: save user data to db
-			$this->container->get('AuthenticationService')->setUserAuthenticated($content->id, 'google');
-		} catch (\Exception $e) {
+			if ($this->container->get('UserService')->fetchUserId($content['id']) == null) {
+				$this->container->get('UserService')->createUser($content['name'],$content['id'],$content['email'],'google',$content['picture']);
+			}
+
+			$this->container->get('AuthenticationService')->setUserAuthenticated($this->container->get('UserService')->fetchUserId($content['id']), 'google');
+
+		} catch (Exception $e) {
 			return ApiHelper::createJsonResponse($response, null, 401, 'Error verifying oauth-tokens');
 		}
 		return ApiHelper::createJsonResponse($response, ['loggedIn' => 'true']);
