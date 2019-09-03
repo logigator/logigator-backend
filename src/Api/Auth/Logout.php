@@ -12,6 +12,8 @@ class Logout extends BaseController
 {
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args) {
 		$token = $this->getUserToken();
+
+
 		$this->container->get('AuthenticationService')->logoutUser($token);
 		return ApiHelper::createJsonResponse($response, ['loggedOut' => 'true']);
 	}
