@@ -13,4 +13,7 @@ function createServices(Slim\App $app, $config) {
 	$app->getContainer()['SmtpService'] = function ($c) use ($config) {
 		return new \Logigator\Service\SmtpService($c, $config);
 	};
+	$app->getContainer()['UserService'] = function ($c) use ($config) {
+		return new \Logigator\Service\UserService($c, $config);
+	};
 }

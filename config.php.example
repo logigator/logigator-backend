@@ -38,6 +38,6 @@ define('GOOGLE_CLIENT_SECRET', '--SECRET--');
 define('ROOT_DOMAIN', 'logigator-local-dev.com');
 
 //for production
-define('ROOT_DOMAIN', 'logigator.com');
+#define('ROOT_DOMAIN', 'logigator.com');
 
 define('JWT_SECRET_KEY', '--KEY--');

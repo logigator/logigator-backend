@@ -14,7 +14,7 @@ use Logigator\Api\BaseController;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Http\Response;
 
-class CreateProject extends BaseController
+class OpenProject extends BaseController
 {
 	public function __invoke(ServerRequestInterface $request, Response $response, array $args)
 	{
@@ -23,11 +23,11 @@ class CreateProject extends BaseController
 		if (!$this->isUserAuthenticated()) {
 			return ApiHelper::createJsonResponse($response, null, 401, 'Not logged in');
 		}
-		if (!ApiHelper::checkRequiredArgs($body, ['name', 'isComponent'])) {
+		if (!ApiHelper::checkRequiredArgs($body, ['project_id'])) {
 			return ApiHelper::createJsonResponse($response, null, 400, 'Not all required args were given');
 		}
 
-		$this->container->get('ProjectService')->createProject($body['name'], $body['isComponent'], $this->getTokenPayload()->sub);
-		return ApiHelper::createJsonResponse($response, ['createdProject' => 'true']);
+		$data = $this->container->get('ProjectService')->openProject($body['project_id']);
+		return ApiHelper::createJsonResponse($response, $data);
 	}
 }
