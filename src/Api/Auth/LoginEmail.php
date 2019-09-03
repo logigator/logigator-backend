@@ -17,18 +17,15 @@ class LoginEmail extends BaseController
 			return ApiHelper::createJsonResponse($response, null, 400, 'Not all required args were given');
 		}
 
-		// TODO: check if user exists and the password is correct
-		$userExists = true;
-		$userId = 0;
-		$passwordCorrect = true;
+		$userId = $this->container->get('UserService')->fetchUserIdPerEmail($body['email']);
+		$passwordCorrect = $this->container->get('UserService')->verifyPassword($body['email'],$body['password']);
 
-		if (!$userExists) {
+		if ($userId == null) {
 			return ApiHelper::createJsonResponse($response, null, 404, 'no such user');
 		}
 		if(!$passwordCorrect) {
 			return ApiHelper::createJsonResponse($response, null, 401, 'password is incorrect');
 		}
-
 
 		$this->container->get('AuthenticationService')->setUserAuthenticated($userId, 'email');
 		return ApiHelper::createJsonResponse($response, ['loggedIn' => 'true']);

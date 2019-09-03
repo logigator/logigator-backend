@@ -27,7 +27,11 @@ class OpenProject extends BaseController
 			return ApiHelper::createJsonResponse($response, null, 400, 'Not all required args were given');
 		}
 
-		$data = $this->container->get('ProjectService')->openProject($body['project_id']);
-		return ApiHelper::createJsonResponse($response, $data);
+		$location = $this->container->get('ProjectService')->fetchLocation($body['project_id'],$this->getTokenPayload()->sub);
+		if ($location == null){
+			return ApiHelper::createJsonResponse($response, null, 403, "You don't have permission to view this file");
+		} else {
+			return ApiHelper::createJsonResponse($response, file_get_contents($location));
+		}
 	}
 }

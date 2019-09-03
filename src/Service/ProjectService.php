@@ -14,9 +14,10 @@ use Ramsey\Uuid\Uuid;
 class ProjectService extends BaseService
 {
 	private const DEFAULT_PREVIEW_IMAGE = "";
+
 	// TODO: set a default image location
 
-	public function createProject($name, $isComponent, $fk_user)
+	public function createProject($name, $isComponent, $fk_user, $description, $symbol)
 	{
 		$location = $this->generateLocation();
 		$this->container->get('DbalService')->getQueryBuilder()
@@ -26,16 +27,21 @@ class ProjectService extends BaseService
 			->setValue('fk_user', '?')
 			->setValue('location', '?')
 			->setValue('preview_image', '?')
+			->setValue('description', '?')
+			->setValue('symbol', '?')
 			->setParameter(0, $name)
 			->setParameter(1, $isComponent)
 			->setParameter(2, $fk_user)
 			->setParameter(3, $location)
-			->setParameter(4, self::DEFAULT_PREVIEW_IMAGE)
-			->execute()
-		;
+			// TODO: remove random
+			->setParameter(4, self::DEFAULT_PREVIEW_IMAGE . random_int(0, 1000))
+			->setParameter(5, $description)
+			->setParameter(6, $symbol)
+			->execute();
 	}
 
-	private function generateLocation(){
+	private function generateLocation()
+	{
 		try {
 			$uuid1 = Uuid::uuid1();
 			return $uuid1->toString();
@@ -46,17 +52,48 @@ class ProjectService extends BaseService
 		}
 	}
 
-	public function openProject($id){
-		$location = $this->container->get('DbalService')->getQueryBuilder()
+	public function fetchLocation($projectId, $userId)
+	{
+		return $this->container->get('DbalService')->getQueryBuilder()
 			->select('location')
 			->from('projects')
-			->where('pk_id = ?')
-			->setParamter(0,$id)
-			->getQuery()
-			->getResults()
-		;
+			->where('pk_id = ? and fk_user = ?')
+			->setParameter(0, $projectId)
+			->setParameter(1, $userId)
+			->execute()
+			->fetch()["location"];
+	}
 
-		return file_get_contents($location);
+	public function deleteProject($projectId, $userId)
+	{
+		$this->container->get('DbalService')->getQueryBuilder()
+			->delete('projects')
+			->where('pk_id = ? and fk_user = ?')
+			->setParameter(0, $projectId)
+			->setParameter(1, $userId)
+			->execute();
+	}
+
+	public function getAllProjectsInfo($userId)
+	{
+		return $this->container->get('DbalService')->getQueryBuilder()
+			->select('pk_id, name, description, symbol, last_edited, created_on')
+			->from('projects')
+			->where('fk_user = ?')
+			->setParameter(0, $userId)
+			->execute()
+			->fetchAll();
+	}
+
+	public function getAllComponentsInfo($userId)
+	{
+		return $this->container->get('DbalService')->getQueryBuilder()
+			->select('pk_id, name, description, symbol, last_edited, created_on')
+			->from('projects')
+			->where('fk_user = ? and is_component = true')
+			->setParameter(0, $userId)
+			->execute()
+			->fetchAll();
 	}
 
 }
