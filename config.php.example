@@ -1,28 +1,28 @@
 <?php
 $config = [
-	'settings' => [
-		'displayErrorDetails' => true,
-		'determineRouteBeforeAppMiddleware' => true
-	],
-	'doctrine-dbal' => [
-		'dbname' => '--',
-		'user' => '--',
-		'password' => 'password',
-		'host' => 'localhost',
-		'driver' => 'pdo_mysql',
-	],
-	'smtp' => [
-		'{accountName}' => [
-			'emailAddress' => 'noreply@yourdomain.com',
-			'displayName' => 'noreply',
-			'hostname' => 'mail.yourdomain.com',
-			'port' => '587',
-			'secure' => 'tls',
-			'authentication' => true,
-			'username' => '',
-			'password' => ''
-		]
-	]
+    'settings' => [
+        'displayErrorDetails' => true,
+        'determineRouteBeforeAppMiddleware' => true
+    ],
+    'doctrine-dbal' => [
+        'dbname' => '--',
+        'user' => '--',
+        'password' => 'password',
+        'host' => 'localhost',
+        'driver' => 'pdo_mysql',
+    ],
+         'smtp' => [
+         	'{accountName}' => [
+         		'emailAddress' => 'noreply@yourdomain.com',
+     		    'displayName' => 'noreply',
+     		    'hostname' => 'mail.yourdomain.com',
+     		    'port' => '587',
+     		    'secure' => 'tls',
+     		    'authentication' => true,
+     		    'username' => '',
+     		    'password' => ''
+     	    ]
+         ]
 ];
 
 define('TWITTER_CALLBACK_URL', 'http://localhost:4200/auth-callback');
@@ -38,6 +38,6 @@ define('GOOGLE_CLIENT_SECRET', '--SECRET--');
 define('ROOT_DOMAIN', 'logigator-local-dev.com');
 
 //for production
-define('ROOT_DOMAIN', 'logigator.com');
+#define('ROOT_DOMAIN', 'logigator.com');
 
 define('JWT_SECRET_KEY', '--KEY--');
