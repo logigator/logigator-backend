@@ -12,19 +12,17 @@ namespace Logigator\Api\Projects;
 use Logigator\Api\ApiHelper;
 use Logigator\Api\BaseController;
 use Psr\Http\Message\ServerRequestInterface;
-use Slim\Http\Response;
+use Psr\Http\Message\ResponseInterface;
+use Slim\Exception\HttpBadRequestException;
 
 class OpenProject extends BaseController
 {
-	public function __invoke(ServerRequestInterface $request, Response $response, array $args)
+	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args)
 	{
 		$body = $request->getParsedBody();
 
-		if (!$this->isUserAuthenticated()) {
-			return ApiHelper::createJsonResponse($response, null, 401, 'Not logged in');
-		}
 		if (!ApiHelper::checkRequiredArgs($body, ['project_id'])) {
-			return ApiHelper::createJsonResponse($response, null, 400, 'Not all required args were given');
+			throw new HttpBadRequestException($request, 'Not all required args were given');
 		}
 
 		$data = $this->container->get('ProjectService')->openProject($body['project_id']);
