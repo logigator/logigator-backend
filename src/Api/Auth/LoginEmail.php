@@ -17,12 +17,10 @@ class LoginEmail extends BaseController
 			throw new HttpBadRequestException($request, 'Not all required args were given');
 		}
 
-		// TODO: check if user exists and the password is correct
-		$userExists = true;
-		$userId = 0;
-		$passwordCorrect = true;
+		$userId = $this->container->get('UserService')->fetchUserIdPerEmail($body['email']);
+		$passwordCorrect = $this->container->get('UserService')->verifyPassword($body['email'],$body['password']);
 
-		if (!$userExists)
+		if ($userId == null)
 			throw new HttpBadRequestException($request, 'User not found.');
 
 		if(!$passwordCorrect)

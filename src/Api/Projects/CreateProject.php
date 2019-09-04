@@ -25,7 +25,10 @@ class CreateProject extends BaseController
 			throw new HttpBadRequestException($request, 'Not all required args were given');
 		}
 
-		$this->container->get('ProjectService')->createProject($body['name'], $body['isComponent'], $this->getTokenPayload()->sub);
+		$description = !isset($body['description']) ? null : $body['description'];
+		$symbol = !isset($body['symbol']) ? null : $body['symbol'];
+		$this->container->get('ProjectService')->createProject($body['name'], $body['isComponent'], $this->getTokenPayload()->sub, $description, $symbol);
+
 		return ApiHelper::createJsonResponse($response, ['createdProject' => 'true']);
 	}
 }

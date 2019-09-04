@@ -7,7 +7,7 @@ class UserService extends BaseService
 {
 	private const DEFAULT_PROFILE_IMAGE = "";
 
-	public function createUser($username,$socialMediaKey, $email, $loginType, $profile_image = self::DEFAULT_PROFILE_IMAGE, $password = null)
+	public function createUser($username,$socialMediaKey, $email, $loginType, $password = null, $profile_image = self::DEFAULT_PROFILE_IMAGE)
 	{
 		$this->container->get('DbalService')->getQueryBuilder()
 			->insert('users')
@@ -26,7 +26,7 @@ class UserService extends BaseService
 			->execute();
 	}
 
-	public function fetchUserId($key)
+	public function fetchUserIdPerKey($key)
 	{
 		return $this->container->get('DbalService')->getQueryBuilder()
 			->select('pk_id')
@@ -35,6 +35,29 @@ class UserService extends BaseService
 			->setParameter(0, $key)
 			->execute()
 			->fetch()["pk_id"];
+	}
+
+	public function fetchUserIdPerEmail($email)
+	{
+		return $this->container->get('DbalService')->getQueryBuilder()
+			->select('pk_id')
+			->from('users')
+			->where('email = ?')
+			->setParameter(0, $email)
+			->execute()
+			->fetch()["pk_id"];
+	}
+
+	//TODO: implement secure password verification
+	public function verifyPassword($email,$password)
+	{
+		return $this->container->get('DbalService')->getQueryBuilder()
+			->select('password')
+			->from('users')
+			->where('email = ?')
+			->setParameter(0, $email)
+			->execute()
+			->fetch()["password"]==$password;
 	}
 
 }
