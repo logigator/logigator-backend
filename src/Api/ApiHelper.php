@@ -2,24 +2,19 @@
 
 namespace Logigator\Api;
 
-
-use Slim\Http\Response;
+use Psr\Http\Message\ResponseInterface;
 
 class ApiHelper
 {
-	public static function createJsonResponse(Response $response, $data, $status = 200, $error = null) {
+	public static function createJsonResponse(ResponseInterface $response, array $data): ResponseInterface {
 		if($data === null) {
 			$data = array();
 		}
-		if ($error !== null) {
-			$data['error'] = $error;
-		}
-		if(is_array($data)) {
-			$data['status'] = $status;
-		} else {
-			$data->status = $status;
-		}
-		return $response->withJson($data, $status);
+
+		$data['status'] = 200;
+		$payload = json_encode($data, JSON_PRETTY_PRINT);
+		$response->getBody()->write($payload);
+		return $response;
 	}
 
 	public static function checkRequiredArgs($body, array $args): bool {

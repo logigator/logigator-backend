@@ -1,9 +1,6 @@
 <?php
 $config = [
-    'settings' => [
-        'displayErrorDetails' => true,
-        'determineRouteBeforeAppMiddleware' => true
-    ],
+    'configuration' => 'debug',
     'doctrine-dbal' => [
         'dbname' => '--',
         'user' => '--',
