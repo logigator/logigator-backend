@@ -1,7 +1,7 @@
 <?php
 
 function createRoutes(Slim\App $app, $authenticationMiddleware) {
-	$app->group('/auth', function (\Slim\Routing\RouteCollectorProxy $group) {
+	$app->group('/auth', function (\Slim\Routing\RouteCollectorProxy $group) use ($authenticationMiddleware) {
 		$group->get('/google-auth-url', \Logigator\Api\Auth\GetGoogleAuthUrl::class);
 		$group->post('/verify-google-credentials', \Logigator\Api\Auth\VerifyGoogleCredentials::class);
 
