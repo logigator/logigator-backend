@@ -20,9 +20,6 @@ class DeleteProject extends BaseController
 	{
 		$body = $request->getParsedBody();
 
-		if (!$this->isUserAuthenticated()) {
-			return ApiHelper::createJsonResponse($response, null, 401, 'Not logged in');
-		}
 		if (!ApiHelper::checkRequiredArgs($body, ['projectId'])) {
 			return ApiHelper::createJsonResponse($response, null, 400, 'Not all required args were given');
 		}
