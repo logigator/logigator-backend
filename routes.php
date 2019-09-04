@@ -11,7 +11,7 @@ function createRoutes(Slim\App $app, $authenticationMiddleware) {
 		$group->post('/register-email', \Logigator\Api\Auth\RegisterEmail::class);
 		$group->post('/login-email', \Logigator\Api\Auth\LoginEmail::class);
 
-		$group->get('/logout', \Logigator\Api\Auth\Logout::class);
+		$group->get('/logout', \Logigator\Api\Auth\Logout::class)->add($authenticationMiddleware);
 	});
 
 	$app->group('/project', function(\Slim\Routing\RouteCollectorProxy $group){
