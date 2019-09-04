@@ -11,17 +11,18 @@ namespace Logigator\Api\Projects;
 
 use Logigator\Api\ApiHelper;
 use Logigator\Api\BaseController;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Slim\Http\Response;
+use Slim\Exception\HttpBadRequestException;
 
 class DeleteProject extends BaseController
 {
-	public function __invoke(ServerRequestInterface $request, Response $response, array $args)
+	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args)
 	{
 		$body = $request->getParsedBody();
 
 		if (!ApiHelper::checkRequiredArgs($body, ['projectId'])) {
-			return ApiHelper::createJsonResponse($response, null, 400, 'Not all required args were given');
+            throw new HttpBadRequestException($request, 'Not all required args were given');
 		}
 
 		$this->container->get('ProjectService')->deleteProject($body['projectId'],$this->getTokenPayload()->sub);
