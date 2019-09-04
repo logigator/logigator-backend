@@ -2,23 +2,27 @@
 
 namespace Logigator\Middleware;
 
-
-use Logigator\Api\ApiHelper;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Slim\Http\Response;
+use Psr\Http\Server\RequestHandlerInterface;
+use Slim\Exception\HttpBadRequestException;
+use \Slim\Exception;
 
 class JsonValidationMiddleware
 {
-	public function __invoke(ServerRequestInterface $request, Response $response, callable $next) {
+	public function __invoke(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
 		if ($request->getMethod() === 'GET') {
-			return $next($request, $response);
+			return $handler->handle($request);
 		}
+
 		if($request->getHeader('Content-Type')[0] !== 'application/json') {
-			return ApiHelper::createJsonResponse($response, null, 400, 'Content-Type must be application/json.');
+			throw new Exception\HttpBadRequestException($request, 'Content-Type must be application/json.');
 		}
+
 		if($request->getBody()->getContents() !== '' && $request->getParsedBody() == null ) {
-			return ApiHelper::createJsonResponse($response, null, 400, 'Error while parsing Json.');
+			throw new HttpBadRequestException($request, 'Invalid JSON received.');
 		}
-		return $next($request, $response);
+
+		return $handler->handle($request);
 	}
 }

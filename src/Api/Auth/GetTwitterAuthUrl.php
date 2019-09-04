@@ -7,11 +7,11 @@ use Logigator\Api\BaseController;
 use Abraham\TwitterOAuth\TwitterOAuth;
 use Logigator\Api\ApiHelper;
 use Psr\Http\Message\ServerRequestInterface;
-use Slim\Http\Response;
+use Psr\Http\Message\ResponseInterface;
 
 class GetTwitterAuthUrl extends BaseController
 {
-	public function __invoke(ServerRequestInterface $request, Response $response, array $args) {
+	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args) {
 		$connection = new TwitterOAuth(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET);
 		$request_token = $connection->oauth('oauth/request_token', array('oauth_callback' => TWITTER_CALLBACK_URL));
 

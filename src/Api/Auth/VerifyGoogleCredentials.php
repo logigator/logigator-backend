@@ -9,17 +9,18 @@ use Google_Service_Oauth2;
 use Logigator\Api\ApiHelper;
 use Logigator\Api\BaseController;
 use Psr\Http\Message\ServerRequestInterface;
-use Slim\Http\Response;
+use Psr\Http\Message\ResponseInterface;
+use Slim\Exception\HttpBadRequestException;
+use Slim\Exception\HttpUnauthorizedException;
 
 class VerifyGoogleCredentials extends BaseController
 {
 
-	public function __invoke(ServerRequestInterface $request, Response $response, array $args){
+	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args){
 		$body = $request->getParsedBody();
 
-		if(!ApiHelper::checkRequiredArgs($body, ['code'])) {
-			return ApiHelper::createJsonResponse($response, null, 400, 'Not all required args were given');
-		}
+		if(!ApiHelper::checkRequiredArgs($body, ['code']))
+			throw new HttpBadRequestException($request, 'Not all required args were given');
 
 		$client = new Google_Client();
 		$client->setApplicationName(GOOGLE_APPLICATION_NAME);
@@ -40,7 +41,7 @@ class VerifyGoogleCredentials extends BaseController
 			$this->container->get('AuthenticationService')->setUserAuthenticated($this->container->get('UserService')->fetchUserId($content['id']), 'google');
 
 		} catch (Exception $e) {
-			return ApiHelper::createJsonResponse($response, null, 401, 'Error verifying oauth-tokens');
+			throw new HttpUnauthorizedException($request, 'Error verifying oauth-tokens');
 		}
 		return ApiHelper::createJsonResponse($response, ['loggedIn' => 'true']);
 	}
