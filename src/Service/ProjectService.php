@@ -8,7 +8,6 @@
 
 namespace Logigator\Service;
 
-use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
 use Ramsey\Uuid\Uuid;
 
 class ProjectService extends BaseService
@@ -68,6 +67,25 @@ class ProjectService extends BaseService
 			->execute()
 			->fetchAll();
 	}
+
+    public function getProjectInfo(int $projectId, int $userId = null): array
+    {
+        $query = $this->container->get('DbalService')->getQueryBuilder()
+            ->select('*')
+            ->from('projects');
+
+        if($userId === null)
+            $query = $query
+                ->where('pk_id = ? and is_component = 0')
+                ->setParameter(0, $projectId);
+        else
+            $query = $query
+                ->where('pk_id = ? and fk_user = ? and is_component = 0')
+                ->setParameter(0, $projectId)
+                ->setParameter(1, $userId);
+
+        return $query->execute()->fetchAll();
+    }
 
 	public function getAllComponentsInfo(int $userId): array
 	{
