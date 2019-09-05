@@ -13,16 +13,46 @@ class ApiHelper
     public const JSON_OBJECT = 14;
     public const JSON_NULL = 15;
 
-	public static function createJsonResponse(ResponseInterface $response, array $data): ResponseInterface {
+	public static function createJsonResponse(ResponseInterface $response, array $data, bool $resolveSqlNames = false): ResponseInterface {
 		if($data === null) {
 			$data = array();
 		}
 
-		$data['status'] = 200;
-		$payload = json_encode($data, JSON_PRETTY_PRINT);
+        $obj = array();
+        $obj['status'] = 200;
+
+		if($resolveSqlNames) {
+		    $obj['result'] = self::resolveSqlObject($data);
+        } else {
+            $obj['result'] = $data;
+        }
+
+		$payload = json_encode($obj, JSON_PRETTY_PRINT);
 		$response->getBody()->write($payload);
 		return $response;
 	}
+
+	public static function resolveSqlObject(array $input) : array {
+	    $obj = array();
+        foreach ($input as $key => $value) {
+            $pos = strpos($key, '.');
+            if($pos !== false) {
+                $first = substr($key, 0, $pos);
+                $last = substr($key, $pos + 1, strlen($key) - $pos);
+
+                if(is_array($value))
+                    $obj[$first][$last] = self::resolveSqlObject($value);
+                else
+                    $obj[$first][$last] = $value;
+            } else {
+                if(is_array($value))
+                    $obj[$key] = self::resolveSqlObject($value);
+                else
+                    $obj[$key] = $value;
+            }
+        }
+        return $obj;
+    }
 
 	public static function checkRequiredArgs($body, array $args): bool {
 		foreach ($args as $arg) {
