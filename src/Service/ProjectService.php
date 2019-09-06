@@ -12,7 +12,7 @@ use Ramsey\Uuid\Uuid;
 
 class ProjectService extends BaseService
 {
-	public function createProject(string $name, bool $isComponent, int $fk_user, string $description, string $symbol, int $fk_originates_from = null): string
+	public function createProject(string $name, bool $isComponent, int $fk_user, string $description, int $fk_originates_from = null): string
 	{
 		$location = Uuid::uuid4()->toString();
 
@@ -23,13 +23,11 @@ class ProjectService extends BaseService
 			->setValue('fk_user', '?')
 			->setValue('location', '?')
 			->setValue('description', '?')
-			->setValue('symbol', '?')
 			->setParameter(0, $name)
 			->setParameter(1, $isComponent)
 			->setParameter(2, $fk_user)
 			->setParameter(3, $location)
-			->setParameter(4, $description)
-			->setParameter(5, $symbol);
+			->setParameter(4, $description);
 
 		if(!is_null($fk_originates_from))
 		    $query = $query->setValue('fk_originates_from', '?')
@@ -37,7 +35,7 @@ class ProjectService extends BaseService
 
 		$query->execute();
 
-		return $location;
+		return $this->container->get('DbalService')->getConnection()->lastInsertId();
 	}
 
 	public function fetchLocation(int $projectId, int $userId): string
@@ -65,7 +63,7 @@ class ProjectService extends BaseService
 	public function getAllProjectsInfo(int $userId): array
 	{
 		return $this->container->get('DbalService')->getQueryBuilder()
-			->select('pk_id, name, description, symbol, last_edited, created_on')
+			->select('pk_id, name, description, last_edited, created_on')
 			->from('projects')
 			->where('fk_user = ? and is_component = false')
 			->setParameter(0, $userId)
