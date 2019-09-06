@@ -1,6 +1,7 @@
 <?php
 $config = [
     'configuration' => 'debug',
+    'project_path' => 'projects/',
     'doctrine-dbal' => [
         'dbname' => '--',
         'user' => '--',

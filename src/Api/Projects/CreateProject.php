@@ -20,7 +20,8 @@ class CreateProject extends BaseController
 		}
 
 		$description = !isset($body['description']) ? null : $body['description'];
-		$id = $this->container->get('ProjectService')->createProject($body['name'], $body['isComponent'], $this->getTokenPayload()->sub, $description);
+        $symbol = !isset($body['symbol']) ? null : $body['symbol'];
+        $id = $this->container->get('ProjectService')->createProject($body['name'], $body['isComponent'], $this->getTokenPayload()->sub, $description, $symbol);
 
 		return ApiHelper::createJsonResponse($response, ['pk_id' => $id]);
 	}
