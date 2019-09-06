@@ -27,9 +27,9 @@ class OpenProject extends BaseController
 
 		$location = $this->container->get('ProjectService')->fetchLocation($body['project_id'],$this->getTokenPayload()->sub);
 		if ($location == null){
-			return ApiHelper::createJsonResponse($response, null, 403, "You don't have permission to view this file");
+            throw new HttpBadRequestException($request, 'Project not found.');
 		} else {
-			return ApiHelper::createJsonResponse($response, file_get_contents($location));
+			return ApiHelper::createJsonResponse($response, ['project' => file_get_contents($location)]);
 		}
 	}
 }

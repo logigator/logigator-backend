@@ -17,7 +17,7 @@ function createRoutes(Slim\App $app, $authenticationMiddleware) {
 	$app->group('/project', function(\Slim\Routing\RouteCollectorProxy $group){
 		$group->post('/create', \Logigator\Api\Projects\CreateProject::class);
 		$group->post('/open', \Logigator\Api\Projects\OpenProject::class);
-    		$group->post('/delete', \Logigator\Api\Projects\DeleteProject::class);
+		$group->post('/delete', \Logigator\Api\Projects\DeleteProject::class);
 		$group->post('/get-all-projects-info', \Logigator\Api\Projects\GetAllProjectsInfo::class);
 		$group->post('/get-all-components-info', \Logigator\Api\Projects\GetAllComponentsInfo::class);
 	})->add($authenticationMiddleware);
