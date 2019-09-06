@@ -15,9 +15,9 @@ class JsonValidationMiddleware
 			return $handler->handle($request);
 		}
 
-		if($request->getHeader('Content-Type')[0] !== 'application/json') {
-			throw new Exception\HttpBadRequestException($request, 'Content-Type must be application/json.');
-		}
+		if(strpos($request->getHeaderLine('Content-Type'), 'application/json') !== false) {
+            $request = $request->withParsedBody(json_decode($request->getBody()->getContents(), true));
+        }
 
 		if($request->getBody()->getContents() !== '' && $request->getParsedBody() == null ) {
 			throw new HttpBadRequestException($request, 'Invalid JSON received.');

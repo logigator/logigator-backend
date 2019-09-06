@@ -8,16 +8,15 @@
 
 namespace Logigator\Service;
 
-use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
 use Ramsey\Uuid\Uuid;
 
 class ProjectService extends BaseService
 {
-	public function createProject(string $name, bool $isComponent, int $fk_user, string $description, string $symbol): string
+	public function createProject(string $name, bool $isComponent, int $fk_user, string $description, string $symbol, int $fk_originates_from = null): string
 	{
-		$location = Uuid::uuid1()->toString();
+		$location = Uuid::uuid4()->toString();
 
-		$this->container->get('DbalService')->getQueryBuilder()
+		$query = $this->container->get('DbalService')->getQueryBuilder()
 			->insert('projects')
 			->setValue('name', '?')
 			->setValue('is_component', '?')
@@ -30,8 +29,13 @@ class ProjectService extends BaseService
 			->setParameter(2, $fk_user)
 			->setParameter(3, $location)
 			->setParameter(4, $description)
-			->setParameter(5, $symbol)
-			->execute();
+			->setParameter(5, $symbol);
+
+		if(!is_null($fk_originates_from))
+		    $query = $query->setValue('fk_originates_from', '?')
+                ->setParameter(6, $fk_originates_from);
+
+		$query->execute();
 
 		return $location;
 	}
@@ -68,6 +72,25 @@ class ProjectService extends BaseService
 			->execute()
 			->fetchAll();
 	}
+
+    public function getProjectInfo(int $projectId, int $userId = null): array
+    {
+        $query = $this->container->get('DbalService')->getQueryBuilder()
+            ->select('*')
+            ->from('projects');
+
+        if($userId === null)
+            $query = $query
+                ->where('pk_id = ?')
+                ->setParameter(0, $projectId);
+        else
+            $query = $query
+                ->where('pk_id = ? and fk_user = ?')
+                ->setParameter(0, $projectId)
+                ->setParameter(1, $userId);
+
+        return $query->execute()->fetch();
+    }
 
 	public function getAllComponentsInfo(int $userId): array
 	{

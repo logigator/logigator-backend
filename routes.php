@@ -14,11 +14,16 @@ function createRoutes(Slim\App $app, $authenticationMiddleware) {
 		$group->get('/logout', \Logigator\Api\Auth\Logout::class)->add($authenticationMiddleware);
 	});
 
-	$app->group('/project', function(\Slim\Routing\RouteCollectorProxy $group){
+	$app->group('/project', function(\Slim\Routing\RouteCollectorProxy $group) {
 		$group->post('/create', \Logigator\Api\Projects\CreateProject::class);
 		$group->post('/open', \Logigator\Api\Projects\OpenProject::class);
 		$group->post('/delete', \Logigator\Api\Projects\DeleteProject::class);
 		$group->post('/get-all-projects-info', \Logigator\Api\Projects\GetAllProjectsInfo::class);
 		$group->post('/get-all-components-info', \Logigator\Api\Projects\GetAllComponentsInfo::class);
 	})->add($authenticationMiddleware);
+
+	$app->group('/share', function(\Slim\Routing\RouteCollectorProxy $group) use ($authenticationMiddleware) {
+        $group->get('/get/{id}', \Logigator\Api\Share\GetShare::class);
+        $group->post('/create', \Logigator\Api\Share\CreateShare::class)->add($authenticationMiddleware);
+    });
 }
