@@ -6,8 +6,8 @@ use Logigator\Api\ApiHelper;
 use Logigator\Api\BaseController;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Ramsey\Uuid\Uuid;
 use Slim\Exception\HttpBadRequestException;
-use Slim\Exception\HttpForbiddenException;
 
 class CreateShare extends BaseController
 {
@@ -20,30 +20,61 @@ class CreateShare extends BaseController
         }
 
         $project = $this->container->get('ProjectService')->getProjectInfo($body['project'], $this->getTokenPayload()->sub);
+
         if(!$project)
-            throw new HttpForbiddenException($request, "Project was not found or does not belong to you.");
+            throw new HttpBadRequestException($request, "Project was not found or does not belong to you.");
 
+        $is_public = true;
+        if(isset($body['users']) && is_array($body['users']) && count($body['users']) > 0) {
+            $is_public = false;
+        }
 
-        //TODO: create snapshot project
-
-
-        //TODO: create link entry
-        /*$share = $this->container->get('DbalService')->getQueryBuilder()
+        $link_address = Uuid::uuid4()->toString();
+        $this->container->get('DbalService')->getQueryBuilder()
             ->insert('links')
-            ->setValue('name', '?')
-            ->setValue('is_component', '?')
-            ->setValue('fk_user', '?')
-            ->setValue('location', '?')
-            ->setValue('description', '?')
-            ->setValue('symbol', '?')
-            ->setParameter(0, $name)
-            ->setParameter(1, $isComponent)
-            ->setParameter(2, $fk_user)
-            ->setParameter(3, $location)
-            ->setParameter(4, $description)
-            ->setParameter(5, $symbol)
+            ->setValue('address', '?')
+            ->setValue('is_public', '?')
+            ->setValue('fk_project', '?')
+            ->setParameter(0, $link_address)
+            ->setParameter(1, $is_public)
+            ->setParameter(2, $project['pk_id'])
             ->execute();
 
-		return ApiHelper::createJsonResponse($response, $share, true);*/
+        $link_id = $this->container->get('DbalService')->getQueryBuilder()
+            ->select('pk_id')
+            ->from('links')
+            ->where('address = ?')
+            ->setParameter(0, $link_address)
+            ->execute()
+            ->fetch()['pk_id'];
+
+        $warnings = array();
+        if(!$is_public) {
+            foreach($body['users'] as $user) {
+                $user = $this->container->get('DbalService')->getQueryBuilder()
+                    ->select('pk_id')
+                    ->from('users')
+                    ->where('username = ? or email = ?')
+                    ->setParameter(0, $user)
+                    ->setParameter(1, $user)
+                    ->execute()
+                    ->fetch()['pk_id'];
+
+                if(!$user) {
+                    array_push($warnings, 'user "' . $user . '" not found."');
+                    continue;
+                }
+
+                $this->container->get('DbalService')->getQueryBuilder()
+                    ->insert('link_permits')
+                    ->setValue('fk_user', '?')
+                    ->setValue('fk_link', '?')
+                    ->setParameter(0, $user)
+                    ->setParameter(1, $link_id)
+                    ->execute();
+            }
+        }
+
+		return ApiHelper::createJsonResponse($response, ['address' => $link_address], true, $warnings);
 	}
 }

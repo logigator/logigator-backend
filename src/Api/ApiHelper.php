@@ -13,7 +13,7 @@ class ApiHelper
     public const JSON_OBJECT = 14;
     public const JSON_NULL = 15;
 
-	public static function createJsonResponse(ResponseInterface $response, array $data, bool $resolveSqlNames = false): ResponseInterface {
+	public static function createJsonResponse(ResponseInterface $response, array $data, bool $resolveSqlNames = false, array $warnings = null): ResponseInterface {
 		if($data === null) {
 			$data = array();
 		}
@@ -26,6 +26,9 @@ class ApiHelper
         } else {
             $obj['result'] = $data;
         }
+
+		if($warnings !== null)
+		    $obj['warnings'] = $warnings;
 
 		$payload = json_encode($obj, JSON_PRETTY_PRINT);
 		$response->getBody()->write($payload);
