@@ -27,8 +27,6 @@ class CloneProject extends BaseController
 		$id = $this->getTokenPayload()->sub;
 		$linkData = $this->container->get('LinkService')->fetchLinkData($body['address'], $id);
 		$newProjectId = $this->container->get('ProjectService')->cloneProject($linkData['project_id'], $linkData['user_id'], $id,0);
-		//TODO use new project ID to retrieve and return data
-		$data = array();
-		return ApiHelper::createJsonResponse($response, $data);
+		return ApiHelper::createJsonResponse($response,  ['pk_id' => $newProjectId]);
 	}
 }
