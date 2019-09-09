@@ -8,6 +8,7 @@
 
 namespace Logigator\Service;
 
+use Logigator\Api\ApiHelper;
 use Ramsey\Uuid\Uuid;
 
 class ProjectService extends BaseService
@@ -111,12 +112,15 @@ class ProjectService extends BaseService
 		}
 		$newLocation = $this->copyData($projectId, $userIdOrigin, $userId);
 		$newProjectId = $this->fetchProjectId($newLocation, $userId);
-		$jsonString = file_get_contents($newLocation);
-		$data = json_decode($jsonString, true);
 
-		foreach ($data['mapping'] as $key => $value) {
-			$key[$value] = $this->cloneProject($value, $userIdOrigin, $userId, $counter++);
-		}
+		if(file_exists(ApiHelper::getProjectPath($this->container, $newLocation))) {
+            $jsonString = file_get_contents(ApiHelper::getProjectPath($this->container, $newLocation));
+            $data = json_decode($jsonString, true);
+
+            foreach ($data['mapping'] as $key => $value) {
+                $key[$value] = $this->cloneProject($value, $userIdOrigin, $userId, $counter++);
+            }
+        }
 
 		return $newProjectId;
 	}
@@ -124,14 +128,14 @@ class ProjectService extends BaseService
 	public function copyData($projectId, $userIdOrigin, $userId): String
 	{
 		$location = Uuid::uuid4()->toString();
-		$projectData = $this->fetchProjectData($projectId, $userIdOrigin);
+
+		$projectData = $this->getProjectInfo($projectId, $userIdOrigin);
 		$this->container->get('DbalService')->getQueryBuilder()
 			->insert('projects')
 			->setValue('name', '?')
 			->setValue('is_component', '?')
 			->setValue('fk_user', '?')
 			->setValue('location', '?')
-			->setValue('preview_image', '?')
 			->setValue('description', '?')
 			->setValue('symbol', '?')
 			->setValue('originates_from', '?')
@@ -139,26 +143,22 @@ class ProjectService extends BaseService
 			->setParameter(1, $projectData['isComponent'])
 			->setParameter(2, $userId)
 			->setParameter(3, $location)
-			->setParameter(4, $projectData['preview_image'])
 			->setParameter(5, $projectData['description'])
 			->setParameter(6, $projectData['symbol'])
 			->setParameter(7, $projectData['fk_user'])
 			->execute();
-		$jsonString = file_get_contents($projectData['location']);
-		file_put_contents($location, $jsonString);
-		return $location;
-	}
 
-	public function fetchProjectData($projectId, $userId): array
-	{
-		return $this->container->get('DbalService')->getQueryBuilder()
-			->select('*')
-			->from('projects')
-			->where('pk_id = ? and fk_user = ?')
-			->setParameter(0, $projectId)
-			->setParameter(1, $userId)
-			->getQuery()
-			->getResults();
+		$path = ApiHelper::getProjectPath($this->container, $projectData['location']);
+
+		if(file_exists($path))
+            file_put_contents(ApiHelper::getProjectPath($this->container, $location), file_get_contents($path));
+
+		$path = ApiHelper::getProjectPreviewPath($this->container, $projectData['location']);
+
+		if(file_exists($path))
+            file_put_contents(ApiHelper::getProjectPreviewPath($this->container, $location), file_get_contents($path));
+
+		return $location;
 	}
 
 	public function fetchProjectId($location, $userId): int
