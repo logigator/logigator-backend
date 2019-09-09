@@ -2,6 +2,7 @@
 
 namespace Logigator\Api;
 
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class ApiHelper
@@ -55,6 +56,31 @@ class ApiHelper
             }
         }
         return $obj;
+    }
+
+    public static function getProjectPath(ContainerInterface $container, string $filename): string {
+	    $project_path = $container->get('ConfigService')->getConfig('project_path');
+	    $absolute = false;
+
+        // Optional wrapper(s).
+        $regExp = '%^(?<wrappers>(?:[[:print:]]{2,}://)*)';
+        // Optional root prefix.
+        $regExp .= '(?<root>(?:[[:alpha:]]:/|/)?)';
+        // Actual path.
+        $regExp .= '(?<path>(?:[[:print:]]*))$%';
+        $parts = [];
+        if (!preg_match($regExp, $project_path, $parts)) {
+            $mess = sprintf('Project Path configured in config is invalid.', $project_path);
+            throw new \DomainException($mess);
+        }
+        if ('' !== $parts['root']) {
+            $absolute = true;
+        }
+
+        if($absolute)
+            return $container->get('ConfigService')->getConfig('project_path') . $filename;
+        else
+            return $_SERVER['DOCUMENT_ROOT'] . '/' . $container->get('ConfigService')->getConfig('project_path') . $filename;
     }
 
 	public static function checkRequiredArgs($body, array $args): bool {
