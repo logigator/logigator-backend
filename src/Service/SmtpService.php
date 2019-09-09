@@ -1,6 +1,7 @@
 <?php
 namespace Logigator\Service;
 
+use Logigator\Api\ApiHelper;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use Psr\Container\ContainerInterface;
@@ -12,7 +13,7 @@ class SmtpService extends BaseService
 	}
 
 	public function loadTemplate(string $path, array $keyValuePairs): string {
-		$content = file_get_contents($path);
+		$content = file_get_contents(ApiHelper::getPath($this->container->get('ConfigService')->getConfig('email_templates_path'), $path));
 		foreach ($keyValuePairs as $keyValuePair) {
 			$content = str_replace('%%' . $keyValuePair[0] . '%%', $keyValuePair[1], $content);
 		}

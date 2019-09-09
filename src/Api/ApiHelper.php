@@ -59,8 +59,19 @@ class ApiHelper
     }
 
     public static function getProjectPath(ContainerInterface $container, string $filename): string {
-	    $project_path = $container->get('ConfigService')->getConfig('project_path');
-	    $absolute = false;
+        return self::getPath($container->get('ConfigService')->getConfig('project_path'), $filename);
+    }
+
+    public static function getProjectPreviewPath(ContainerInterface $container, string $filename): string {
+        return self::getPath($container->get('ConfigService')->getConfig('project_preview_path'), $filename);
+    }
+
+    public static function getProfileImagePath(ContainerInterface $container, string $filename): string {
+        return self::getPath($container->get('ConfigService')->getConfig('profile_image_path'), $filename);
+    }
+
+    public static function getPath(string $config_path, string $filename): string {
+        $absolute = false;
 
         // Optional wrapper(s).
         $regExp = '%^(?<wrappers>(?:[[:print:]]{2,}://)*)';
@@ -69,18 +80,22 @@ class ApiHelper
         // Actual path.
         $regExp .= '(?<path>(?:[[:print:]]*))$%';
         $parts = [];
-        if (!preg_match($regExp, $project_path, $parts)) {
-            $mess = sprintf('Project Path configured in config is invalid.', $project_path);
+        if (!preg_match($regExp, $config_path, $parts)) {
+            $mess = sprintf('Path configured in config is invalid.', $config_path);
             throw new \DomainException($mess);
         }
         if ('' !== $parts['root']) {
             $absolute = true;
         }
 
+        $last = substr($config_path, strlen($config_path) - 1, 1);
+        if($last !== '/' && $last !== '\\')
+            $config_path .= '/';
+
         if($absolute)
-            return $container->get('ConfigService')->getConfig('project_path') . $filename;
+            return $config_path . $filename;
         else
-            return $_SERVER['DOCUMENT_ROOT'] . '/' . $container->get('ConfigService')->getConfig('project_path') . $filename;
+            return $_SERVER['DOCUMENT_ROOT'] . '/' . $config_path . $filename;
     }
 
 	public static function checkRequiredArgs($body, array $args): bool {
