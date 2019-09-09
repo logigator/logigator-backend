@@ -88,6 +88,10 @@ class ApiHelper
             $absolute = true;
         }
 
+        $last = substr($config_path, strlen($config_path) - 1, 1);
+        if($last !== '/' && $last !== '\\')
+            $config_path .= '/';
+
         if($absolute)
             return $config_path . $filename;
         else

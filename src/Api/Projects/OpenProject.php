@@ -29,7 +29,8 @@ class OpenProject extends BaseController
 		if ($location == null){
             throw new HttpBadRequestException($request, 'Project not found.');
 		} else {
-			return ApiHelper::createJsonResponse($response, ['project' => file_get_contents($location)]);
+		    if(file_exists(ApiHelper::getProjectPath($this->container, $location)))
+			return ApiHelper::createJsonResponse($response, ['project' => file_get_contents(ApiHelper::getProjectPath($this->container, $location))]);
 		}
 	}
 }

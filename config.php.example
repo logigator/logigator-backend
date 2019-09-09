@@ -2,8 +2,9 @@
 $config = [
     'configuration' => 'debug',
     'project_path' => 'projects/',
-    'project_preview_path' => 'projects/preview',
-    'profile_image_path' => 'images/profile',
+    'project_preview_path' => 'projects/preview/',
+    'profile_image_path' => 'images/profile/',
+    'email_templates_path' => 'data/email-templates/',
     'doctrine-dbal' => [
         'dbname' => '--',
         'user' => '--',

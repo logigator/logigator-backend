@@ -106,7 +106,7 @@ class ProjectService extends BaseService
 
 	public function cloneProject($projectId, $userIdOrigin, $userId, $counter): int
 	{
-		if ($counter >= 128) {
+		if ($counter >= 64) {
 			// TODO: stop and throw error
 			return 0;
 		}
@@ -118,7 +118,7 @@ class ProjectService extends BaseService
             $data = json_decode($jsonString, true);
 
             foreach ($data['mapping'] as $key => $value) {
-                $key[$value] = $this->cloneProject($value, $userIdOrigin, $userId, $counter++);
+                $key[$value] = $this->cloneProject($value, $userIdOrigin, $userId, $counter+1);
             }
         }
 
