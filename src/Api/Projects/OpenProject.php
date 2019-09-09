@@ -29,9 +29,8 @@ class OpenProject extends BaseController
 
 		if ($location == null)
             throw new HttpBadRequestException($request, 'Project not found.');
-
-		//TODO: Construct absolute file path
-        $project = file_get_contents($this->container->get('ConfigService')->getConfig('project_path') . $location);
+		
+        $project = file_get_contents($_SERVER['DOCUMENT_ROOT'] . '/' . $this->container->get('ConfigService')->getConfig('project_path') . $location);
 
         if(!$project)
             $project = '{}';
