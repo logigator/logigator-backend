@@ -25,8 +25,15 @@ class CloneProject extends BaseController
 			throw new HttpBadRequestException($request, 'Not all required args were given');
 		}
 		$id = $this->getTokenPayload()->sub;
-		$linkData = $this->container->get('LinkService')->fetchLinkData($body['address'], $id);
-		$newProjectId = $this->container->get('ProjectService')->cloneProject($linkData['project_id'], $linkData['user_id'], $id,0);
-		return ApiHelper::createJsonResponse($response,  ['pk_id' => $newProjectId]);
+		$linkData = $this->container->get('LinkService')->fetchPublicLinkData($body['address']);
+		if ($linkData == null) {
+			$linkData = $this->container->get('LinkService')->fetchPrivateLinkData($body['address'], $id);
+		}
+		if ($linkData == null){
+			throw new HttpBadRequestException($request, "Share not found.");
+		}
+
+		$newProjectId = $this->container->get('ProjectService')->cloneProject($linkData['project_id'], $linkData['user_id'], $id, 0);
+		return ApiHelper::createJsonResponse($response, ['pk_id' => $newProjectId]);
 	}
 }

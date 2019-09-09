@@ -13,7 +13,7 @@ use Ramsey\Uuid\Uuid;
 
 class ProjectService extends BaseService
 {
-	public function createProject(string $name, bool $isComponent, int $fk_user, string $description, string $symbol = null, int $fk_originates_from = null): string
+	public function createProject(string $name, bool $isComponent, int $fk_user, string $description = null, string $symbol = null, int $fk_originates_from = null): string
 	{
 		$location = Uuid::uuid4()->toString();
 
@@ -139,14 +139,14 @@ class ProjectService extends BaseService
 			->setValue('location', '?')
 			->setValue('description', '?')
 			->setValue('symbol', '?')
-			->setValue('originates_from', '?')
+			->setValue('fk_originates_from', '?')
 			->setParameter(0, $projectData['name'] . "_Copy")
-			->setParameter(1, $projectData['isComponent'])
+			->setParameter(1, $projectData['is_component'])
 			->setParameter(2, $userId)
 			->setParameter(3, $location)
-			->setParameter(5, $projectData['description'])
-			->setParameter(6, $projectData['symbol'])
-			->setParameter(7, $projectData['fk_user'])
+			->setParameter(4, $projectData['description'])
+			->setParameter(5, $projectData['symbol'])
+			->setParameter(6, $projectId)
 			->execute();
 
 		$path = ApiHelper::getProjectPath($this->container, $projectData['location']);
