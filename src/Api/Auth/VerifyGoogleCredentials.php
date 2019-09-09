@@ -34,11 +34,11 @@ class VerifyGoogleCredentials extends BaseController
 			$client->setAccessToken($token);
 			$content = $serviceOAuth->userinfo->get();
 
-			if ($this->container->get('UserService')->fetchUserId($content['id']) == null) {
+			if ($this->container->get('UserService')->fetchUserIdPerKey($content['id']) == null) {
 				$this->container->get('UserService')->createUser($content['name'],$content['id'],$content['email'],'google',$content['picture']);
 			}
 
-			$this->container->get('AuthenticationService')->setUserAuthenticated($this->container->get('UserService')->fetchUserId($content['id']), 'google');
+			$this->container->get('AuthenticationService')->setUserAuthenticated($this->container->get('UserService')->fetchUserIdPerKey($content['id']), 'google');
 
 		} catch (Exception $e) {
 			throw new HttpUnauthorizedException($request, 'Error verifying oauth-tokens');
