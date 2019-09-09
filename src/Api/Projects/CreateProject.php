@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Stefan
- * Date: 31.08.2019
- * Time: 10:41
- */
 
 namespace Logigator\Api\Projects;
 
@@ -26,9 +20,9 @@ class CreateProject extends BaseController
 		}
 
 		$description = !isset($body['description']) ? null : $body['description'];
-		$symbol = !isset($body['symbol']) ? null : $body['symbol'];
-		$this->container->get('ProjectService')->createProject($body['name'], $body['isComponent'], $this->getTokenPayload()->sub, $description, $symbol);
+        $symbol = !isset($body['symbol']) ? null : $body['symbol'];
+        $id = $this->container->get('ProjectService')->createProject($body['name'], $body['isComponent'], $this->getTokenPayload()->sub, $description, $symbol);
 
-		return ApiHelper::createJsonResponse($response, ['createdProject' => 'true']);
+		return ApiHelper::createJsonResponse($response, ['pk_id' => $id]);
 	}
 }

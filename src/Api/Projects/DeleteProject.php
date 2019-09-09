@@ -21,11 +21,13 @@ class DeleteProject extends BaseController
 	{
 		$body = $request->getParsedBody();
 
-		if (!ApiHelper::checkRequiredArgs($body, ['projectId'])) {
+		if (!ApiHelper::checkRequiredArgs($body, ['project_id'])) {
             throw new HttpBadRequestException($request, 'Not all required args were given');
 		}
 
-		$this->container->get('ProjectService')->deleteProject($body['projectId'],$this->getTokenPayload()->sub);
-		return ApiHelper::createJsonResponse($response, ['deletedProject' => 'true']);
+		if(!$this->container->get('ProjectService')->deleteProject($body['project_id'],$this->getTokenPayload()->sub))
+		    throw new HttpBadRequestException($request, 'Project not found.');
+
+		return ApiHelper::createJsonResponse($response, ['success' => true]);
 	}
 }

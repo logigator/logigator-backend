@@ -12,10 +12,10 @@ class GetShare extends BaseController
 {
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args)
 	{
-	    //TODO: shares for specific person
         $share = $this->container->get('DbalService')->getQueryBuilder()
             ->select('link.address as "link.address", 
                 link.is_public as "link.is_public",
+                link.pk_id as "link.pk_id",
                 project.pk_id as "project.id",
                 project.name as "project.name",
                 project.description as "project.description",
@@ -29,7 +29,7 @@ class GetShare extends BaseController
             ->from('links', 'link')
             ->join('link', 'projects', 'project', 'link.fk_project = project.pk_id')
             ->join('project', 'users', 'user', 'user.pk_id = project.fk_user')
-            ->where('link.address = ? and link.is_public = 1')
+            ->where('link.address = ?')
             ->setParameter(0, $args['id'])
             ->execute()
             ->fetch();
@@ -37,6 +37,20 @@ class GetShare extends BaseController
         if(!$share)
             throw new HttpBadRequestException($request, "Share not found.");
 
-		return ApiHelper::createJsonResponse($response, $share, true);
-	}
+        if($share['link.is_public'])
+            return ApiHelper::createJsonResponse($response, $share, true);
+
+        if(!$this->container->get('DbalService')->getQueryBuilder()
+            ->select('fk_user, fk_link')
+            ->from('link_permits')
+            ->where('fk_user = ? and fk_link = ?')
+            ->setParameter(0, $this->getTokenPayload()->sub)
+            ->setParameter(1, $share['link.pk_id'])
+            ->execute()
+            ->fetch())
+            throw new HttpBadRequestException($request, "Share not found.");
+
+        return ApiHelper::createJsonResponse($response, $share, true);
+
+    }
 }
