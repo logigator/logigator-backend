@@ -20,4 +20,12 @@ function createServices(\DI\Container $container, array $config) {
 	$container->set('UserService', function ($c) use ($config) {
 		return new \Logigator\Service\UserService($c, $config);
 	});
+
+    $container->set('ConfigService', function ($c) use ($config) {
+        return new \Logigator\Service\ConfigService($c, $config);
+    });
+
+	$container->set('LinkService', function ($c) use ($config) {
+		return new \Logigator\Service\LinkService($c, $config);
+	});
 }
