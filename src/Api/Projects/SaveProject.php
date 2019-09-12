@@ -23,6 +23,7 @@ class SaveProject extends BaseController
 		$symbol = !isset($body['symbol']) ? null : $body['symbol'];
 		if (isset($body['data']) && is_array($body['data']) && count($body['data']) > 0) {
 			//TODO: json file prüfen
+
 			$data = $body['data'];
 		} else $data = null;
 

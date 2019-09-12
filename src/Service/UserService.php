@@ -5,9 +5,7 @@ namespace Logigator\Service;
 
 class UserService extends BaseService
 {
-	private const DEFAULT_PROFILE_IMAGE = "";
-
-	public function createUser($username,$socialMediaKey, $email, $loginType, $password = null, $profile_image = self::DEFAULT_PROFILE_IMAGE)
+	public function createUser($username, $socialMediaKey, $email, $loginType, $password = null, $profile_image = '_default')
 	{
 		$this->container->get('DbalService')->getQueryBuilder()
 			->insert('users')

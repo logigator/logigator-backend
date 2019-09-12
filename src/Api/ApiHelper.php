@@ -58,6 +58,12 @@ class ApiHelper
         return $obj;
     }
 
+    public static function removeSpecialCharacters(string $string): string {
+        $string = str_replace(' ', '-', $string); // Replaces all spaces with hyphens.
+
+        return preg_replace('/[^A-Za-z0-9\-\_]/', '', $string); // Removes special chars.
+    }
+
     public static function getProjectPath(ContainerInterface $container, string $filename): string {
         return self::getPath($container->get('ConfigService')->getConfig('project_path'), $filename);
     }
@@ -68,6 +74,15 @@ class ApiHelper
 
     public static function getProfileImagePath(ContainerInterface $container, string $filename): string {
         return self::getPath($container->get('ConfigService')->getConfig('profile_image_path'), $filename);
+    }
+
+    public static function generateRandomString(int $length = 8, string $charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789') {
+        $randomString = '';
+        $charactersLength = strlen($charset);
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $charset[random_int(0, $charactersLength - 1)];
+        }
+        return $randomString;
     }
 
     public static function getPath(string $config_path, string $filename): string {

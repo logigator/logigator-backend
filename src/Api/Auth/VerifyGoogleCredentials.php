@@ -10,6 +10,7 @@ use Logigator\Api\ApiHelper;
 use Logigator\Api\BaseController;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Ramsey\Uuid\Uuid;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpUnauthorizedException;
 
@@ -34,15 +35,17 @@ class VerifyGoogleCredentials extends BaseController
 			$client->setAccessToken($token);
 			$content = $serviceOAuth->userinfo->get();
 
-			if ($this->container->get('UserService')->fetchUserIdPerKey($content['id']) == null) {
-				$this->container->get('UserService')->createUser($content['name'],$content['id'],$content['email'],'google',$content['picture']);
-			}
+            if ($this->container->get('UserService')->fetchUserIdPerKey($content['id']) == null) {
+                $profile_url = Uuid::uuid4()->toString();
+                $this->container->get('UserService')->createUser(ApiHelper::removeSpecialCharacters($content['name']) . '_' . ApiHelper::generateRandomString(3), $content['id'], $content['email'], 'google', null, $profile_url);
+                file_put_contents(ApiHelper::getProfileImagePath($this->container, $profile_url), fopen($content['picture'], 'r'));
+            }
 
 			$this->container->get('AuthenticationService')->setUserAuthenticated($this->container->get('UserService')->fetchUserIdPerKey($content['id']), 'google');
 
 		} catch (Exception $e) {
 			throw new HttpUnauthorizedException($request, 'Error verifying oauth-tokens');
 		}
-		return ApiHelper::createJsonResponse($response, ['loggedIn' => 'true']);
+		return ApiHelper::createJsonResponse($response, ['loggedIn' => 'true', 'content' => $content]);
 	}
 }
