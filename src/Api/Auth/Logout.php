@@ -15,6 +15,6 @@ class Logout extends BaseController
 
 
 		$this->container->get('AuthenticationService')->logoutUser($token);
-		return ApiHelper::createJsonResponse($response, ['loggedOut' => 'true']);
+		return ApiHelper::createJsonResponse($response, ['loggedOut' => true]);
 	}
 }

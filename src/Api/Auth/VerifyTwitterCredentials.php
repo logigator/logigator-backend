@@ -37,6 +37,6 @@ class VerifyTwitterCredentials extends BaseController
 		} catch (\Exception $e) {
 			throw new HttpUnauthorizedException($request, 'Error verifying oauth-tokens');
 		}
-		return ApiHelper::createJsonResponse($response, ['loggedIn' => 'true']);
+		return ApiHelper::createJsonResponse($response, ['loggedIn' => true]);
 	}
 }

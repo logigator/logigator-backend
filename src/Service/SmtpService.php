@@ -12,10 +12,10 @@ class SmtpService extends BaseService
 		parent::__construct($container, $config);
 	}
 
-	public function loadTemplate(string $path, array $keyValuePairs): string {
-		$content = file_get_contents(ApiHelper::getPath($this->container->get('ConfigService')->getConfig('email_templates_path'), $path));
-		foreach ($keyValuePairs as $keyValuePair) {
-			$content = str_replace('%%' . $keyValuePair[0] . '%%', $keyValuePair[1], $content);
+	public function loadTemplate(string $filename, array $keyValuePairs): string {
+		$content = file_get_contents(ApiHelper::getPath($this->container->get('ConfigService')->getConfig('email_templates_path'), $filename));
+		foreach ($keyValuePairs as $key => $value) {
+			$content = str_replace('%%' . $key . '%%', $value, $content);
 		}
 		return $content;
 	}

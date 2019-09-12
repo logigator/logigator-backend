@@ -13,7 +13,7 @@ use Ramsey\Uuid\Uuid;
 
 class ProjectService extends BaseService
 {
-	public function createProject(string $name, bool $isComponent, int $fk_user, string $description = null, string $symbol = null, int $fk_originates_from = null): string
+	public function createProject(string $name, bool $isComponent, int $fk_user, string $description = null, string $symbol = '', int $fk_originates_from = null): string
 	{
 		$location = Uuid::uuid4()->toString();
 

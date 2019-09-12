@@ -17,6 +17,7 @@ class LoginEmail extends BaseController
 			throw new HttpBadRequestException($request, 'Not all required args were given');
 		}
 
+		//TODO: Ignore Users who have login from google or twitter
 		$userId = $this->container->get('UserService')->fetchUserIdPerEmail($body['email']);
 		$passwordCorrect = $this->container->get('UserService')->verifyPassword($body['email'],$body['password']);
 
@@ -27,6 +28,6 @@ class LoginEmail extends BaseController
 			throw new HttpBadRequestException($request, 'password is incorrect');
 
 		$this->container->get('AuthenticationService')->setUserAuthenticated($userId, 'email');
-		return ApiHelper::createJsonResponse($response, ['loggedIn' => 'true']);
+		return ApiHelper::createJsonResponse($response, ['loggedIn' => true]);
 	}
 }

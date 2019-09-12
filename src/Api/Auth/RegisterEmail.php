@@ -34,6 +34,6 @@ class RegisterEmail extends BaseController
 		$this->container->get('UserService')->createUser($body['username'], null, $body['email'], 'local', $body['password']);
 		$this->container->get('AuthenticationService')->setUserAuthenticated($this->container->get('UserService')->fetchUserIdPerEmail($body['email']), 'email');
 
-		return ApiHelper::createJsonResponse($response, ['loggedIn' => 'true']);
+		return ApiHelper::createJsonResponse($response, ['loggedIn' => true]);
 	}
 }

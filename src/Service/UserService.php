@@ -26,6 +26,16 @@ class UserService extends BaseService
 		return $this->container->get('DbalService')->getConnection()->lastInsertId();
 	}
 
+	public function fetchUser($id) {
+		return $this->container->get('DbalService')->getQueryBuilder()
+			->select('*')
+			->from('users')
+			->where('pk_id = ?')
+			->setParameter(0, $id)
+			->execute()
+			->fetch();
+	}
+
 	public function fetchUserIdPerKey($key)
 	{
 		return $this->container->get('DbalService')->getQueryBuilder()
