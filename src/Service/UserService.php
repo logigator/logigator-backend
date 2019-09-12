@@ -5,7 +5,7 @@ namespace Logigator\Service;
 
 class UserService extends BaseService
 {
-	public function createUser($username, $socialMediaKey, $email, $loginType, $password = null, $profile_image = '_default')
+	public function createUser($username, $socialMediaKey, $email, $loginType, $password = null, $profile_image = '_default'): int
 	{
 		$this->container->get('DbalService')->getQueryBuilder()
 			->insert('users')
@@ -22,6 +22,8 @@ class UserService extends BaseService
 			->setParameter(4, $profile_image)
 			->setParameter(5, $socialMediaKey)
 			->execute();
+
+		return $this->container->get('DbalService')->getConnection()->lastInsertId();
 	}
 
 	public function fetchUserIdPerKey($key)
@@ -34,6 +36,17 @@ class UserService extends BaseService
 			->execute()
 			->fetch()["pk_id"];
 	}
+
+    public function fetchUserIdPerUsername($username)
+    {
+        return $this->container->get('DbalService')->getQueryBuilder()
+            ->select('pk_id')
+            ->from('users')
+            ->where('username = ?')
+            ->setParameter(0, $username)
+            ->execute()
+            ->fetch()["pk_id"];
+    }
 
 	public function fetchUserIdPerEmail($email)
 	{

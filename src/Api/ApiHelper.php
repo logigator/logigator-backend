@@ -155,7 +155,10 @@ class ApiHelper
 		return true;
 	}
 
-	public static function checkArgumentFormat(string $regex, string $input): bool {
-        return preg_match($regex, $input) !== false;
+	public static function checkArgumentFormat(string $regex, array $input): bool {
+	    foreach($input as $string) {
+            if(preg_match($regex, $string) === false) return false;
+        }
+	    return true;
     }
 }

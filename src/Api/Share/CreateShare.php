@@ -40,13 +40,7 @@ class CreateShare extends BaseController
             ->setParameter(2, $project['pk_id'])
             ->execute();
 
-        $link_id = $this->container->get('DbalService')->getQueryBuilder()
-            ->select('pk_id')
-            ->from('links')
-            ->where('address = ?')
-            ->setParameter(0, $link_address)
-            ->execute()
-            ->fetch()['pk_id'];
+        $link_id = $this->container->get('DbalService')->getConnection()->lastInsertId();
 
         $warnings = array();
         if(!$is_public) {
