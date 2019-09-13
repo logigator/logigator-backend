@@ -107,10 +107,9 @@ class ProjectService extends BaseService
 
 	public function cloneProject($projectId, $userIdOrigin, $userId, $counter): int
 	{
-		if ($counter >= 64) {
-			// TODO: stop and throw error
-			return 0;
-		}
+		if ($counter >= 64)
+			return -1;
+
 		$newLocation = $this->copyData($projectId, $userIdOrigin, $userId);
 		$newProjectId = $this->fetchProjectId($newLocation, $userId);
 

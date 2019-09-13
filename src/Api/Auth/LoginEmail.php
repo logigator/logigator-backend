@@ -13,16 +13,23 @@ class LoginEmail extends BaseController
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args) {
 		$body = $request->getParsedBody();
 
-		if(!ApiHelper::checkRequiredArgs($body, ['email', 'password'])) {
+		if(!ApiHelper::checkRequiredArgs($body, ['user', 'password'])) {
 			throw new HttpBadRequestException($request, 'Not all required args were given');
 		}
 
-		//TODO: Ignore Users who have login from google or twitter
-		$userId = $this->container->get('UserService')->fetchUserIdPerEmail($body['email']);
-		$passwordCorrect = $this->container->get('UserService')->verifyPassword($body['email'],$body['password']);
+        $userId = $this->container->get('DbalService')->getQueryBuilder()
+            ->select('pk_id')
+            ->from('users')
+            ->where('(email = ? or username = ?) and login_type = \'local\'')
+            ->setParameter(0, $body['user'])
+            ->setParameter(1, $body['user'])
+            ->execute()
+            ->fetch()["pk_id"];
 
 		if ($userId == null)
 			throw new HttpBadRequestException($request, 'User not found.');
+
+        $passwordCorrect = $this->container->get('UserService')->verifyPassword($userId, $body['password']);
 
 		if(!$passwordCorrect)
 			throw new HttpBadRequestException($request, 'password is incorrect');

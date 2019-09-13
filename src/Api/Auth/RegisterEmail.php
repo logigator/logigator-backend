@@ -18,7 +18,7 @@ class RegisterEmail extends BaseController
 		if(!ApiHelper::checkRequiredArgs($body, ['email', 'password', 'username']))
 			throw new HttpBadRequestException($request, 'Not all required args were given');
 
-		if(ApiHelper::checkArgumentFormat('^[^ ]+$', [$body['username']]))
+		if(!ApiHelper::checkArgumentFormat('/^[^ ]+$/', [$body['username']]))
             throw new HttpBadRequestException($request, 'Username is invalid.');
 
         if ($this->container->get('UserService')->fetchUserIdPerEmail($body['email']) != null) {

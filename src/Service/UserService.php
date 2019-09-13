@@ -7,6 +7,9 @@ class UserService extends BaseService
 {
 	public function createUser($username, $socialMediaKey, $email, $loginType, $password = null, $profile_image = '_default'): int
 	{
+	    if($password !== null)
+	        $password = password_hash($password, PASSWORD_DEFAULT);
+
 		$this->container->get('DbalService')->getQueryBuilder()
 			->insert('users')
 			->setValue('username', '?')
@@ -69,16 +72,20 @@ class UserService extends BaseService
 			->fetch()["pk_id"];
 	}
 
-	//TODO: implement secure password verification
-	public function verifyPassword($email,$password)
+	public function verifyPassword($pk_id, $password): bool
 	{
-		return $this->container->get('DbalService')->getQueryBuilder()
+		$hash = $this->container->get('DbalService')->getQueryBuilder()
 			->select('password')
 			->from('users')
-			->where('email = ?')
-			->setParameter(0, $email)
+			->where('pk_id = ?')
+			->setParameter(0, $pk_id)
 			->execute()
-			->fetch()["password"]==$password;
+			->fetch()["password"];
+
+		if(!$hash)
+		    return false;
+
+		return password_verify($password, $hash);
 	}
 
 }
