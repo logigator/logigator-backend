@@ -2,6 +2,7 @@
 
 namespace Logigator\Api;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Psr\Container\ContainerInterface;
 
@@ -37,5 +38,9 @@ abstract class BaseController
 
 	protected function getDbalQueryBuilder(): QueryBuilder {
 		return $this->container->get('DbalService')->getQueryBuilder();
+	}
+
+	protected function getDbalConnection(): Connection {
+		return $this->container->get('DbalService')->getConnection();
 	}
 }

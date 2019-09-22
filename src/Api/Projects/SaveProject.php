@@ -20,7 +20,7 @@ class SaveProject extends BaseController
 			throw new HttpBadRequestException($request, 'Not all required args were given');
 		}
 
-		$path = ApiHelper::getProjectPath($this->container,  $this->container->get('ProjectService')->fetchLocation($body['id'], $this->getTokenPayload()->sub));
+		$path = $this->container->get('ProjectService')->fetchLocation($body['id'], $this->getTokenPayload()->sub);
 		if(!$path)
 			throw new HttpBadRequestException($request, 'Project not found.');
 

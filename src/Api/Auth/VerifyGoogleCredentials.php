@@ -35,17 +35,25 @@ class VerifyGoogleCredentials extends BaseController
 			$client->setAccessToken($token);
 			$content = $serviceOAuth->userinfo->get();
 
-            if ($this->container->get('UserService')->fetchUserIdPerKey($content['id']) == null) {
-                $profile_url = Uuid::uuid4()->toString();
-                $this->container->get('UserService')->createUser(ApiHelper::removeSpecialCharacters($content['name']) . '_' . ApiHelper::generateRandomString(3), $content['id'], $content['email'], 'google', null, $profile_url);
+			$id = $this->container->get('UserService')->fetchUserIdPerKey($content['id'], 'google');
+            if (!$id) {
+                $username = ApiHelper::removeSpecialCharacters($content['name']);
+
+                if($this->container->get('UserService')->fetchUserIdPerEmail($content['email']))
+                	throw new HttpBadRequestException($request, "Email already used.");
+
+	            if($this->container->get('UserService')->fetchUserIdPerUsername($username))
+	            	$username = $username . '_' . ApiHelper::generateRandomString(4);
+
+	            $profile_url = Uuid::uuid4()->toString();
+                $id = $this->container->get('UserService')->createUser($username, $content['id'], $content['email'], 'google', null, $profile_url);
                 file_put_contents(ApiHelper::getProfileImagePath($this->container, $profile_url), fopen($content['picture'], 'r'));
             }
 
-			$this->container->get('AuthenticationService')->setUserAuthenticated($this->container->get('UserService')->fetchUserIdPerKey($content['id']), 'google');
-
+			$this->container->get('AuthenticationService')->setUserAuthenticated($id, 'google');
 		} catch (Exception $e) {
 			throw new HttpUnauthorizedException($request, 'Error verifying oauth-tokens');
 		}
-		return ApiHelper::createJsonResponse($response, ['loggedIn' => true]);
+		return ApiHelper::createJsonResponse($response, ['success' => true]);
 	}
 }

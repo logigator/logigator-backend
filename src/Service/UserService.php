@@ -5,7 +5,7 @@ namespace Logigator\Service;
 
 class UserService extends BaseService
 {
-	public function createUser($username, $socialMediaKey, $email, $loginType, $password = null, $profile_image = '_default'): int
+	public function createUser($username, $socialMediaKey, $email, $loginType, $password = null, $profile_image = null): int
 	{
 	    if($password !== null)
 	        $password = password_hash($password, PASSWORD_DEFAULT);
@@ -39,13 +39,14 @@ class UserService extends BaseService
 			->fetch();
 	}
 
-	public function fetchUserIdPerKey($key)
+	public function fetchUserIdPerKey($key, $login_type)
 	{
 		return $this->container->get('DbalService')->getQueryBuilder()
 			->select('pk_id')
 			->from('users')
-			->where('social_media_key = ?')
+			->where('social_media_key = ? and login_type = ?')
 			->setParameter(0, $key)
+			->setParameter(1, $login_type)
 			->execute()
 			->fetch()["pk_id"];
 	}

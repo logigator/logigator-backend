@@ -17,7 +17,7 @@ class LoginEmail extends BaseController
 			throw new HttpBadRequestException($request, 'Not all required args were given');
 		}
 
-        $userId = $this->container->get('DbalService')->getQueryBuilder()
+        $userId = $this->getDbalQueryBuilder()
             ->select('pk_id')
             ->from('users')
             ->where('(email = ? or username = ?) and login_type = \'local\'')

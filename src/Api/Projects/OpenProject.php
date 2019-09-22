@@ -21,11 +21,11 @@ class OpenProject extends BaseController
 	{
 		$body = $request->getParsedBody();
 
-		if (!ApiHelper::checkRequiredArgs($body, ['project_id'])) {
+		if (!ApiHelper::checkRequiredArgs($body, ['id'])) {
 			throw new HttpBadRequestException($request, 'Not all required args were given');
 		}
 
-		$location = $this->container->get('ProjectService')->fetchLocation($body['project_id'],$this->getTokenPayload()->sub);
+		$location = $this->container->get('ProjectService')->fetchLocation($body['id'],$this->getTokenPayload()->sub);
 
 		if ($location == null)
             throw new HttpBadRequestException($request, 'Project not found.');
