@@ -35,11 +35,11 @@ class OpenProject extends BaseController
 		$project['data'] = file_exists($path);
 
 		if($project['data'])
-            $project['data'] = file_get_contents($path);
+            $project['data'] = json_decode(file_get_contents($path));
 
         if(!$project['data'])
-            $project['data'] = '{}';
+            $project['data'] = [];
 
-		return ApiHelper::createJsonResponse($response, ['project' => json_encode($project)]);
+		return ApiHelper::createJsonResponse($response, ['project' => $project]);
 	}
 }
