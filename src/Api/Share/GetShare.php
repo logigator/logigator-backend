@@ -35,7 +35,7 @@ class GetShare extends BaseController
             ->fetch();
 
         if(!$share)
-            throw new HttpBadRequestException($request, "Share not found.");
+            throw new HttpBadRequestException($request, self::ERROR_RESOURCE_NOT_FOUND);
 
         if($share['link.is_public'])
             return ApiHelper::createJsonResponse($response, $share, true);
@@ -48,7 +48,7 @@ class GetShare extends BaseController
             ->setParameter(1, $share['link.pk_id'])
             ->execute()
             ->fetch())
-            throw new HttpBadRequestException($request, "Share not found.");
+            throw new HttpBadRequestException($request, self::ERROR_RESOURCE_NOT_FOUND);
 
         return ApiHelper::createJsonResponse($response, $share, true);
 

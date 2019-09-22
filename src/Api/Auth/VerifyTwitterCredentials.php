@@ -18,7 +18,7 @@ class VerifyTwitterCredentials extends BaseController
 		$body = $request->getParsedBody();
 
 		if(!ApiHelper::checkRequiredArgs($body, ['oauth_verifier', 'oauth_token']))
-			throw new HttpBadRequestException($request, 'Not all required args were given');
+			throw new HttpBadRequestException($request, self::ERROR_MISSING_ARGUMENTS);
 
 		try {
 			$connection = new TwitterOAuth(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET);
@@ -31,7 +31,7 @@ class VerifyTwitterCredentials extends BaseController
 	            $username = ApiHelper::removeSpecialCharacters($content->screen_name);
 
 	            if($this->container->get('UserService')->fetchUserIdPerEmail($content->email))
-		            throw new HttpBadRequestException($request, "Email already used.");
+		            throw new HttpBadRequestException($request, "Email has already been taken.");
 
 	            if($this->container->get('UserService')->fetchUserIdPerUsername($username))
 		            $username = $username . '_' . ApiHelper::generateRandomString(4);

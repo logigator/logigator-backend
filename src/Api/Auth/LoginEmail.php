@@ -14,7 +14,7 @@ class LoginEmail extends BaseController
 		$body = $request->getParsedBody();
 
 		if(!ApiHelper::checkRequiredArgs($body, ['user', 'password'])) {
-			throw new HttpBadRequestException($request, 'Not all required args were given');
+			throw new HttpBadRequestException($request, self::ERROR_MISSING_ARGUMENTS);
 		}
 
         $user = $this->getDbalQueryBuilder()
@@ -30,7 +30,7 @@ class LoginEmail extends BaseController
 			throw new HttpBadRequestException($request, 'User not found.');
 
 		if (password_verify($body['password'], $user['password']))
-			throw new HttpBadRequestException($request, 'password is incorrect');
+			throw new HttpBadRequestException($request, 'Password is incorrect.');
 
 		$this->container->get('AuthenticationService')->setUserAuthenticated($user['pk_id'], 'email');
 		return ApiHelper::createJsonResponse($response, ['success' => true]);

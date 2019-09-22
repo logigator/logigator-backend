@@ -21,7 +21,7 @@ class VerifyGoogleCredentials extends BaseController
 		$body = $request->getParsedBody();
 
 		if(!ApiHelper::checkRequiredArgs($body, ['code']))
-			throw new HttpBadRequestException($request, 'Not all required args were given');
+			throw new HttpBadRequestException($request, self::ERROR_MISSING_ARGUMENTS);
 
 		$client = new Google_Client();
 		$client->setApplicationName(GOOGLE_APPLICATION_NAME);
@@ -40,7 +40,7 @@ class VerifyGoogleCredentials extends BaseController
                 $username = ApiHelper::removeSpecialCharacters($content['name']);
 
                 if($this->container->get('UserService')->fetchUserIdPerEmail($content['email']))
-                	throw new HttpBadRequestException($request, "Email already used.");
+                	throw new HttpBadRequestException($request, "Email has already been taken.");
 
 	            if($this->container->get('UserService')->fetchUserIdPerUsername($username))
 	            	$username = $username . '_' . ApiHelper::generateRandomString(4);

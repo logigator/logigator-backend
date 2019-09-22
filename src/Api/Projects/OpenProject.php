@@ -22,7 +22,7 @@ class OpenProject extends BaseController
 		$project = $this->container->get('ProjectService')->getProjectInfo($args['id'], $this->getTokenPayload()->sub);
 
 		if (!$project)
-            throw new HttpBadRequestException($request, 'Project not found.');
+            throw new HttpBadRequestException($request, self::ERROR_RESOURCE_NOT_FOUND);
 
 		$path = ApiHelper::getProjectPath($this->container, $project['location']);
 

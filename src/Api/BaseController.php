@@ -8,11 +8,13 @@ use Psr\Container\ContainerInterface;
 
 abstract class BaseController
 {
-
 	protected $container;
 
 	private $tokenPayload;
 	private $checkedToken;
+
+	protected const ERROR_RESOURCE_NOT_FOUND = 'Resource not found.';
+	protected const ERROR_MISSING_ARGUMENTS = 'Not all required args were given.';
 
 	public function __construct(ContainerInterface $container) {
 		$this->checkedToken = false;

@@ -3,6 +3,7 @@
 namespace Logigator\Api\Projects;
 
 
+use Doctrine\DBAL\DBALException;
 use Logigator\Api\ApiHelper;
 use Logigator\Api\BaseController;
 use Psr\Http\Message\ServerRequestInterface;
@@ -16,12 +17,12 @@ class UpdateProjectInfo extends BaseController
 		$body = $request->getParsedBody();
 
 		if (!ApiHelper::checkRequiredArgs($body, ['id'])) {
-			throw new HttpBadRequestException($request, 'Not all required args were given');
+			throw new HttpBadRequestException($request, self::ERROR_MISSING_ARGUMENTS);
 		}
 
 		$project = $this->container->get('ProjectService')->getProjectInfo($body['id'], $this->getTokenPayload()->sub);
 		if(!$project)
-			throw new HttpBadRequestException($request, 'Board not found.');
+			throw new HttpBadRequestException($request, self::ERROR_RESOURCE_NOT_FOUND);
 
 		$query = $this->getDbalQueryBuilder()->update('projects');
 

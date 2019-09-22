@@ -15,18 +15,18 @@ class CreateShare extends BaseController
 	{
         $body = $request->getParsedBody();
 
-        if (!ApiHelper::checkRequiredArgs($body, ['project'])) {
-            throw new HttpBadRequestException($request, 'Not all required args were given');
+        if (!ApiHelper::checkRequiredArgs($body, ['id'])) {
+            throw new HttpBadRequestException($request, self::ERROR_MISSING_ARGUMENTS);
         }
 
-        $project = $this->container->get('ProjectService')->getProjectInfo($body['project'], $this->getTokenPayload()->sub);
+        $project = $this->container->get('ProjectService')->getProjectInfo($body['id'], $this->getTokenPayload()->sub);
         $user = $this->container->get('UserService')->fetchUser($this->getTokenPayload()->sub);
 
         if(!$user)
         	throw new \Exception();
 
         if(!$project)
-            throw new HttpBadRequestException($request, "Project was not found or does not belong to you.");
+            throw new HttpBadRequestException($request, self::ERROR_RESOURCE_NOT_FOUND);
 
         $is_public = true;
         if(isset($body['users']) && is_array($body['users']) && count($body['users']) > 0) {

@@ -15,12 +15,12 @@ class SaveProject extends BaseController
 		$body = $request->getParsedBody();
 
 		if (!ApiHelper::checkRequiredArgs($body, ['id', 'data'])) {
-			throw new HttpBadRequestException($request, 'Not all required args were given');
+			throw new HttpBadRequestException($request, self::ERROR_MISSING_ARGUMENTS);
 		}
 
 		$path = $this->container->get('ProjectService')->fetchLocation($body['id'], $this->getTokenPayload()->sub);
 		if(!$path)
-			throw new HttpBadRequestException($request, 'Project not found.');
+			throw new HttpBadRequestException($request, self::ERROR_RESOURCE_NOT_FOUND);
 
 		// TODO: JSON file check
 		if(file_put_contents(ApiHelper::getProjectPath($this->container, $path), json_encode($body['data'])) === false)

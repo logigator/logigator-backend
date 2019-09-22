@@ -17,13 +17,13 @@ class CreateProject extends BaseController
 		$body = $request->getParsedBody();
 
 		if (!ApiHelper::checkRequiredArgs($body, ['isComponent', 'name'])) {
-			throw new HttpBadRequestException($request, 'Not all required args were given');
+			throw new HttpBadRequestException($request, self::ERROR_MISSING_ARGUMENTS);
 		}
 
 		$body['isComponent'] = filter_var($body['isComponent'], FILTER_VALIDATE_BOOLEAN);
 
 		if($body['isComponent'] && !ApiHelper::checkRequiredArgs($body, ['symbol']))
-			throw new HttpBadRequestException($request, 'Not all required args were given');
+			throw new HttpBadRequestException($request, self::ERROR_MISSING_ARGUMENTS);
 
 		$description = !isset($body['description']) ? '' : $body['description'];
 
