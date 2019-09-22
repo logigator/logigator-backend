@@ -14,6 +14,7 @@ use Logigator\Api\BaseController;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpBadRequestException;
+use Slim\Exception\HttpInternalServerErrorException;
 
 class CloneProject extends BaseController
 {
@@ -24,8 +25,10 @@ class CloneProject extends BaseController
 		if (!ApiHelper::checkRequiredArgs($body, ['address'])) {
 			throw new HttpBadRequestException($request, 'Not all required args were given');
 		}
+
 		$id = $this->getTokenPayload()->sub;
 		$linkData = $this->container->get('LinkService')->fetchPublicLinkData($body['address']);
+
 		if ($linkData == null) {
 			$linkData = $this->container->get('LinkService')->fetchPrivateLinkData($body['address'], $id);
 		}
@@ -34,6 +37,9 @@ class CloneProject extends BaseController
 		}
 
 		$newProjectId = $this->container->get('ProjectService')->cloneProject($linkData['project_id'], $linkData['user_id'], $id, 0);
+		if($newProjectId < 0)
+		    throw new HttpInternalServerErrorException($request);
+
 		return ApiHelper::createJsonResponse($response, ['pk_id' => $newProjectId]);
 	}
 }

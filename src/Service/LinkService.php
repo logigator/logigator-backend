@@ -13,7 +13,7 @@ class LinkService extends BaseService
 			->from('links', 'link')
 			->join('link', 'projects', 'project', 'link.fk_project = project.pk_id')
 			->join('project', 'users', 'user', 'user.pk_id = project.fk_user')
-			->where('link.address = ? and link.is_public = true')
+			->where('link.address = ? and link.is_public = 1')
 			->setParameter(0, $address)
 			->execute()
 			->fetch();

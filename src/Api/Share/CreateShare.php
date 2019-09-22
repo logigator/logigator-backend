@@ -8,6 +8,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Ramsey\Uuid\Uuid;
 use Slim\Exception\HttpBadRequestException;
+use Slim\Exception\HttpInternalServerErrorException;
 
 class CreateShare extends BaseController
 {
@@ -20,6 +21,10 @@ class CreateShare extends BaseController
         }
 
         $project = $this->container->get('ProjectService')->getProjectInfo($body['project'], $this->getTokenPayload()->sub);
+        $user = $this->container->get('UserService')->fetchUser($this->getTokenPayload()->sub);
+
+        if(!$user)
+        	throw new HttpInternalServerErrorException($request);
 
         if(!$project)
             throw new HttpBadRequestException($request, "Project was not found or does not belong to you.");
@@ -40,28 +45,25 @@ class CreateShare extends BaseController
             ->setParameter(2, $project['pk_id'])
             ->execute();
 
-        $link_id = $this->container->get('DbalService')->getQueryBuilder()
-            ->select('pk_id')
-            ->from('links')
-            ->where('address = ?')
-            ->setParameter(0, $link_address)
-            ->execute()
-            ->fetch()['pk_id'];
+        $link_id = $this->container->get('DbalService')->getConnection()->lastInsertId();
 
         $warnings = array();
         if(!$is_public) {
-            foreach($body['users'] as $user) {
-                $user = $this->container->get('DbalService')->getQueryBuilder()
-                    ->select('pk_id')
+            foreach($body['users'] as $u) {
+            	if(!is_string($u))
+            		continue;
+
+                $userData = $this->container->get('DbalService')->getQueryBuilder()
+                    ->select('*')
                     ->from('users')
                     ->where('username = ? or email = ?')
-                    ->setParameter(0, $user)
-                    ->setParameter(1, $user)
+                    ->setParameter(0, $u)
+                    ->setParameter(1, $u)
                     ->execute()
-                    ->fetch()['pk_id'];
+                    ->fetch();
 
-                if(!$user) {
-                    array_push($warnings, 'user "' . $user . '" not found."');
+                if(!$userData || $userData['pk_id'] === $user['pk_id']) {
+                    array_push($warnings, 'user "' . $u . '" not found."');
                     continue;
                 }
 
@@ -69,9 +71,28 @@ class CreateShare extends BaseController
                     ->insert('link_permits')
                     ->setValue('fk_user', '?')
                     ->setValue('fk_link', '?')
-                    ->setParameter(0, $user)
+                    ->setParameter(0, $userData['pk_id'])
                     ->setParameter(1, $link_id)
                     ->execute();
+
+                if(isset($body['invitations']) && $body['invitations'] === true) {
+                	try {
+		                $this->container->get('SmtpService')->sendMail(
+		                	'noreply', [
+		                		$userData['email']
+			                ],
+			                'Someone shared his project with you!',
+			                $this->container->get('SmtpService')->loadTemplate('share-invitation.html', [
+			                	'recipient' => $userData['username'],
+				                'invitor' => $user['username'],
+				                'project' => $project['name'],
+				                'link' => '#'
+			                ])
+		                );
+	                } catch (\Exception $e) {
+                		array_push($warnings, 'Failed to send invitation to user "' . $u . '"');
+	                }
+                }
             }
         }
 

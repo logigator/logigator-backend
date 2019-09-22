@@ -13,7 +13,7 @@ use Ramsey\Uuid\Uuid;
 
 class ProjectService extends BaseService
 {
-	public function createProject(string $name, bool $isComponent, int $fk_user, string $description = null, string $symbol = null, int $fk_originates_from = null): string
+	public function createProject(string $name, bool $isComponent, int $fk_user, string $description = null, string $symbol = '', int $fk_originates_from = null): string
 	{
 		$location = Uuid::uuid4()->toString();
 
@@ -25,13 +25,13 @@ class ProjectService extends BaseService
 			->setValue('fk_user', '?')
 			->setValue('location', '?')
 			->setValue('description', '?')
-            ->setValue('symbol', '?')
+			->setValue('symbol', '?')
 			->setParameter(0, $name)
 			->setParameter(1, $isComponent)
 			->setParameter(2, $fk_user)
 			->setParameter(3, $location)
 			->setParameter(4, $description)
-            ->setParameter(5, $symbol);
+			->setParameter(5, $symbol);
 
 		if (!is_null($fk_originates_from))
 			$query = $query->setValue('fk_originates_from', '?')
@@ -107,21 +107,20 @@ class ProjectService extends BaseService
 
 	public function cloneProject($projectId, $userIdOrigin, $userId, $counter): int
 	{
-		if ($counter >= 64) {
-			// TODO: stop and throw error
-			return 0;
-		}
+		if ($counter >= 64)
+			return -1;
+
 		$newLocation = $this->copyData($projectId, $userIdOrigin, $userId);
 		$newProjectId = $this->fetchProjectId($newLocation, $userId);
 
-		if(file_exists(ApiHelper::getProjectPath($this->container, $newLocation))) {
-            $jsonString = file_get_contents(ApiHelper::getProjectPath($this->container, $newLocation));
-            $data = json_decode($jsonString, true);
+		if (file_exists(ApiHelper::getProjectPath($this->container, $newLocation))) {
+			$jsonString = file_get_contents(ApiHelper::getProjectPath($this->container, $newLocation));
+			$data = json_decode($jsonString, true);
 
-            foreach ($data['mapping'] as $key => $value) {
-                $key[$value] = $this->cloneProject($value, $userIdOrigin, $userId, $counter+1);
-            }
-        }
+			foreach ($data['mapping'] as $key => $value) {
+				$key[$value] = $this->cloneProject($value, $userIdOrigin, $userId, $counter + 1);
+			}
+		}
 
 		return $newProjectId;
 	}
@@ -151,13 +150,13 @@ class ProjectService extends BaseService
 
 		$path = ApiHelper::getProjectPath($this->container, $projectData['location']);
 
-		if(file_exists($path))
-            file_put_contents(ApiHelper::getProjectPath($this->container, $location), file_get_contents($path));
+		if (file_exists($path))
+			file_put_contents(ApiHelper::getProjectPath($this->container, $location), file_get_contents($path));
 
 		$path = ApiHelper::getProjectPreviewPath($this->container, $projectData['location']);
 
-		if(file_exists($path))
-            file_put_contents(ApiHelper::getProjectPreviewPath($this->container, $location), file_get_contents($path));
+		if (file_exists($path))
+			file_put_contents(ApiHelper::getProjectPreviewPath($this->container, $location), file_get_contents($path));
 
 		return $location;
 	}
@@ -174,5 +173,32 @@ class ProjectService extends BaseService
 			->fetch()["pk_id"];
 	}
 
+	public function saveProject(int $projectId, int $fk_user, array $data = null): bool
+	{
+		$path = ApiHelper::getProjectPath($this->container, $this->fetchLocation($projectId, $fk_user));
+		if (file_exists($path)) {
+			file_put_contents($path, $data);
+			return true;
+		}
+		return false;
+	}
+
+	public function updateProjectInfo(int $projectId, string $name, bool $isComponent, int $fk_user, string $description = null, string $symbol = null): bool
+	{
+		return $this->container->get('DbalService')->getQueryBuilder()
+			->update('projects')
+			->set('name', '?')
+			->set('is_component', '?')
+			->set('description', '?')
+			->set('symbol', '?')
+			->where('pk_id = ? and fk_user = ?')
+			->setParameter(0, $name)
+			->setParameter(1, $isComponent)
+			->setParameter(2, $description)
+			->setParameter(3, $symbol)
+			->setParameter(4, $projectId)
+			->setParameter(5, $fk_user)
+			->execute();
+	}
 
 }

@@ -9,20 +9,22 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpBadRequestException;
 
-class CreateProject extends BaseController
+class UpdateProjectInfo extends BaseController
 {
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args)
 	{
 		$body = $request->getParsedBody();
 
-		if (!ApiHelper::checkRequiredArgs($body, ['name', 'isComponent'])) {
+		if (!ApiHelper::checkRequiredArgs($body, ['projectId', 'name', 'isComponent'])) {
 			throw new HttpBadRequestException($request, 'Not all required args were given');
 		}
 
 		$description = !isset($body['description']) ? null : $body['description'];
-        $symbol = !isset($body['symbol']) ? '' : $body['symbol'];
-        $id = $this->container->get('ProjectService')->createProject($body['name'], $body['isComponent'], $this->getTokenPayload()->sub, $description, $symbol);
+		$symbol = !isset($body['symbol']) ? null : $body['symbol'];
 
-		return ApiHelper::createJsonResponse($response, ['pk_id' => $id]);
+		if (!$this->container->get('ProjectService')->updateProjectInfo($body['projectId'], $body['name'], $body['isComponent'], $this->getTokenPayload()->sub, $description, $symbol))
+			throw new HttpBadRequestException($request, 'Project not found.');
+
+		return ApiHelper::createJsonResponse($response, ['success' => true]);
 	}
 }

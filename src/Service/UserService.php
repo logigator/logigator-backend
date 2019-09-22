@@ -5,10 +5,11 @@ namespace Logigator\Service;
 
 class UserService extends BaseService
 {
-	private const DEFAULT_PROFILE_IMAGE = "";
-
-	public function createUser($username,$socialMediaKey, $email, $loginType, $password = null, $profile_image = self::DEFAULT_PROFILE_IMAGE)
+	public function createUser($username, $socialMediaKey, $email, $loginType, $password = null, $profile_image = '_default'): int
 	{
+	    if($password !== null)
+	        $password = password_hash($password, PASSWORD_DEFAULT);
+
 		$this->container->get('DbalService')->getQueryBuilder()
 			->insert('users')
 			->setValue('username', '?')
@@ -24,6 +25,18 @@ class UserService extends BaseService
 			->setParameter(4, $profile_image)
 			->setParameter(5, $socialMediaKey)
 			->execute();
+
+		return $this->container->get('DbalService')->getConnection()->lastInsertId();
+	}
+
+	public function fetchUser($id) {
+		return $this->container->get('DbalService')->getQueryBuilder()
+			->select('*')
+			->from('users')
+			->where('pk_id = ?')
+			->setParameter(0, $id)
+			->execute()
+			->fetch();
 	}
 
 	public function fetchUserIdPerKey($key)
@@ -37,6 +50,17 @@ class UserService extends BaseService
 			->fetch()["pk_id"];
 	}
 
+    public function fetchUserIdPerUsername($username)
+    {
+        return $this->container->get('DbalService')->getQueryBuilder()
+            ->select('pk_id')
+            ->from('users')
+            ->where('username = ?')
+            ->setParameter(0, $username)
+            ->execute()
+            ->fetch()["pk_id"];
+    }
+
 	public function fetchUserIdPerEmail($email)
 	{
 		return $this->container->get('DbalService')->getQueryBuilder()
@@ -48,16 +72,20 @@ class UserService extends BaseService
 			->fetch()["pk_id"];
 	}
 
-	//TODO: implement secure password verification
-	public function verifyPassword($email,$password)
+	public function verifyPassword($pk_id, $password): bool
 	{
-		return $this->container->get('DbalService')->getQueryBuilder()
+		$hash = $this->container->get('DbalService')->getQueryBuilder()
 			->select('password')
 			->from('users')
-			->where('email = ?')
-			->setParameter(0, $email)
+			->where('pk_id = ?')
+			->setParameter(0, $pk_id)
 			->execute()
-			->fetch()["password"]==$password;
+			->fetch()["password"];
+
+		if(!$hash)
+		    return false;
+
+		return password_verify($password, $hash);
 	}
 
 }
