@@ -29,4 +29,8 @@ function createRoutes(Slim\App $app, $authenticationMiddleware) {
         $group->get('/get/{id}', \Logigator\Api\Share\GetShare::class);
         $group->post('/create', \Logigator\Api\Share\CreateShare::class)->add($authenticationMiddleware);
     });
+
+	$app->group('/user', function(\Slim\Routing\RouteCollectorProxy $group) use ($authenticationMiddleware) {
+		$group->get('/get', \Logigator\Api\User\GetUserInfo::class);
+	})->add($authenticationMiddleware);
 }

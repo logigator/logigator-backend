@@ -4,6 +4,7 @@ $config = [
     'project_path' => 'projects/',
     'project_preview_path' => 'projects/preview/',
     'profile_image_path' => 'images/profile/',
+    'profile_default_image' => 'default',
     'email_templates_path' => 'data/email-templates/',
     'doctrine-dbal' => [
         'dbname' => '--',
