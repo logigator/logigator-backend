@@ -25,8 +25,8 @@ class SaveProject extends BaseController
 			throw new HttpBadRequestException($request, 'Project not found.');
 
 		// TODO: JSON file check
-		if(file_put_contents(ApiHelper::getProjectPath($this->container, $path), $body['data']) === false)
-			throw new HttpInternalServerErrorException($request, 'An error occured trying to save your project.');
+		if(file_put_contents(ApiHelper::getProjectPath($this->container, $path), json_encode($body['data'])) === false)
+			throw new HttpInternalServerErrorException($request, 'An error occurred trying to save your project.');
 
 		return ApiHelper::createJsonResponse($response, ['success' => true]);
 	}
