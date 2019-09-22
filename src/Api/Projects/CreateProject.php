@@ -15,7 +15,13 @@ class CreateProject extends BaseController
 	{
 		$body = $request->getParsedBody();
 
-		if (!ApiHelper::checkRequiredArgs($body, ['name', 'isComponent'])) {
+		if (!ApiHelper::checkRequiredArgs($body, ['isComponent', 'name'])) {
+			throw new HttpBadRequestException($request, 'Not all required args were given');
+		}
+
+		$body['isComponent'] = filter_var($body['isComponent'], FILTER_VALIDATE_BOOLEAN);
+
+		if($body['isComponent'] && !ApiHelper::checkRequiredArgs($body, ['symbol'])) {
 			throw new HttpBadRequestException($request, 'Not all required args were given');
 		}
 
@@ -23,6 +29,6 @@ class CreateProject extends BaseController
         $symbol = !isset($body['symbol']) ? '' : $body['symbol'];
         $id = $this->container->get('ProjectService')->createProject($body['name'], $body['isComponent'], $this->getTokenPayload()->sub, $description, $symbol);
 
-		return ApiHelper::createJsonResponse($response, ['pk_id' => $id]);
+		return ApiHelper::createJsonResponse($response, ['id' => $id]);
 	}
 }

@@ -173,16 +173,6 @@ class ProjectService extends BaseService
 			->fetch()["pk_id"];
 	}
 
-	public function saveProject(int $projectId, int $fk_user, array $data = null): bool
-	{
-		$path = ApiHelper::getProjectPath($this->container, $this->fetchLocation($projectId, $fk_user));
-		if (file_exists($path)) {
-			file_put_contents($path, $data);
-			return true;
-		}
-		return false;
-	}
-
 	public function updateProjectInfo(int $projectId, string $name, bool $isComponent, int $fk_user, string $description = null, string $symbol = null): bool
 	{
 		return $this->container->get('DbalService')->getQueryBuilder()
