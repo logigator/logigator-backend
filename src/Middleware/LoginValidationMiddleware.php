@@ -22,7 +22,7 @@ class LoginValidationMiddleware
 			return $handler->handle($request);
 
 		$payload = [
-			'statusCode' => 401,
+			'status' => 401,
 			'error' => [
 				'type' => 'UNAUTHENTICATED',
 				'description' => 'You are not logged in.',

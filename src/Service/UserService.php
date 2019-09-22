@@ -72,21 +72,4 @@ class UserService extends BaseService
 			->execute()
 			->fetch()["pk_id"];
 	}
-
-	public function verifyPassword($pk_id, $password): bool
-	{
-		$hash = $this->container->get('DbalService')->getQueryBuilder()
-			->select('password')
-			->from('users')
-			->where('pk_id = ?')
-			->setParameter(0, $pk_id)
-			->execute()
-			->fetch()["password"];
-
-		if(!$hash)
-		    return false;
-
-		return password_verify($password, $hash);
-	}
-
 }

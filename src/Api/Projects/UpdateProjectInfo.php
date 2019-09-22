@@ -13,6 +13,7 @@ class UpdateProjectInfo extends BaseController
 {
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args)
 	{
+		// TODO: all the things
 		$body = $request->getParsedBody();
 
 		if (!ApiHelper::checkRequiredArgs($body, ['projectId', 'name', 'isComponent'])) {

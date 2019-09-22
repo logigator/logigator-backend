@@ -50,7 +50,7 @@ class HttpErrorHandler extends ErrorHandler
 		}
 
 		$error = [
-			'statusCode' => $statusCode,
+			'status' => $statusCode,
 			'error' => [
 				'type' => $type,
 				'description' => $description,

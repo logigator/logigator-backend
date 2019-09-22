@@ -17,24 +17,22 @@ class LoginEmail extends BaseController
 			throw new HttpBadRequestException($request, 'Not all required args were given');
 		}
 
-        $userId = $this->getDbalQueryBuilder()
+        $user = $this->getDbalQueryBuilder()
             ->select('pk_id')
             ->from('users')
-            ->where('(email = ? or username = ?) and login_type = \'local\'')
+            ->where('email = ? or username = ?')
             ->setParameter(0, $body['user'])
             ->setParameter(1, $body['user'])
             ->execute()
-            ->fetch()["pk_id"];
+            ->fetch();
 
-		if ($userId == null)
+		if (!$user)
 			throw new HttpBadRequestException($request, 'User not found.');
 
-        $passwordCorrect = $this->container->get('UserService')->verifyPassword($userId, $body['password']);
-
-		if(!$passwordCorrect)
+		if (password_verify($body['password'], $user['password']))
 			throw new HttpBadRequestException($request, 'password is incorrect');
 
-		$this->container->get('AuthenticationService')->setUserAuthenticated($userId, 'email');
-		return ApiHelper::createJsonResponse($response, ['loggedIn' => true]);
+		$this->container->get('AuthenticationService')->setUserAuthenticated($user['pk_id'], 'email');
+		return ApiHelper::createJsonResponse($response, ['success' => true]);
 	}
 }

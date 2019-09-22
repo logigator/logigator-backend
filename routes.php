@@ -16,13 +16,13 @@ function createRoutes(Slim\App $app, $authenticationMiddleware) {
 
 	$app->group('/project', function(\Slim\Routing\RouteCollectorProxy $group) {
 		$group->post('/create', \Logigator\Api\Projects\CreateProject::class);
-		$group->post('/open', \Logigator\Api\Projects\OpenProject::class);
-		$group->post('/delete', \Logigator\Api\Projects\DeleteProject::class);
+		$group->get('/open/{id}', \Logigator\Api\Projects\OpenProject::class);
+		$group->get('/delete/{id}', \Logigator\Api\Projects\DeleteProject::class);
 		$group->post('/save', \Logigator\Api\Projects\SaveProject::class);
 		$group->post('/update', \Logigator\Api\Projects\UpdateProjectInfo::class);
-		$group->post('/clone', \Logigator\Api\Projects\CloneProject::class);
-		$group->post('/get-all-projects-info', \Logigator\Api\Projects\GetAllProjectsInfo::class);
-		$group->post('/get-all-components-info', \Logigator\Api\Projects\GetAllComponentsInfo::class);
+		$group->get('/clone/{address}', \Logigator\Api\Projects\CloneProject::class);
+		$group->get('/get-all-projects-info', \Logigator\Api\Projects\GetAllProjectsInfo::class);
+		$group->get('/get-all-components-info', \Logigator\Api\Projects\GetAllComponentsInfo::class);
 	})->add($authenticationMiddleware);
 
 	$app->group('/share', function(\Slim\Routing\RouteCollectorProxy $group) use ($authenticationMiddleware) {

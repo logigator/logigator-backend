@@ -19,13 +19,7 @@ class OpenProject extends BaseController
 {
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args)
 	{
-		$body = $request->getParsedBody();
-
-		if (!ApiHelper::checkRequiredArgs($body, ['id'])) {
-			throw new HttpBadRequestException($request, 'Not all required args were given');
-		}
-
-		$project = $this->container->get('ProjectService')->getProjectInfo($body['id'], $this->getTokenPayload()->sub);
+		$project = $this->container->get('ProjectService')->getProjectInfo($args['id'], $this->getTokenPayload()->sub);
 
 		if (!$project)
             throw new HttpBadRequestException($request, 'Project not found.');

@@ -20,21 +20,15 @@ class CloneProject extends BaseController
 {
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args)
 	{
-		$body = $request->getParsedBody();
-
-		if (!ApiHelper::checkRequiredArgs($body, ['address'])) {
-			throw new HttpBadRequestException($request, 'Not all required args were given');
-		}
-
+		// TODO: all the things
 		$id = $this->getTokenPayload()->sub;
-		$linkData = $this->container->get('LinkService')->fetchPublicLinkData($body['address']);
+		$linkData = $this->container->get('LinkService')->fetchPublicLinkData($args['address']);
 
-		if ($linkData == null) {
-			$linkData = $this->container->get('LinkService')->fetchPrivateLinkData($body['address'], $id);
-		}
-		if ($linkData == null){
+		if (!$linkData)
+			$linkData = $this->container->get('LinkService')->fetchPrivateLinkData($args['address'], $id);
+
+		if (!$linkData)
 			throw new HttpBadRequestException($request, "Share not found.");
-		}
 
 		$newProjectId = $this->container->get('ProjectService')->cloneProject($linkData['project_id'], $linkData['user_id'], $id, 0);
 		if($newProjectId < 0)
