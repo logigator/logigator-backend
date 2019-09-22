@@ -14,20 +14,34 @@ class GetUserInfo extends BaseController
 {
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args)
 	{
-		$data = $this->getDbalQueryBuilder()
+		$user = $this->getDbalQueryBuilder()
 			->select('username, email, login_type, profile_image')
 			->from('users')
-			->where('pk_id = ?')
+			->where('users.pk_id = ?')
 			->setParameter(0, $this->getTokenPayload()->sub)
 			->execute()
 			->fetch();
 
-		if(!$data)
-			throw new HttpInternalServerErrorException(self::ERROR_RESOURCE_NOT_FOUND);
+		$shortcuts = $this->getDbalQueryBuilder()
+			->select('name, key_code, shift, ctrl, alt')
+			->from('shortcuts')
+			->where('fk_user = ?')
+			->setParameter(0, $this->getTokenPayload()->sub)
+			->execute()
+			->fetchAll();
 
-		if($data['profile_image'] === null)
-			$data['profile_image'] = $this->container->get('ConfigService')->getConfig('profile_default_image');
+		if(!$user)
+			throw new HttpInternalServerErrorException($request, self::ERROR_RESOURCE_NOT_FOUND);
 
-		return ApiHelper::createJsonResponse($response, $data);
+		if($user['profile_image'] === null)
+			$user['profile_image'] = $this->container->get('ConfigService')->getConfig('profile_default_image');
+
+		for($i = 0; $i < count($shortcuts); $i++) {
+			$shortcuts[$i]['shift'] = !!$shortcuts[$i]['shift'];
+			$shortcuts[$i]['ctrl'] = !!$shortcuts[$i]['ctrl'];
+			$shortcuts[$i]['alt'] = !!$shortcuts[$i]['alt'];
+		}
+
+		return ApiHelper::createJsonResponse($response, ['user' => $user, 'shortcuts' => $shortcuts]);
 	}
 }
