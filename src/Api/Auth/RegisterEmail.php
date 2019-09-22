@@ -11,7 +11,7 @@ use Slim\Exception\HttpBadRequestException;
 
 class RegisterEmail extends BaseController
 {
-  
+
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args) {
 		$body = $request->getParsedBody();
 
@@ -22,11 +22,11 @@ class RegisterEmail extends BaseController
             throw new HttpBadRequestException($request, 'Username is invalid.');
 
         if ($this->container->get('UserService')->fetchUserIdPerEmail($body['email']) != null) {
-			throw new HttpBadRequestException($request, 'Email has been taken.');
+			throw new HttpBadRequestException($request, 'Email has already been taken.');
 		}
 
         if ($this->container->get('UserService')->fetchUserIdPerUsername($body['username']) != null) {
-            throw new HttpBadRequestException($request, 'Username has been taken.');
+            throw new HttpBadRequestException($request, 'Username has already been taken.');
         }
 
 		//TODO: Recaptcha
@@ -34,6 +34,6 @@ class RegisterEmail extends BaseController
 		$this->container->get('UserService')->createUser($body['username'], null, $body['email'], 'local', $body['password']);
 		$this->container->get('AuthenticationService')->setUserAuthenticated($this->container->get('UserService')->fetchUserIdPerEmail($body['email']), 'email');
 
-		return ApiHelper::createJsonResponse($response, ['loggedIn' => true]);
+		return ApiHelper::createJsonResponse($response, ['success' => true]);
 	}
 }

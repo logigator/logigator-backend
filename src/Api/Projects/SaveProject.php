@@ -2,13 +2,11 @@
 
 namespace Logigator\Api\Projects;
 
-
 use Logigator\Api\ApiHelper;
 use Logigator\Api\BaseController;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpBadRequestException;
-use Slim\Exception\HttpInternalServerErrorException;
 
 class SaveProject extends BaseController
 {
@@ -26,7 +24,7 @@ class SaveProject extends BaseController
 
 		// TODO: JSON file check
 		if(file_put_contents(ApiHelper::getProjectPath($this->container, $path), json_encode($body['data'])) === false)
-			throw new HttpInternalServerErrorException($request, 'An error occurred trying to save your project.');
+			throw new \Exception();
 
 		return ApiHelper::createJsonResponse($response, ['success' => true]);
 	}

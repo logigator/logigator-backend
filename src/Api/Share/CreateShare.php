@@ -8,7 +8,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Ramsey\Uuid\Uuid;
 use Slim\Exception\HttpBadRequestException;
-use Slim\Exception\HttpInternalServerErrorException;
 
 class CreateShare extends BaseController
 {
@@ -24,7 +23,7 @@ class CreateShare extends BaseController
         $user = $this->container->get('UserService')->fetchUser($this->getTokenPayload()->sub);
 
         if(!$user)
-        	throw new HttpInternalServerErrorException($request);
+        	throw new \Exception();
 
         if(!$project)
             throw new HttpBadRequestException($request, "Project was not found or does not belong to you.");

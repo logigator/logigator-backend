@@ -46,7 +46,7 @@ class ProjectService extends BaseService
 			->fetchAll();
 	}
 
-	public function getProjectInfo(int $projectId, int $userId = null): array
+	public function getProjectInfo(int $projectId, int $userId = null)
 	{
 		$query = $this->container->get('DbalService')->getQueryBuilder()
 			->select('*')
@@ -143,23 +143,4 @@ class ProjectService extends BaseService
 			->execute()
 			->fetch()["pk_id"];
 	}
-
-	public function updateProjectInfo(int $projectId, string $name, bool $isComponent, int $fk_user, string $description = null, string $symbol = null): bool
-	{
-		return $this->container->get('DbalService')->getQueryBuilder()
-			->update('projects')
-			->set('name', '?')
-			->set('is_component', '?')
-			->set('description', '?')
-			->set('symbol', '?')
-			->where('pk_id = ? and fk_user = ?')
-			->setParameter(0, $name)
-			->setParameter(1, $isComponent)
-			->setParameter(2, $description)
-			->setParameter(3, $symbol)
-			->setParameter(4, $projectId)
-			->setParameter(5, $fk_user)
-			->execute();
-	}
-
 }

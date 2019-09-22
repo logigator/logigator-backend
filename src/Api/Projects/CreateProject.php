@@ -3,14 +3,12 @@
 namespace Logigator\Api\Projects;
 
 
-use Doctrine\DBAL\DBALException;
 use Logigator\Api\ApiHelper;
 use Logigator\Api\BaseController;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Ramsey\Uuid\Uuid;
 use Slim\Exception\HttpBadRequestException;
-use Slim\Exception\HttpInternalServerErrorException;
 
 class CreateProject extends BaseController
 {
@@ -31,26 +29,23 @@ class CreateProject extends BaseController
 
 		$location = Uuid::uuid4()->toString();
 
-		try {
-			$this->getDbalQueryBuilder()
-				->insert('projects')
-				->setValue('name', '?')
-				->setValue('is_component', '?')
-				->setValue('fk_user', '?')
-				->setValue('location', '?')
-				->setValue('description', '?')
-				->setValue('symbol', '?')
-				->setParameter(0, $body['name'])
-				->setParameter(1, $body['isComponent'])
-				->setParameter(2, $this->getTokenPayload()->sub)
-				->setParameter(3, $location)
-				->setParameter(4, $description)
-				->setParameter(5, $body['symbol'])
-				->execute();
-		} catch (DBALException $e) {
-			throw new HttpInternalServerErrorException($request);
-		}
+		$query = $this->getDbalQueryBuilder()
+			->insert('projects')
+			->setValue('name', '?')
+			->setValue('is_component', '?')
+			->setValue('fk_user', '?')
+			->setValue('location', '?')
+			->setValue('description', '?')
+			->setParameter(0, $body['name'])
+			->setParameter(1, $body['isComponent'])
+			->setParameter(2, $this->getTokenPayload()->sub)
+			->setParameter(3, $location)
+			->setParameter(4, $description);
 
+		if($body['isComponent'])
+			$query = $query->setValue('symbol', '?')->setParameter(5, $body['symbol']);
+
+		$query->execute();
 		return ApiHelper::createJsonResponse($response, ['id' => $this->getDbalConnection()->lastInsertId()]);
 	}
 }
