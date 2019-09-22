@@ -40,6 +40,6 @@ class OpenProject extends BaseController
         if(!$project['data'])
             $project['data'] = '{}';
 
-		return ApiHelper::createJsonResponse($response, ['project' => json_decode($project)]);
+		return ApiHelper::createJsonResponse($response, ['project' => json_encode($project)]);
 	}
 }
