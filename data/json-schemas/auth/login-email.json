@@ -4,13 +4,21 @@
 
 	"type": "object",
 	"properties": {
-		"user": {
-			"type": "string"
+		"arguments": {
+			"required": [ ],
+			"additionalProperties" : false
 		},
-		"password": {
-			"type": "string"
+		"body": {
+			"user": {
+				"type": "string"
+			},
+			"password": {
+				"type": "string"
+			},
+			"required": [ "user", "password" ],
+			"additionalProperties" : false
 		}
 	},
-	"required": [ "user", "password" ],
+	"required": [ "arguments", "body" ],
 	"additionalProperties" : false
 }
