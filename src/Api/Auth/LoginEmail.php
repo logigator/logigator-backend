@@ -18,7 +18,7 @@ class LoginEmail extends BaseController
 		}
 
         $user = $this->getDbalQueryBuilder()
-            ->select('pk_id')
+            ->select('pk_id, password')
             ->from('users')
             ->where('email = ? or username = ?')
             ->setParameter(0, $body['user'])
@@ -29,7 +29,7 @@ class LoginEmail extends BaseController
 		if (!$user)
 			throw new HttpBadRequestException($request, 'User not found.');
 
-		if (password_verify($body['password'], $user['password']))
+		if (!$user['password'] || !password_verify($body['password'], $user['password']))
 			throw new HttpBadRequestException($request, 'Password is incorrect.');
 
 		$this->container->get('AuthenticationService')->setUserAuthenticated($user['pk_id'], 'email');

@@ -14,10 +14,10 @@ $authenticationMiddleware = new \Logigator\Middleware\LoginValidationMiddleware(
 createServices($container, $config);
 createRoutes($app, $authenticationMiddleware);
 
+$app->add(new \Logigator\Middleware\RequestValidationMiddleware($container));
+$app->addRoutingMiddleware();
 $app->addErrorMiddleware($config['configuration'] == 'debug', false, false)
 	->setDefaultErrorHandler(new \Logigator\HttpErrorHandler($app->getCallableResolver(), $app->getResponseFactory()));
-
-$app->add(new \Logigator\Middleware\JsonValidationMiddleware());
 $app->add(new \Logigator\Middleware\HeaderMiddleware());
 
 $app->run();
