@@ -1,28 +1,27 @@
 {
 	"$schema": "http://json-schema.org/schema#",
-	"$id": "/auth/login-email",
+	"$id": "/project/save",
 
 	"type": "object",
 	"properties": {
 		"arguments": {
 			"type": "object",
 			"properties": {
-
+				"id": {
+					"type": "integer"
+				}
 			},
-			"required": [ ],
+			"required": [ "id" ],
 			"additionalProperties": false
 		},
 		"body": {
 			"type": "object",
 			"properties": {
-				"user": {
-					"type": "string"
-				},
-				"password": {
-					"type": "string"
+				"data": {
+					"type": "object"
 				}
 			},
-			"required": [ "user", "password" ],
+			"required": [ "data" ],
 			"additionalProperties": false
 		}
 	},

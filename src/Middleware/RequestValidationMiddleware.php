@@ -2,6 +2,7 @@
 
 namespace Logigator\Middleware;
 
+use JsonSchema\Constraints\Constraint;
 use Logigator\Api\ApiHelper;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -42,10 +43,10 @@ class RequestValidationMiddleware
 		if(!file_exists($path))
 			throw new HttpBadRequestException($request, 'Invalid data received: Failed to validate input');
 
-		$parsedBody = (object)[ 'arguments' => (object)$route->getArguments(), 'body' => $request->getParsedBody() ];
+		$parsedBody = (object)[ 'arguments' => (object)$route->getArguments(), 'body' => (object)$request->getParsedBody() ];
 
 		$validator = new \JsonSchema\Validator();
-		$validator->validate($parsedBody, [ '$ref' => $path ]);
+		$validator->validate($parsedBody, [ '$ref' => $path ], Constraint::CHECK_MODE_COERCE_TYPES);
 		if($validator->isValid())
 			return $handler->handle($request);
 		else {

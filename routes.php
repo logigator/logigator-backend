@@ -18,8 +18,8 @@ function createRoutes(Slim\App $app, $authenticationMiddleware) {
 		$group->post('/create', \Logigator\Api\Projects\CreateProject::class);
 		$group->get('/open/{id}', \Logigator\Api\Projects\OpenProject::class);
 		$group->get('/delete/{id}', \Logigator\Api\Projects\DeleteProject::class);
-		$group->post('/save', \Logigator\Api\Projects\SaveProject::class);
-		$group->post('/update', \Logigator\Api\Projects\UpdateProjectInfo::class);
+		$group->post('/save/{id}', \Logigator\Api\Projects\SaveProject::class);
+		$group->post('/update/{id}', \Logigator\Api\Projects\UpdateProjectInfo::class);
 		$group->get('/clone/{address}', \Logigator\Api\Projects\CloneProject::class);
 		$group->get('/get-all-projects-info', \Logigator\Api\Projects\GetAllProjectsInfo::class);
 		$group->get('/get-all-components-info', \Logigator\Api\Projects\GetAllComponentsInfo::class);

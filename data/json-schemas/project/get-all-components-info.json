@@ -1,6 +1,6 @@
 {
 	"$schema": "http://json-schema.org/schema#",
-	"$id": "/auth/login-email",
+	"$id": "/project/get-all-components-info",
 
 	"type": "object",
 	"properties": {
@@ -15,14 +15,9 @@
 		"body": {
 			"type": "object",
 			"properties": {
-				"user": {
-					"type": "string"
-				},
-				"password": {
-					"type": "string"
-				}
+
 			},
-			"required": [ "user", "password" ],
+			"required": [ ],
 			"additionalProperties": false
 		}
 	},

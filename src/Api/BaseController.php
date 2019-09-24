@@ -14,7 +14,7 @@ abstract class BaseController
 	private $checkedToken;
 
 	protected const ERROR_RESOURCE_NOT_FOUND = 'Resource not found.';
-	protected const ERROR_MISSING_ARGUMENTS = 'Not all required args were given.';
+	protected const ERROR_MISSING_ARGUMENTS = 'Invalid data received: More properties required';
 
 	public function __construct(ContainerInterface $container) {
 		$this->checkedToken = false;

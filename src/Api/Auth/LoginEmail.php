@@ -13,23 +13,19 @@ class LoginEmail extends BaseController
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args) {
 		$body = $request->getParsedBody();
 
-		if(!ApiHelper::checkRequiredArgs($body, ['user', 'password'])) {
-			throw new HttpBadRequestException($request, self::ERROR_MISSING_ARGUMENTS);
-		}
-
         $user = $this->getDbalQueryBuilder()
             ->select('pk_id, password')
             ->from('users')
             ->where('email = ? or username = ?')
-            ->setParameter(0, $body['user'])
-            ->setParameter(1, $body['user'])
+            ->setParameter(0, $body->user)
+            ->setParameter(1, $body->user)
             ->execute()
             ->fetch();
 
 		if (!$user)
 			throw new HttpBadRequestException($request, 'User not found.');
 
-		if (!$user['password'] || !password_verify($body['password'], $user['password']))
+		if (!$user['password'] || !password_verify($body->password, $user['password']))
 			throw new HttpBadRequestException($request, 'Password is incorrect.');
 
 		$this->container->get('AuthenticationService')->setUserAuthenticated($user['pk_id'], 'email');

@@ -1,28 +1,25 @@
 {
 	"$schema": "http://json-schema.org/schema#",
-	"$id": "/auth/login-email",
+	"$id": "/share/get",
 
 	"type": "object",
 	"properties": {
 		"arguments": {
 			"type": "object",
 			"properties": {
-
+				"id": {
+					"type": "integer"
+				}
 			},
-			"required": [ ],
+			"required": [ "id" ],
 			"additionalProperties": false
 		},
 		"body": {
 			"type": "object",
 			"properties": {
-				"user": {
-					"type": "string"
-				},
-				"password": {
-					"type": "string"
-				}
+
 			},
-			"required": [ "user", "password" ],
+			"required": [ ],
 			"additionalProperties": false
 		}
 	},

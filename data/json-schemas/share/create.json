@@ -1,6 +1,6 @@
 {
 	"$schema": "http://json-schema.org/schema#",
-	"$id": "/auth/login-email",
+	"$id": "/share/create",
 
 	"type": "object",
 	"properties": {
@@ -15,14 +15,22 @@
 		"body": {
 			"type": "object",
 			"properties": {
-				"user": {
-					"type": "string"
+				"project": {
+					"type": "integer"
 				},
-				"password": {
-					"type": "string"
+				"users": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"minItems": 1,
+					"uniqueItems": true
+				},
+				"invitations": {
+					"type": "boolean"
 				}
 			},
-			"required": [ "user", "password" ],
+			"required": [ "project" ],
 			"additionalProperties": false
 		}
 	},

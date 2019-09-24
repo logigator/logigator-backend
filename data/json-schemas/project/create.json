@@ -1,0 +1,44 @@
+{
+	"$schema": "http://json-schema.org/schema#",
+	"$id": "/project/create",
+
+	"type": "object",
+	"properties": {
+		"arguments": {
+			"type": "object",
+			"properties": {
+
+			},
+			"required": [ ],
+			"additionalProperties": false
+		},
+		"body": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"type": "string",
+					"minLength": 2,
+					"maxLength": 20,
+					"pattern": "^[a-zA-Z0-9_\\-]+$"
+				},
+				"isComponent": {
+					"type": "boolean"
+				},
+				"symbol": {
+					"type": "string",
+					"minLength": 1,
+					"maxLength": 5,
+					"pattern": "^[a-zA-Z0-9_\\-]+$"
+				},
+				"description": {
+					"type": "string",
+					"maxLength": 1000
+				}
+			},
+			"required": [ "name", "isComponent" ],
+			"additionalProperties": false
+		}
+	},
+	"required": [ "arguments", "body" ],
+	"additionalProperties": false
+}

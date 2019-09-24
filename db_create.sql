@@ -38,7 +38,7 @@ create table projects
     pk_id 				int auto_increment primary key,
     location 				varchar(100) unique not null,
     name					varchar(100) not null,
-    description			varchar(500) not null default '',
+    description			varchar(1000) not null default '',
     symbol				varchar(10),
     fk_user				int not null,
     fk_originates_from	int,
