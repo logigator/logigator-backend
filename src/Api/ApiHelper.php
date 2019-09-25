@@ -80,8 +80,7 @@ class ApiHelper
         $regExp .= '(?<path>(?:[[:print:]]*))$%';
         $parts = [];
         if (!preg_match($regExp, $config_path, $parts)) {
-            $mess = sprintf('Path configured in config is invalid.', $config_path);
-            throw new \DomainException($mess);
+            throw new \DomainException('Path configured in config is invalid: '. $config_path);
         }
         if ('' !== $parts['root']) {
             $absolute = true;
