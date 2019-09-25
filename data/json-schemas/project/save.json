@@ -1,0 +1,30 @@
+{
+	"$schema": "http://json-schema.org/schema#",
+	"$id": "/project/save",
+
+	"type": "object",
+	"properties": {
+		"arguments": {
+			"type": "object",
+			"properties": {
+				"id": {
+					"type": "integer"
+				}
+			},
+			"required": [ "id" ],
+			"additionalProperties": false
+		},
+		"body": {
+			"type": "object",
+			"properties": {
+				"data": {
+					"type": "object"
+				}
+			},
+			"required": [ "data" ],
+			"additionalProperties": false
+		}
+	},
+	"required": [ "arguments", "body" ],
+	"additionalProperties": false
+}

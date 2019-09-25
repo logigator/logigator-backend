@@ -20,9 +20,6 @@ class VerifyGoogleCredentials extends BaseController
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args){
 		$body = $request->getParsedBody();
 
-		if(!ApiHelper::checkRequiredArgs($body, ['code']))
-			throw new HttpBadRequestException($request, self::ERROR_MISSING_ARGUMENTS);
-
 		$client = new Google_Client();
 		$client->setApplicationName(GOOGLE_APPLICATION_NAME);
 		$client->setClientId(GOOGLE_CLIENT_ID);
@@ -31,7 +28,7 @@ class VerifyGoogleCredentials extends BaseController
 
 		try {
 			$serviceOAuth = new Google_Service_Oauth2($client);
-			$token = $client->fetchAccessTokenWithAuthCode($body['code']);
+			$token = $client->fetchAccessTokenWithAuthCode($body->code);
 			$client->setAccessToken($token);
 			$content = $serviceOAuth->userinfo->get();
 

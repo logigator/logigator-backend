@@ -1,6 +1,7 @@
 <?php
 $config = [
     'configuration' => 'debug',
+    'json_schemas' => 'data/json-schemas/',
     'project_path' => 'projects/',
     'project_preview_path' => 'projects/preview/',
     'profile_image_path' => 'images/profile/',

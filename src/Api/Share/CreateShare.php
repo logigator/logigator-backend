@@ -15,11 +15,7 @@ class CreateShare extends BaseController
 	{
         $body = $request->getParsedBody();
 
-        if (!ApiHelper::checkRequiredArgs($body, ['id'])) {
-            throw new HttpBadRequestException($request, self::ERROR_MISSING_ARGUMENTS);
-        }
-
-        $project = $this->container->get('ProjectService')->getProjectInfo($body['id'], $this->getTokenPayload()->sub);
+        $project = $this->container->get('ProjectService')->getProjectInfo($body->project, $this->getTokenPayload()->sub);
         $user = $this->container->get('UserService')->fetchUser($this->getTokenPayload()->sub);
 
         if(!$user)
@@ -29,7 +25,7 @@ class CreateShare extends BaseController
             throw new HttpBadRequestException($request, self::ERROR_RESOURCE_NOT_FOUND);
 
         $is_public = true;
-        if(isset($body['users']) && is_array($body['users']) && count($body['users']) > 0) {
+        if(isset($body->users) && count($body->users) > 0) {
             $is_public = false;
         }
 
@@ -48,10 +44,8 @@ class CreateShare extends BaseController
 
         $warnings = array();
         if(!$is_public) {
-            foreach($body['users'] as $u) {
-            	if(!is_string($u))
-            		continue;
-
+        	$added = [];
+            foreach($body->users as $u) {
                 $userData = $this->container->get('DbalService')->getQueryBuilder()
                     ->select('*')
                     ->from('users')
@@ -66,6 +60,12 @@ class CreateShare extends BaseController
                     continue;
                 }
 
+                if(in_array($userData['pk_id'], $added)) {
+		            array_push($warnings, 'user "' . $u . '" listed multiple times."');
+		            continue;
+	            }
+                $added[] = $userData['pk_id'];
+
                 $this->container->get('DbalService')->getQueryBuilder()
                     ->insert('link_permits')
                     ->setValue('fk_user', '?')
@@ -74,7 +74,7 @@ class CreateShare extends BaseController
                     ->setParameter(1, $link_id)
                     ->execute();
 
-                if(isset($body['invitations']) && $body['invitations'] === true) {
+                if(isset($body->invitations) && $body->invitations === true) {
                 	try {
 		                $this->container->get('SmtpService')->sendMail(
 		                	'noreply', [
