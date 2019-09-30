@@ -30,7 +30,8 @@ function createRoutes(Slim\App $app, $authenticationMiddleware) {
         $group->post('/create', \Logigator\Api\Share\CreateShare::class)->add($authenticationMiddleware);
     });
 
-	$app->group('/user', function(\Slim\Routing\RouteCollectorProxy $group) use ($authenticationMiddleware) {
+	$app->group('/user', function(\Slim\Routing\RouteCollectorProxy $group) {
 		$group->get('/get', \Logigator\Api\User\GetUserInfo::class);
+		$group->post('/upload-picture', \Logigator\Api\User\UploadPicture::class);
 	})->add($authenticationMiddleware);
 }
