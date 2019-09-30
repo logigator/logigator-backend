@@ -68,7 +68,7 @@ class ProjectService extends BaseService
 	public function getAllComponentsInfo(int $userId): array
 	{
 		return $this->container->get('DbalService')->getQueryBuilder()
-			->select('pk_id, name, description, symbol, last_edited, created_on')
+			->select('pk_id, name, description, symbol, last_edited, created_on, num_inputs, num_outputs')
 			->from('projects')
 			->where('fk_user = ? and is_component = true')
 			->setParameter(0, $userId)

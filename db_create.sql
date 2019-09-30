@@ -39,15 +39,21 @@ create table projects
     location 				varchar(100) unique not null,
     name					varchar(100) not null,
     description			varchar(1000) not null default '',
-    symbol				varchar(10),
     fk_user				int not null,
     fk_originates_from	int,
     last_edited			timestamp default CURRENT_TIMESTAMP not null,
     created_on			timestamp default CURRENT_TIMESTAMP not null,
     is_component		bit not null,
+	symbol				varchar(10),
+	num_inputs          int,
+	num_outputs         int,
 
     constraint constraint_projects_check_symbol
         check (is_component = 0 or symbol is not null),
+    constraint constraint_projects_check_num_inputs
+        check (is_component = 0 or num_inputs is not null),
+    constraint constraint_projects_check_num_outputs
+        check (is_component = 0 or num_outputs is not null),
 
     constraint constraint_projects_fk_user
         foreign key (fk_user) references users (pk_id)

@@ -36,8 +36,11 @@ class CreateProject extends BaseController
 			->setParameter(3, $location)
 			->setParameter(4, $description);
 
-		if($body->isComponent)
+		if($body->isComponent) {
 			$query = $query->setValue('symbol', '?')->setParameter(5, $body->symbol);
+			$query = $query->setValue('num_inputs', '?')->setParameter(6, 0);
+			$query = $query->setValue('num_outputs', '?')->setParameter(7, 0);
+		}
 
 		$query->execute();
 		return ApiHelper::createJsonResponse($response, ['id' => $this->getDbalConnection()->lastInsertId()]);

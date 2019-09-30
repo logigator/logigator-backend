@@ -19,6 +19,12 @@
 			"properties": {
 				"data": {
 					"type": "object"
+				},
+				"num_inputs": {
+					"type": "integer"
+				},
+				"num_outputs": {
+					"type": "integer"
 				}
 			},
 			"required": [ "data" ],
