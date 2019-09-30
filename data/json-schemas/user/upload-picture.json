@@ -1,0 +1,26 @@
+{
+	"$schema": "http://json-schema.org/schema#",
+	"$id": "/user/upload-picture",
+
+	"type": "object",
+	"properties": {
+		"arguments": {
+			"type": "object",
+			"properties": {
+
+			},
+			"required": [ ],
+			"additionalProperties": false
+		},
+		"body": {
+			"type": "object",
+			"properties": {
+
+			},
+			"required": [ ],
+			"additionalProperties": false
+		}
+	},
+	"required": [ "arguments", "body" ],
+	"additionalProperties": false
+}
