@@ -33,6 +33,6 @@ function createRoutes(Slim\App $app, $authenticationMiddleware) {
 	$app->group('/user', function(\Slim\Routing\RouteCollectorProxy $group) {
 		$group->get('/get', \Logigator\Api\User\GetUserInfo::class);
 		$group->post('/upload-picture', \Logigator\Api\User\UploadPicture::class);
-		$group->post('/update-password', \Logigator\Api\User\UpdatePassword::class);
+		$group->post('/update', \Logigator\Api\User\UpdateUser::class);
 	})->add($authenticationMiddleware);
 }
