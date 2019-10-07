@@ -43,7 +43,6 @@ class UpdateUser extends BaseController
 		if($dirty === true)
 			$query->where('pk_id = :pk_id')->setParameter('pk_id', $this->getTokenPayload()->sub)->execute();
 
-		// TODO: update shortcuts
 		if (isset($body->shortcuts)) {
 			foreach ($body->shortcuts as $key => $value) {
 				if($this->getDbalQueryBuilder()
