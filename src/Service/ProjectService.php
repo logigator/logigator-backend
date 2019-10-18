@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Stefan
- * Date: 31.08.2019
- * Time: 11:07
- */
 
 namespace Logigator\Service;
 
@@ -76,62 +70,6 @@ class ProjectService extends BaseService
 			->fetchAll();
 	}
 
-	public function cloneProject($projectId, $userIdOrigin, $userId, $counter): int
-	{
-		if ($counter >= 64)
-			return -1;
-
-		$newLocation = $this->copyData($projectId, $userIdOrigin, $userId);
-		$newProjectId = $this->fetchProjectId($newLocation, $userId);
-
-		if (file_exists(ApiHelper::getProjectPath($this->container, $newLocation))) {
-			$jsonString = file_get_contents(ApiHelper::getProjectPath($this->container, $newLocation));
-			$data = json_decode($jsonString, true);
-
-			foreach ($data['mapping'] as $key => $value) {
-				$key[$value] = $this->cloneProject($value, $userIdOrigin, $userId, $counter + 1);
-			}
-		}
-
-		return $newProjectId;
-	}
-
-	public function copyData($projectId, $userIdOrigin, $userId): String
-	{
-		$location = Uuid::uuid4()->toString();
-
-		$projectData = $this->getProjectInfo($projectId, $userIdOrigin);
-		$this->container->get('DbalService')->getQueryBuilder()
-			->insert('projects')
-			->setValue('name', '?')
-			->setValue('is_component', '?')
-			->setValue('fk_user', '?')
-			->setValue('location', '?')
-			->setValue('description', '?')
-			->setValue('symbol', '?')
-			->setValue('fk_originates_from', '?')
-			->setParameter(0, $projectData['name'] . "_Copy")
-			->setParameter(1, $projectData['is_component'])
-			->setParameter(2, $userId)
-			->setParameter(3, $location)
-			->setParameter(4, $projectData['description'])
-			->setParameter(5, $projectData['symbol'])
-			->setParameter(6, $projectId)
-			->execute();
-
-		$path = ApiHelper::getProjectPath($this->container, $projectData['location']);
-
-		if (file_exists($path))
-			file_put_contents(ApiHelper::getProjectPath($this->container, $location), file_get_contents($path));
-
-		$path = ApiHelper::getProjectPreviewPath($this->container, $projectData['location']);
-
-		if (file_exists($path))
-			file_put_contents(ApiHelper::getProjectPreviewPath($this->container, $location), file_get_contents($path));
-
-		return $location;
-	}
-
 	public function fetchProjectId($location, $userId): int
 	{
 		return $this->container->get('DbalService')->getQueryBuilder()
@@ -142,5 +80,50 @@ class ProjectService extends BaseService
 			->setParameter(1, $userId)
 			->execute()
 			->fetch()["pk_id"];
+	}
+
+	public function fetchShare(string $address, int $userId, $anonymous = false) {
+		$share = $this->container->get('DbalService')->getQueryBuilder()
+			->select('link.address as "link.address", 
+                link.is_public as "link.is_public",
+                link.pk_id as "link.pk_id",
+                project.pk_id as "project.id",
+                project.name as "project.name",
+                project.description as "project.description",
+                project.symbol as "project.symbol", 
+                project.last_edited as "project.last_edited",
+                project.created_on as "project.created_on", 
+                project.is_component as "project.is_component", 
+                project.location as "project.location", 
+                user.username as "user.username",
+                user.profile_image as "user.profile_image"')
+			->from('links', 'link')
+			->join('link', 'projects', 'project', 'link.fk_project = project.pk_id')
+			->join('project', 'users', 'user', 'user.pk_id = project.fk_user')
+			->where('link.address = ?')
+			->setParameter(0, $address)
+			->execute()
+			->fetch();
+
+		if(!$share)
+			return false;
+
+		if($share['link.is_public'])
+			return $share;
+
+		if($anonymous)
+			return false;
+
+		if(!$this->container->get('DbalService')->getQueryBuilder()
+			->select('fk_user, fk_link')
+			->from('link_permits')
+			->where('fk_user = ? and fk_link = ?')
+			->setParameter(0, $userId)
+			->setParameter(1, $share['link.pk_id'])
+			->execute()
+			->fetch())
+			return false;
+
+		return $share;
 	}
 }

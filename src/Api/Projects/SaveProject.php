@@ -42,7 +42,6 @@ class SaveProject extends BaseController
 				->execute();
 		}
 
-		// TODO: JSON file check
 		if(file_put_contents(ApiHelper::getProjectPath($this->container, $project['location']), json_encode($body->data)) === false)
 			throw new \Exception();
 

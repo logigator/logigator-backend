@@ -68,6 +68,9 @@
 											},
 											"rotation": {
 												"type": "integer"
+											},
+											"plugIndex": {
+												"type": "integer"
 											}
 										},
 										"required": [ "id", "typeId", "numOutputs", "numInputs", "pos", "endPos", "rotation" ],

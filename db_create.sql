@@ -66,7 +66,7 @@ create table projects
 create table links
 (
     pk_id			int auto_increment primary key,
-    address		char(100) not null unique,
+    address		varchar(100) not null unique,
     is_public		bit default 0 not null,
     fk_project	int not null,
 

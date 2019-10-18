@@ -18,6 +18,7 @@
     "php-di/php-di": "^6.0",
     "ext-json": "*",
     "justinrainbow/json-schema": "^5.2",
-	  "ext-exif": "*"
+	  "ext-exif": "*",
+	  "ext-pdo": "*"
   }
 }
