@@ -6,7 +6,7 @@ use Logigator\Api\ApiHelper;
 use Logigator\Api\BaseController;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Slim\Exception\HttpBadRequestException;
+use Slim\Exception\HttpUnauthorizedException;
 
 class LoginEmail extends BaseController
 {
@@ -23,10 +23,10 @@ class LoginEmail extends BaseController
             ->fetch();
 
 		if (!$user)
-			throw new HttpBadRequestException($request, 'User not found.');
+			throw new HttpUnauthorizedException($request, 'User not found.');
 
 		if (!$user['password'] || !password_verify($body->password, $user['password']))
-			throw new HttpBadRequestException($request, 'Password is incorrect.');
+			throw new HttpUnauthorizedException($request, 'Password is incorrect.');
 
 		$this->container->get('AuthenticationService')->setUserAuthenticated($user['pk_id'], 'email');
 		return ApiHelper::createJsonResponse($response, ['success' => true]);
