@@ -126,4 +126,58 @@ class ProjectService extends BaseService
 
 		return $share;
 	}
+
+	public function setSharePermits($link_id, $users, $invitations = false, $invitor = 'user', $project_name = 'project', $link ='') {
+		$warnings = ['not_found' => [], 'duplicates' => []];
+		$added = [];
+		foreach($users as $u) {
+			$userData = $this->container->get('DbalService')->getQueryBuilder()
+				->select('*')
+				->from('users')
+				->where('username = ? or email = ?')
+				->setParameter(0, $u)
+				->setParameter(1, $u)
+				->execute()
+				->fetch();
+
+			if(!$userData) {
+				array_push($warnings['not_found'], $u);
+				continue;
+			}
+
+			if (in_array($userData['pk_id'], $added)) {
+				array_push($warnings['duplicates'], $u);
+				continue;
+			}
+			$added[] = $userData['pk_id'];
+
+			$this->container->get('DbalService')->getQueryBuilder()
+				->insert('link_permits')
+				->setValue('fk_user', '?')
+				->setValue('fk_link', '?')
+				->setParameter(0, $userData['pk_id'])
+				->setParameter(1, $link_id)
+				->execute();
+
+			if($invitations === true) {
+				try {
+					$this->container->get('SmtpService')->sendMail(
+						'noreply', [
+						$userData['email']
+					],
+						'Someone shared his project with you!',
+						$this->container->get('SmtpService')->loadTemplate('share-invitation.html', [
+							'recipient' => $userData['username'],
+							'invitor' => $invitor,
+							'project' => $project_name,
+							'link' => 'https://editor.logigator.com/share/' . $link
+						])
+					);
+				} catch (\Exception $e) {
+					array_push($warnings, 'Failed to send invitation to user "' . $u . '"');
+				}
+			}
+		}
+		return $warnings;
+	}
 }

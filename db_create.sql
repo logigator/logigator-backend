@@ -68,7 +68,7 @@ create table links
     pk_id			int auto_increment primary key,
     address		varchar(100) not null unique,
     is_public		bit default 0 not null,
-    fk_project	int not null,
+    fk_project	int not null unique,
 
     constraint constraint_links_fk_project
         foreign key (fk_project) references projects (pk_id)
