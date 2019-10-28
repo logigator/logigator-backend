@@ -41,6 +41,7 @@ class ProjectService extends BaseService
 			->select('pk_id, name, description, last_edited, created_on')
 			->from('projects')
 			->where('fk_user = ? and is_component = false')
+			->orderBy('last_edited', 'DESC')
 			->setParameter(0, $userId)
 			->execute()
 			->fetchAll();
@@ -71,6 +72,7 @@ class ProjectService extends BaseService
 			->select('pk_id, name, description, symbol, last_edited, created_on, num_inputs, num_outputs')
 			->from('projects')
 			->where('fk_user = ? and is_component = true')
+			->orderBy('last_edited', 'DESC')
 			->setParameter(0, $userId)
 			->execute()
 			->fetchAll();

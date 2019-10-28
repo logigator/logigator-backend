@@ -14,7 +14,7 @@ class SaveProject extends BaseController
 	{
 		$body = $request->getParsedBody();
 
-		$project = $this->container->get('DbalService')->getQueryBuilder()
+		$project = $this->getDbalQueryBuilder()
 			->select('location, is_component')
 			->from('projects')
 			->where('pk_id = ? and fk_user = ?')
