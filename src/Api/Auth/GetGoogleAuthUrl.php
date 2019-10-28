@@ -17,6 +17,7 @@ class GetGoogleAuthUrl extends BaseController
 		$client->setClientId(GOOGLE_CLIENT_ID);
 		$client->setClientSecret(GOOGLE_CLIENT_SECRET);
 		$client->setRedirectUri(GOOGLE_CALLBACK_URL);
+		$client->setApprovalPrompt('force');
 
 		$url = $client->createAuthUrl(['email', 'profile']);
 

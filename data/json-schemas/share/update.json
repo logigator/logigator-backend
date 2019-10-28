@@ -1,6 +1,6 @@
 {
 	"$schema": "http://json-schema.org/schema#",
-	"$id": "/share/get",
+	"$id": "/share/update",
 
 	"type": "object",
 	"properties": {
@@ -12,13 +12,24 @@
 					"pattern": "^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-4[0-9A-Fa-f]{3}-[89ABab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}$"
 				}
 			},
-			"required": [ ],
+			"required": [ "address" ],
 			"additionalProperties": false
 		},
 		"body": {
 			"type": "object",
 			"properties": {
-
+				"is_public": {
+					"type": "boolean"
+				},
+				"users": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					}
+				},
+				"invitations": {
+					"type": "boolean"
+				}
 			},
 			"required": [ ],
 			"additionalProperties": false

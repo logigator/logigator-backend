@@ -18,7 +18,88 @@
 			"type": "object",
 			"properties": {
 				"data": {
-					"type": "object"
+					"type": "object",
+					"properties": {
+						"board": {
+							"type": "object",
+							"properties": {
+								"elements": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"id": {
+												"type": "integer"
+											},
+											"typeId": {
+												"type": "integer"
+											},
+											"numOutputs": {
+												"type": "integer"
+											},
+											"numInputs": {
+												"type": "integer"
+											},
+											"pos": {
+												"type": "object",
+												"properties": {
+													"x": {
+														"type": "integer"
+													},
+													"y": {
+														"type": "integer"
+													}
+												},
+												"required": [ "x", "y" ],
+												"additionalProperties": false
+											},
+											"endPos": {
+												"type": "object",
+												"properties": {
+													"x": {
+														"type": "integer"
+													},
+													"y": {
+														"type": "integer"
+													}
+												},
+												"required": [ "x", "y" ],
+												"additionalProperties": false
+											},
+											"rotation": {
+												"type": "integer"
+											},
+											"plugIndex": {
+												"type": "integer"
+											}
+										},
+										"required": [ "id", "typeId", "numOutputs", "numInputs", "pos", "endPos", "rotation" ],
+										"additionalProperties": false
+									}
+								}
+							},
+							"required": [ "elements" ],
+							"additionalProperties": false
+						},
+						"mappings": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"database": {
+										"type": "integer"
+									},
+									"model": {
+										"type": "integer"
+									}
+								},
+								"required": [ "database", "model" ],
+								"additionalProperties": false
+							}
+						}
+					},
+					"required": [ "board", "mappings" ],
+					"additionalProperties": false
 				},
 				"num_inputs": {
 					"type": "integer"
