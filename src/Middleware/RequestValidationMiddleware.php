@@ -46,7 +46,7 @@ class RequestValidationMiddleware
 		$parsedBody = (object)[ 'arguments' => (object)$route->getArguments(), 'body' => (object)$request->getParsedBody() ];
 
 		$validator = new \JsonSchema\Validator();
-		$validator->validate($parsedBody, [ '$ref' => $path ], Constraint::CHECK_MODE_COERCE_TYPES);
+		$validator->validate($parsedBody, [ '$ref' => 'file://' . realpath($path) ], Constraint::CHECK_MODE_COERCE_TYPES);
 		if($validator->isValid())
 			return $handler->handle($request);
 		else {
