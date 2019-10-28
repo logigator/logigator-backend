@@ -7,6 +7,7 @@ $config = [
     'profile_image_path' => 'images/profile/',
     'profile_default_image' => 'default',
     'email_templates_path' => 'data/email-templates/',
+    'google_recaptcha_secret' => '',
     'doctrine-dbal' => [
         'dbname' => '--',
         'user' => '--',
@@ -17,18 +18,18 @@ $config = [
             PDO::ATTR_EMULATE_PREPARES => false
         )
     ],
-         'smtp' => [
-         	'{accountName}' => [
-         		'emailAddress' => 'noreply@yourdomain.com',
-     		    'displayName' => 'noreply',
-     		    'hostname' => 'mail.yourdomain.com',
-     		    'port' => '587',
-     		    'secure' => 'tls',
-     		    'authentication' => true,
-     		    'username' => '',
-     		    'password' => ''
-     	    ]
-         ]
+    'smtp' => [
+     	'{accountName}' => [
+        'emailAddress' => 'noreply@yourdomain.com',
+  	    'displayName' => 'noreply',
+  	    'hostname' => 'mail.yourdomain.com',
+  	    'port' => '587',
+  	    'secure' => 'tls',
+  	    'authentication' => true,
+  	    'username' => '',
+  	    'password' => ''
+      ]
+    ]
 ];
 
 define('TWITTER_CALLBACK_URL', 'http://localhost:4200/auth-callback');

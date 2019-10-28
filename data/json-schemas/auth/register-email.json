@@ -30,9 +30,13 @@
 					"type": "string",
 					"minLength": 8,
 					"pattern": "^(?=.*[A-Za-z])(?=.*[0-9]).*$"
+				},
+				"recaptcha":{
+					"type": "string",
+					"minLength": 1
 				}
 			},
-			"required": [ "email", "username", "password" ],
+			"required": [ "email", "username", "password", "recaptcha" ],
 			"additionalProperties": false
 		}
 	},
