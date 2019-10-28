@@ -6,7 +6,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Slim\Psr7\Response;
+use Slim\Exception\HttpUnauthorizedException;
 
 class LoginValidationMiddleware
 {
@@ -21,15 +21,6 @@ class LoginValidationMiddleware
 		if($this->container->get('AuthenticationService')->verifyToken() !== null)
 			return $handler->handle($request);
 
-		$payload = [
-			'statusCode' => 401,
-			'error' => [
-				'type' => 'UNAUTHENTICATED',
-				'description' => 'You are not logged in.',
-			]
-		];
-		$response = new Response(401, null);
-		$response->getBody()->write(json_encode($payload, JSON_PRETTY_PRINT));
-		return $response;
+		throw new HttpUnauthorizedException($request, 'You are not logged in.');
 	}
 }

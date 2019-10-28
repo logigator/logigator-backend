@@ -6,27 +6,29 @@ use Logigator\Api\ApiHelper;
 use Logigator\Api\BaseController;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Slim\Exception\HttpBadRequestException;
+use Slim\Exception\HttpUnauthorizedException;
 
 class LoginEmail extends BaseController
 {
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args) {
 		$body = $request->getParsedBody();
 
-		if(!ApiHelper::checkRequiredArgs($body, ['email', 'password'])) {
-			throw new HttpBadRequestException($request, 'Not all required args were given');
-		}
+        $user = $this->getDbalQueryBuilder()
+            ->select('pk_id, password')
+            ->from('users')
+            ->where('email = ? or username = ?')
+            ->setParameter(0, $body->user)
+            ->setParameter(1, $body->user)
+            ->execute()
+            ->fetch();
 
-		$userId = $this->container->get('UserService')->fetchUserIdPerEmail($body['email']);
-		$passwordCorrect = $this->container->get('UserService')->verifyPassword($body['email'],$body['password']);
+		if (!$user)
+			throw new HttpUnauthorizedException($request, 'User not found.');
 
-		if ($userId == null)
-			throw new HttpBadRequestException($request, 'User not found.');
+		if (!$user['password'] || !password_verify($body->password, $user['password']))
+			throw new HttpUnauthorizedException($request, 'Password is incorrect.');
 
-		if(!$passwordCorrect)
-			throw new HttpBadRequestException($request, 'password is incorrect');
-
-		$this->container->get('AuthenticationService')->setUserAuthenticated($userId, 'email');
-		return ApiHelper::createJsonResponse($response, ['loggedIn' => 'true']);
+		$this->container->get('AuthenticationService')->setUserAuthenticated($user['pk_id'], 'email');
+		return ApiHelper::createJsonResponse($response, ['success' => true]);
 	}
 }

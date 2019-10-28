@@ -19,26 +19,20 @@ class OpenProject extends BaseController
 {
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args)
 	{
-		$body = $request->getParsedBody();
+		$project = $this->container->get('ProjectService')->getProjectInfo($args['id'], $this->getTokenPayload()->sub);
 
-		if (!ApiHelper::checkRequiredArgs($body, ['project_id'])) {
-			throw new HttpBadRequestException($request, 'Not all required args were given');
-		}
+		if (!$project)
+            throw new HttpBadRequestException($request, self::ERROR_RESOURCE_NOT_FOUND);
 
-		$location = $this->container->get('ProjectService')->fetchLocation($body['project_id'],$this->getTokenPayload()->sub);
+		$path = ApiHelper::getProjectPath($this->container, $project['location']);
 
-		if ($location == null)
-            throw new HttpBadRequestException($request, 'Project not found.');
+		$project['data'] = file_exists($path);
 
-		$path = ApiHelper::getProjectPath($this->container, $location);
+		if($project['data'])
+            $project['data'] = json_decode(file_get_contents($path));
 
-		$project = file_exists($path);
-
-		if($project)
-            $project = file_get_contents($path);
-
-        if(!$project)
-            $project = '{}';
+        if(!$project['data'])
+            $project['data'] = [];
 
 		return ApiHelper::createJsonResponse($response, ['project' => $project]);
 	}

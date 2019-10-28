@@ -16,6 +16,9 @@
     "phpmailer/phpmailer": "^6.0",
     "slim/psr7": "^0.5.0",
     "php-di/php-di": "^6.0",
-    "ext-json": "*"
+    "ext-json": "*",
+    "justinrainbow/json-schema": "^5.2",
+	  "ext-exif": "*",
+	  "ext-pdo": "*"
   }
 }

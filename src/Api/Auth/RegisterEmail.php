@@ -11,22 +11,23 @@ use Slim\Exception\HttpBadRequestException;
 
 class RegisterEmail extends BaseController
 {
-  
+
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args) {
 		$body = $request->getParsedBody();
 
-		if(!ApiHelper::checkRequiredArgs($body, ['email', 'password']))
-			throw new HttpBadRequestException($request, 'Not all required args were given');
-
-    if ($this->container->get('UserService')->fetchUserIdPerEmail($body['email']) != null) {
-			throw new HttpBadRequestException($request, 'User already exists');
+        if ($this->container->get('UserService')->fetchUserIdPerEmail($body->email) != null) {
+			throw new HttpBadRequestException($request, 'Email has already been taken.');
 		}
-    
 
-		//TODO: Security
-		$this->container->get('UserService')->createUser(explode("@", $body['email'])[0], null, $body['email'],'local', $body['password']);
-		$this->container->get('AuthenticationService')->setUserAuthenticated($this->container->get('UserService')->fetchUserIdPerEmail($body['email']), 'email');
+        if ($this->container->get('UserService')->fetchUserIdPerUsername($body->username) != null) {
+            throw new HttpBadRequestException($request, 'Username has already been taken.');
+        }
 
-		return ApiHelper::createJsonResponse($response, ['loggedIn' => 'true']);
+		//TODO: Recaptcha
+
+		$this->container->get('UserService')->createUser($body->username, null, $body->email, 'local', $body->password);
+		$this->container->get('AuthenticationService')->setUserAuthenticated($this->container->get('UserService')->fetchUserIdPerEmail($body->email), 'local');
+
+		return ApiHelper::createJsonResponse($response, ['success' => true]);
 	}
 }

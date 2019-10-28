@@ -1,9 +1,11 @@
 <?php
 $config = [
     'configuration' => 'debug',
+    'json_schemas' => 'data/json-schemas/',
     'project_path' => 'projects/',
     'project_preview_path' => 'projects/preview/',
     'profile_image_path' => 'images/profile/',
+    'profile_default_image' => 'default',
     'email_templates_path' => 'data/email-templates/',
     'doctrine-dbal' => [
         'dbname' => '--',
@@ -11,6 +13,9 @@ $config = [
         'password' => 'password',
         'host' => 'localhost',
         'driver' => 'pdo_mysql',
+        'driverOptions' => array (
+            PDO::ATTR_EMULATE_PREPARES => false
+        )
     ],
          'smtp' => [
          	'{accountName}' => [

@@ -15,22 +15,31 @@ class CreateShare extends BaseController
 	{
         $body = $request->getParsedBody();
 
-        if (!ApiHelper::checkRequiredArgs($body, ['project'])) {
-            throw new HttpBadRequestException($request, 'Not all required args were given');
-        }
+        $project = $this->container->get('ProjectService')->getProjectInfo($body->project, $this->getTokenPayload()->sub);
+        $user = $this->container->get('UserService')->fetchUser($this->getTokenPayload()->sub);
 
-        $project = $this->container->get('ProjectService')->getProjectInfo($body['project'], $this->getTokenPayload()->sub);
+        if(!$user)
+        	throw new \Exception();
 
         if(!$project)
-            throw new HttpBadRequestException($request, "Project was not found or does not belong to you.");
+            throw new HttpBadRequestException($request, self::ERROR_RESOURCE_NOT_FOUND);
+
+        if ($this->getDbalQueryBuilder()
+	        ->select('pk_id')
+	        ->from('links')
+	        ->where('links.fk_project = :project')
+	        ->setParameter('project', $body->project)
+            ->execute()->rowCount() > 0) {
+	        throw new HttpBadRequestException($request, 'Link already exists.');
+        }
 
         $is_public = true;
-        if(isset($body['users']) && is_array($body['users']) && count($body['users']) > 0) {
+        if(isset($body->users) && count($body->users) > 0) {
             $is_public = false;
         }
 
         $link_address = Uuid::uuid4()->toString();
-        $this->container->get('DbalService')->getQueryBuilder()
+        $this->getDbalQueryBuilder()
             ->insert('links')
             ->setValue('address', '?')
             ->setValue('is_public', '?')
@@ -40,39 +49,17 @@ class CreateShare extends BaseController
             ->setParameter(2, $project['pk_id'])
             ->execute();
 
-        $link_id = $this->container->get('DbalService')->getQueryBuilder()
-            ->select('pk_id')
-            ->from('links')
-            ->where('address = ?')
-            ->setParameter(0, $link_address)
-            ->execute()
-            ->fetch()['pk_id'];
+        $link_id = $this->container->get('DbalService')->getConnection()->lastInsertId();
 
-        $warnings = array();
-        if(!$is_public) {
-            foreach($body['users'] as $user) {
-                $user = $this->container->get('DbalService')->getQueryBuilder()
-                    ->select('pk_id')
-                    ->from('users')
-                    ->where('username = ? or email = ?')
-                    ->setParameter(0, $user)
-                    ->setParameter(1, $user)
-                    ->execute()
-                    ->fetch()['pk_id'];
-
-                if(!$user) {
-                    array_push($warnings, 'user "' . $user . '" not found."');
-                    continue;
-                }
-
-                $this->container->get('DbalService')->getQueryBuilder()
-                    ->insert('link_permits')
-                    ->setValue('fk_user', '?')
-                    ->setValue('fk_link', '?')
-                    ->setParameter(0, $user)
-                    ->setParameter(1, $link_id)
-                    ->execute();
-            }
+        $warnings = [];
+        if(isset($body->users)) {
+	        $warnings = $this->container->get('ProjectService')->setSharePermits($link_id,
+		        $body->users,
+		        isset($body->invitations) ? $body->invitations : false,
+		        $user['username'],
+		        $project['name'],
+		        $link_address
+	        );
         }
 
 		return ApiHelper::createJsonResponse($response, ['address' => $link_address], true, $warnings);

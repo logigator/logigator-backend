@@ -1,0 +1,43 @@
+{
+	"$schema": "http://json-schema.org/schema#",
+	"$id": "/project/update",
+
+	"type": "object",
+	"properties": {
+		"arguments": {
+			"type": "object",
+			"properties": {
+				"id": {
+					"type": "integer"
+				}
+			},
+			"required": [ "id" ],
+			"additionalProperties": false
+		},
+		"body": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"type": "string",
+					"minLength": 2,
+					"maxLength": 20,
+					"pattern": "^[a-zA-Z0-9_\\-]+$"
+				},
+				"description": {
+					"type": "string",
+					"maxLength": 1000
+				},
+				"symbol": {
+					"type": "string",
+					"minLength": 1,
+					"maxLength": 5,
+					"pattern": "^[a-zA-Z0-9_\\-]+$"
+				}
+			},
+			"required": [ ],
+			"additionalProperties": false
+		}
+	},
+	"required": [ "arguments", "body" ],
+	"additionalProperties": false
+}

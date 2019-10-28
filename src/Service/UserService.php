@@ -5,10 +5,11 @@ namespace Logigator\Service;
 
 class UserService extends BaseService
 {
-	private const DEFAULT_PROFILE_IMAGE = "";
-
-	public function createUser($username,$socialMediaKey, $email, $loginType, $password = null, $profile_image = self::DEFAULT_PROFILE_IMAGE)
+	public function createUser($username, $socialMediaKey, $email, $loginType, $password = null, $profile_image = null): int
 	{
+	    if($password !== null)
+	        $password = password_hash($password, PASSWORD_DEFAULT);
+
 		$this->container->get('DbalService')->getQueryBuilder()
 			->insert('users')
 			->setValue('username', '?')
@@ -24,18 +25,42 @@ class UserService extends BaseService
 			->setParameter(4, $profile_image)
 			->setParameter(5, $socialMediaKey)
 			->execute();
+
+		return $this->container->get('DbalService')->getConnection()->lastInsertId();
 	}
 
-	public function fetchUserIdPerKey($key)
+	public function fetchUser($id) {
+		return $this->container->get('DbalService')->getQueryBuilder()
+			->select('*')
+			->from('users')
+			->where('pk_id = ?')
+			->setParameter(0, $id)
+			->execute()
+			->fetch();
+	}
+
+	public function fetchUserIdPerKey($key, $login_type)
 	{
 		return $this->container->get('DbalService')->getQueryBuilder()
 			->select('pk_id')
 			->from('users')
-			->where('social_media_key = ?')
+			->where('social_media_key = ? and login_type = ?')
 			->setParameter(0, $key)
+			->setParameter(1, $login_type)
 			->execute()
 			->fetch()["pk_id"];
 	}
+
+    public function fetchUserIdPerUsername($username)
+    {
+        return $this->container->get('DbalService')->getQueryBuilder()
+            ->select('pk_id')
+            ->from('users')
+            ->where('username = ?')
+            ->setParameter(0, $username)
+            ->execute()
+            ->fetch()["pk_id"];
+    }
 
 	public function fetchUserIdPerEmail($email)
 	{
@@ -47,17 +72,4 @@ class UserService extends BaseService
 			->execute()
 			->fetch()["pk_id"];
 	}
-
-	//TODO: implement secure password verification
-	public function verifyPassword($email,$password)
-	{
-		return $this->container->get('DbalService')->getQueryBuilder()
-			->select('password')
-			->from('users')
-			->where('email = ?')
-			->setParameter(0, $email)
-			->execute()
-			->fetch()["password"]==$password;
-	}
-
 }

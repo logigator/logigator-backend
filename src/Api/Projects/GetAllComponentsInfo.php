@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Stefan
- * Date: 31.08.2019
- * Time: 10:41
- */
 
 namespace Logigator\Api\Projects;
 

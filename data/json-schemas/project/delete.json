@@ -1,0 +1,28 @@
+{
+	"$schema": "http://json-schema.org/schema#",
+	"$id": "/project/delete",
+
+	"type": "object",
+	"properties": {
+		"arguments": {
+			"type": "object",
+			"properties": {
+				"id": {
+					"type": "integer"
+				}
+			},
+			"required": [ "id" ],
+			"additionalProperties": false
+		},
+		"body": {
+			"type": "object",
+			"properties": {
+
+			},
+			"required": [ ],
+			"additionalProperties": false
+		}
+	},
+	"required": [ "arguments", "body" ],
+	"additionalProperties": false
+}
