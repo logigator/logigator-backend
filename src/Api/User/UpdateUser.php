@@ -26,22 +26,22 @@ class UpdateUser extends BaseController
 
 		$dirty = false;
 		if(isset($body->username)) {
-			$query = $query->set('username', ':username')->setParameter('username', $body->username);
+			$query = $query->set('username', ':username')->setParameter('username', $body->username, \Doctrine\DBAL\ParameterType::STRING);
 			$dirty = true;
 		}
 
 		if(isset($body->email)) {
-			$query = $query->set('email', ':email')->setParameter('email', $body->email);
+			$query = $query->set('email', ':email')->setParameter('email', $body->email, \Doctrine\DBAL\ParameterType::STRING);
 			$dirty = true;
 		}
 
 		if(isset($body->password)) {
-			$query = $query->set('password', ':password')->setParameter('password', password_hash($body->password, PASSWORD_DEFAULT));
+			$query = $query->set('password', ':password')->setParameter('password', password_hash($body->password, PASSWORD_DEFAULT), \Doctrine\DBAL\ParameterType::STRING);
 			$dirty = true;
 		}
 
 		if($dirty === true)
-			$query->where('pk_id = :pk_id')->setParameter('pk_id', (int)$this->getTokenPayload()->sub)->execute();
+			$query->where('pk_id = :pk_id')->setParameter('pk_id', (int)$this->getTokenPayload()->sub, \Doctrine\DBAL\ParameterType::INTEGER)->execute();
 
 		if (isset($body->shortcuts)) {
 			foreach ($body->shortcuts as $key => $value) {
@@ -49,8 +49,8 @@ class UpdateUser extends BaseController
 					->select('pk_id')
 					->from('shortcuts')
 					->where('fk_user = :user and name = :shortcut')
-					->setParameter('user', (int)$this->getTokenPayload()->sub)
-					->setParameter('shortcut', $key)
+					->setParameter('user', (int)$this->getTokenPayload()->sub, \Doctrine\DBAL\ParameterType::INTEGER)
+					->setParameter('shortcut', $key, \Doctrine\DBAL\ParameterType::STRING)
 					->execute()
 					->fetch()) {
 					$this->getDbalQueryBuilder()
@@ -60,12 +60,12 @@ class UpdateUser extends BaseController
 						->set('ctrl', ':ctrl')
 						->set('alt', ':alt')
 						->where('fk_user = :user and name = :shortcut')
-						->setParameter('key', $value->key_code)
-						->setParameter('shift', $value->shift)
-						->setParameter('ctrl', $value->ctrl)
-						->setParameter('alt', $value->alt)
-						->setParameter('user', (int)$this->getTokenPayload()->sub)
-						->setParameter('shortcut', $key)
+						->setParameter('key', $value->key_code, \Doctrine\DBAL\ParameterType::STRING)
+						->setParameter('shift', $value->shift, \Doctrine\DBAL\ParameterType::BOOLEAN)
+						->setParameter('ctrl', $value->ctrl, \Doctrine\DBAL\ParameterType::BOOLEAN)
+						->setParameter('alt', $value->alt, \Doctrine\DBAL\ParameterType::BOOLEAN)
+						->setParameter('user', (int)$this->getTokenPayload()->sub, \Doctrine\DBAL\ParameterType::INTEGER)
+						->setParameter('shortcut', $key, \Doctrine\DBAL\ParameterType::STRING)
 						->execute();
 				} else {
 					$this->getDbalQueryBuilder()
@@ -76,12 +76,12 @@ class UpdateUser extends BaseController
 						->setValue('ctrl', ':ctrl')
 						->setValue('alt', ':alt')
 						->setValue('fk_user', ':user')
-						->setParameter('key', $value->key_code)
-						->setParameter('shift', $value->shift)
-						->setParameter('ctrl', $value->ctrl)
-						->setParameter('alt', $value->alt)
-						->setParameter('user', (int)$this->getTokenPayload()->sub)
-						->setParameter('shortcut', $key)
+						->setParameter('key', $value->key_code, \Doctrine\DBAL\ParameterType::STRING)
+						->setParameter('shift', $value->shift, \Doctrine\DBAL\ParameterType::BOOLEAN)
+						->setParameter('ctrl', $value->ctrl, \Doctrine\DBAL\ParameterType::BOOLEAN)
+						->setParameter('alt', $value->alt, \Doctrine\DBAL\ParameterType::BOOLEAN)
+						->setParameter('user', (int)$this->getTokenPayload()->sub, \Doctrine\DBAL\ParameterType::INTEGER)
+						->setParameter('shortcut', $key, \Doctrine\DBAL\ParameterType::STRING)
 						->execute();
 				}
 			}
