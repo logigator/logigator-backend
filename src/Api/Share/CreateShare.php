@@ -28,7 +28,7 @@ class CreateShare extends BaseController
 	        ->select('pk_id')
 	        ->from('links')
 	        ->where('links.fk_project = :project')
-	        ->setParameter('project', $body->project)
+	        ->setParameter('project', $body->project, \Doctrine\DBAL\ParameterType::INTEGER)
             ->execute()->rowCount() > 0) {
 	        throw new HttpBadRequestException($request, 'Link already exists.');
         }
@@ -44,9 +44,9 @@ class CreateShare extends BaseController
             ->setValue('address', '?')
             ->setValue('is_public', '?')
             ->setValue('fk_project', '?')
-            ->setParameter(0, $link_address)
-            ->setParameter(1, $is_public)
-            ->setParameter(2, $project['pk_id'])
+            ->setParameter(0, $link_address, \Doctrine\DBAL\ParameterType::STRING)
+            ->setParameter(1, $is_public, \Doctrine\DBAL\ParameterType::BOOLEAN)
+            ->setParameter(2, $project['pk_id'], \Doctrine\DBAL\ParameterType::INTEGER)
             ->execute();
 
         $link_id = $this->container->get('DbalService')->getConnection()->lastInsertId();

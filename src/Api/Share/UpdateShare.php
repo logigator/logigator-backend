@@ -19,8 +19,8 @@ class UpdateShare extends BaseController
 			->from('links')
 			->join('links', 'projects', 'projects', 'links.fk_project = projects.pk_id')
 			->where('projects.fk_user = :user and links.address = :link')
-			->setParameter('user', (int)$this->getTokenPayload()->sub)
-			->setParameter('link', $args['address'])
+			->setParameter('user', (int)$this->getTokenPayload()->sub, \Doctrine\DBAL\ParameterType::INTEGER)
+			->setParameter('link', $args['address'], \Doctrine\DBAL\ParameterType::STRING)
 			->execute()
 			->fetch();
 
@@ -32,8 +32,8 @@ class UpdateShare extends BaseController
 				->update('links')
 				->where('pk_id = :id')
 				->set('is_public', ':public')
-				->setParameter('public', $body->is_public)
-				->setParameter('id', $share['pk_id'])
+				->setParameter('public', $body->is_public, \Doctrine\DBAL\ParameterType::BOOLEAN)
+				->setParameter('id', $share['pk_id'], \Doctrine\DBAL\ParameterType::INTEGER)
 				->execute();
 		}
 
@@ -45,7 +45,7 @@ class UpdateShare extends BaseController
 			$this->getDbalQueryBuilder()
 				->delete('link_permits')
 				->where('fk_link = :link')
-				->setParameter('link', $share['pk_id'])
+				->setParameter('link', $share['pk_id'], \Doctrine\DBAL\ParameterType::INTEGER)
 				->execute();
 
 			$warnings = $this->container->get('ProjectService')->setSharePermits($share['pk_id'],

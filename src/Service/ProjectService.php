@@ -13,8 +13,8 @@ class ProjectService extends BaseService
 			->select('location')
 			->from('projects')
 			->where('pk_id = ? and fk_user = ?')
-			->setParameter(0, $projectId)
-			->setParameter(1, $userId)
+			->setParameter(0, $projectId, \Doctrine\DBAL\ParameterType::INTEGER)
+			->setParameter(1, $userId, \Doctrine\DBAL\ParameterType::INTEGER)
 			->execute()
 			->fetch()["location"];
 	}
@@ -24,8 +24,8 @@ class ProjectService extends BaseService
 		return $this->container->get('DbalService')->getQueryBuilder()
 			->delete('projects')
 			->where('pk_id = ? and fk_user = ?')
-			->setParameter(0, $projectId)
-			->setParameter(1, $userId)
+			->setParameter(0, $projectId, \Doctrine\DBAL\ParameterType::INTEGER)
+			->setParameter(1, $userId, \Doctrine\DBAL\ParameterType::INTEGER)
 			->execute();
 	}
 
@@ -36,7 +36,7 @@ class ProjectService extends BaseService
 			->from('projects')
 			->where('fk_user = ? and is_component = false')
 			->orderBy('last_edited', 'DESC')
-			->setParameter(0, $userId)
+			->setParameter(0, $userId, \Doctrine\DBAL\ParameterType::INTEGER)
 			->execute()
 			->fetchAll();
 	}
@@ -50,12 +50,12 @@ class ProjectService extends BaseService
 		if ($userId === null)
 			$query = $query
 				->where('pk_id = ?')
-				->setParameter(0, $projectId);
+				->setParameter(0, $projectId, \Doctrine\DBAL\ParameterType::INTEGER);
 		else
 			$query = $query
 				->where('pk_id = ? and fk_user = ?')
-				->setParameter(0, $projectId)
-				->setParameter(1, $userId);
+				->setParameter(0, $projectId, \Doctrine\DBAL\ParameterType::STRING)
+				->setParameter(1, $userId, \Doctrine\DBAL\ParameterType::INTEGER);
 
 		return $query->execute()->fetch();
 	}
@@ -67,7 +67,7 @@ class ProjectService extends BaseService
 			->from('projects')
 			->where('fk_user = ? and is_component = true')
 			->orderBy('last_edited', 'DESC')
-			->setParameter(0, $userId)
+			->setParameter(0, $userId, \Doctrine\DBAL\ParameterType::INTEGER)
 			->execute()
 			->fetchAll();
 	}
@@ -78,8 +78,8 @@ class ProjectService extends BaseService
 			->select('pk_id')
 			->from('projects')
 			->where('location = ? and fk_user = ?')
-			->setParameter(0, $location)
-			->setParameter(1, $userId)
+			->setParameter(0, $location, \Doctrine\DBAL\ParameterType::STRING)
+			->setParameter(1, $userId, \Doctrine\DBAL\ParameterType::INTEGER)
 			->execute()
 			->fetch()["pk_id"];
 	}
@@ -103,7 +103,7 @@ class ProjectService extends BaseService
 			->join('link', 'projects', 'project', 'link.fk_project = project.pk_id')
 			->join('project', 'users', 'user', 'user.pk_id = project.fk_user')
 			->where('link.address = ?')
-			->setParameter(0, $address)
+			->setParameter(0, $address, \Doctrine\DBAL\ParameterType::STRING)
 			->execute()
 			->fetch();
 
@@ -120,8 +120,8 @@ class ProjectService extends BaseService
 			->select('fk_user, fk_link')
 			->from('link_permits')
 			->where('fk_user = ? and fk_link = ?')
-			->setParameter(0, $userId)
-			->setParameter(1, $share['link.pk_id'])
+			->setParameter(0, $userId, \Doctrine\DBAL\ParameterType::INTEGER)
+			->setParameter(1, $share['link.pk_id'], \Doctrine\DBAL\ParameterType::INTEGER)
 			->execute()
 			->fetch())
 			return false;
@@ -137,8 +137,8 @@ class ProjectService extends BaseService
 				->select('*')
 				->from('users')
 				->where('username = ? or email = ?')
-				->setParameter(0, $u)
-				->setParameter(1, $u)
+				->setParameter(0, $u, \Doctrine\DBAL\ParameterType::STRING)
+				->setParameter(1, $u, \Doctrine\DBAL\ParameterType::STRING)
 				->execute()
 				->fetch();
 
@@ -157,8 +157,8 @@ class ProjectService extends BaseService
 				->insert('link_permits')
 				->setValue('fk_user', '?')
 				->setValue('fk_link', '?')
-				->setParameter(0, $userData['pk_id'])
-				->setParameter(1, $link_id)
+				->setParameter(0, $userData['pk_id'], \Doctrine\DBAL\ParameterType::INTEGER)
+				->setParameter(1, $link_id, \Doctrine\DBAL\ParameterType::INTEGER)
 				->execute();
 
 			if($invitations === true) {

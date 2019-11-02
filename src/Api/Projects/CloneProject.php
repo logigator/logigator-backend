@@ -48,18 +48,18 @@ class CloneProject extends BaseController
 			->setValue('description', '?')
 			->setValue('fk_originates_from', '?')
 			->setValue('created_on', '?')
-			->setParameter(0, $project['name'])
-			->setParameter(1, !!$project['is_component'])
-			->setParameter(2, (int)$this->getTokenPayload()->sub)
-			->setParameter(3, $location)
-			->setParameter(4, $project['description'])
-			->setParameter(5, $oldUser)
-			->setParameter(6, $project['created_on']);
+			->setParameter(0, $project['name'], \Doctrine\DBAL\ParameterType::STRING)
+			->setParameter(1, $project['is_component'], \Doctrine\DBAL\ParameterType::BOOLEAN)
+			->setParameter(2, (int)$this->getTokenPayload()->sub, \Doctrine\DBAL\ParameterType::STRING)
+			->setParameter(3, $location, \Doctrine\DBAL\ParameterType::STRING)
+			->setParameter(4, $project['description'], \Doctrine\DBAL\ParameterType::STRING)
+			->setParameter(5, $oldUser, \Doctrine\DBAL\ParameterType::INTEGER)
+			->setParameter(6, $project['created_on'], \Doctrine\DBAL\ParameterType::STRING);
 
 		if($project['is_component']) {
-			$query = $query->setValue('symbol', '?')->setParameter(7, $project['symbol'])
-				->setValue('num_inputs', '?')->setParameter(8, $project['num_inputs'])
-				->setValue('num_outputs', '?')->setParameter(9, $project['num_outputs']);
+			$query = $query->setValue('symbol', '?')->setParameter(7, $project['symbol'], \Doctrine\DBAL\ParameterType::STRING)
+				->setValue('num_inputs', '?')->setParameter(8, $project['num_inputs'], \Doctrine\DBAL\ParameterType::INTEGER)
+				->setValue('num_outputs', '?')->setParameter(9, $project['num_outputs'], \Doctrine\DBAL\ParameterType::INTEGER);
 		}
 
 		$query->execute();

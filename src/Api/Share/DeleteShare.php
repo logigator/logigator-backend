@@ -17,8 +17,8 @@ class DeleteShare extends BaseController
 			->from('links')
 			->join('links', 'projects', 'projects', 'links.fk_project = projects.pk_id')
 			->where('links.address = :address and projects.fk_user = :user')
-			->setParameter('address', $args['address'])
-			->setParameter('user', (int)$this->getTokenPayload()->sub)
+			->setParameter('address', $args['address'], \Doctrine\DBAL\ParameterType::STRING)
+			->setParameter('user', (int)$this->getTokenPayload()->sub, \Doctrine\DBAL\ParameterType::INTEGER)
 			->execute()
 			->fetch()['pk_id'];
 
@@ -28,7 +28,7 @@ class DeleteShare extends BaseController
 		$this->getDbalQueryBuilder()
 			->delete('links')
 			->where('links.pk_id = :id')
-			->setParameter('id', $id)
+			->setParameter('id', $id, \Doctrine\DBAL\ParameterType::INTEGER)
 			->execute();
 
 		return ApiHelper::createJsonResponse($response, ['success' => true]);

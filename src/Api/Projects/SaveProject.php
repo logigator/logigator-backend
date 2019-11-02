@@ -18,8 +18,8 @@ class SaveProject extends BaseController
 			->select('location, is_component')
 			->from('projects')
 			->where('pk_id = ? and fk_user = ?')
-			->setParameter(0, $args['id'])
-			->setParameter(1, (int)$this->getTokenPayload()->sub)
+			->setParameter(0, $args['id'], \Doctrine\DBAL\ParameterType::INTEGER)
+			->setParameter(1, (int)$this->getTokenPayload()->sub, \Doctrine\DBAL\ParameterType::INTEGER)
 			->execute()
 			->fetch();
 
@@ -35,10 +35,10 @@ class SaveProject extends BaseController
 				->set('num_inputs', '?')
 				->set('num_outputs', '?')
 				->where('pk_id = ? and fk_user = ?')
-				->setParameter(0, $body->num_inputs)
-				->setParameter(1, $body->num_outputs)
-				->setParameter(2, $args['id'])
-				->setParameter(3, (int)$this->getTokenPayload()->sub)
+				->setParameter(0, $body->num_inputs, \Doctrine\DBAL\ParameterType::INTEGER)
+				->setParameter(1, $body->num_outputs, \Doctrine\DBAL\ParameterType::INTEGER)
+				->setParameter(2, $args['id'], \Doctrine\DBAL\ParameterType::INTEGER)
+				->setParameter(3, (int)$this->getTokenPayload()->sub, \Doctrine\DBAL\ParameterType::INTEGER)
 				->execute();
 		}
 

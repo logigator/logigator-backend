@@ -30,16 +30,16 @@ class CreateProject extends BaseController
 			->setValue('fk_user', '?')
 			->setValue('location', '?')
 			->setValue('description', '?')
-			->setParameter(0, $body->name)
-			->setParameter(1, $body->isComponent)
-			->setParameter(2, (int)$this->getTokenPayload()->sub)
-			->setParameter(3, $location)
-			->setParameter(4, $description);
+			->setParameter(0, $body->name, \Doctrine\DBAL\ParameterType::STRING)
+			->setParameter(1, $body->isComponent, \Doctrine\DBAL\ParameterType::BOOLEAN)
+			->setParameter(2, (int)$this->getTokenPayload()->sub, \Doctrine\DBAL\ParameterType::INTEGER)
+			->setParameter(3, $location, \Doctrine\DBAL\ParameterType::STRING)
+			->setParameter(4, $description, \Doctrine\DBAL\ParameterType::STRING);
 
 		if($body->isComponent) {
-			$query = $query->setValue('symbol', '?')->setParameter(5, $body->symbol);
-			$query = $query->setValue('num_inputs', '?')->setParameter(6, 0);
-			$query = $query->setValue('num_outputs', '?')->setParameter(7, 0);
+			$query = $query->setValue('symbol', '?')->setParameter(5, $body->symbol, \Doctrine\DBAL\ParameterType::STRING);
+			$query = $query->setValue('num_inputs', '?')->setParameter(6, 0, \Doctrine\DBAL\ParameterType::INTEGER);
+			$query = $query->setValue('num_outputs', '?')->setParameter(7, 0, \Doctrine\DBAL\ParameterType::INTEGER);
 		}
 
 		$query->execute();

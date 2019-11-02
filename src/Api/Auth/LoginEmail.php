@@ -17,8 +17,8 @@ class LoginEmail extends BaseController
             ->select('pk_id, password')
             ->from('users')
             ->where('email = ? or username = ?')
-            ->setParameter(0, $body->user)
-            ->setParameter(1, $body->user)
+            ->setParameter(0, $body->user, \Doctrine\DBAL\ParameterType::STRING)
+            ->setParameter(1, $body->user, \Doctrine\DBAL\ParameterType::STRING)
             ->execute()
             ->fetch();
 
