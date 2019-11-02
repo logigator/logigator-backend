@@ -19,16 +19,6 @@ class ProjectService extends BaseService
 			->fetch()["location"];
 	}
 
-	public function deleteProject(int $projectId, int $userId): bool
-	{
-		return $this->container->get('DbalService')->getQueryBuilder()
-			->delete('projects')
-			->where('pk_id = ? and fk_user = ?')
-			->setParameter(0, $projectId, \Doctrine\DBAL\ParameterType::INTEGER)
-			->setParameter(1, $userId, \Doctrine\DBAL\ParameterType::INTEGER)
-			->execute();
-	}
-
 	public function getAllProjectsInfo(int $userId): array
 	{
 		return $this->container->get('DbalService')->getQueryBuilder()
