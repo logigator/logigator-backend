@@ -14,7 +14,7 @@ class CloneProject extends BaseController
 {
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args)
 	{
-		$share = $this->container->get("ProjectService")->fetchShare($args['address'], $this->getTokenPayload()->sub);
+		$share = $this->container->get("ProjectService")->fetchShare($args['address'], (int)$this->getTokenPayload()->sub);
 
 		if(!$share)
 			throw new HttpBadRequestException($request, self::ERROR_RESOURCE_NOT_FOUND);
@@ -50,7 +50,7 @@ class CloneProject extends BaseController
 			->setValue('created_on', '?')
 			->setParameter(0, $project['name'])
 			->setParameter(1, !!$project['is_component'])
-			->setParameter(2, $this->getTokenPayload()->sub)
+			->setParameter(2, (int)$this->getTokenPayload()->sub)
 			->setParameter(3, $location)
 			->setParameter(4, $project['description'])
 			->setParameter(5, $oldUser)

@@ -19,7 +19,7 @@ class SaveProject extends BaseController
 			->from('projects')
 			->where('pk_id = ? and fk_user = ?')
 			->setParameter(0, $args['id'])
-			->setParameter(1, $this->getTokenPayload()->sub)
+			->setParameter(1, (int)$this->getTokenPayload()->sub)
 			->execute()
 			->fetch();
 
@@ -38,7 +38,7 @@ class SaveProject extends BaseController
 				->setParameter(0, $body->num_inputs)
 				->setParameter(1, $body->num_outputs)
 				->setParameter(2, $args['id'])
-				->setParameter(3, $this->getTokenPayload()->sub)
+				->setParameter(3, (int)$this->getTokenPayload()->sub)
 				->execute();
 		}
 

@@ -15,8 +15,8 @@ class CreateShare extends BaseController
 	{
         $body = $request->getParsedBody();
 
-        $project = $this->container->get('ProjectService')->getProjectInfo($body->project, $this->getTokenPayload()->sub);
-        $user = $this->container->get('UserService')->fetchUser($this->getTokenPayload()->sub);
+        $project = $this->container->get('ProjectService')->getProjectInfo($body->project, (int)$this->getTokenPayload()->sub);
+        $user = $this->container->get('UserService')->fetchUser((int)$this->getTokenPayload()->sub);
 
         if(!$user)
         	throw new \Exception();

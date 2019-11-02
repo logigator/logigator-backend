@@ -12,7 +12,7 @@ class GetAllProjectsInfo extends BaseController
 {
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args)
 	{
-		$data = $this->container->get('ProjectService')->getAllProjectsInfo($this->getTokenPayload()->sub);
+		$data = $this->container->get('ProjectService')->getAllProjectsInfo((int)$this->getTokenPayload()->sub);
 		return ApiHelper::createJsonResponse($response, $data);
 	}
 }

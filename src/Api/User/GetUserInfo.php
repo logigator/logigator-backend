@@ -18,7 +18,7 @@ class GetUserInfo extends BaseController
 			->select('username, email, login_type, profile_image')
 			->from('users')
 			->where('users.pk_id = ?')
-			->setParameter(0, $this->getTokenPayload()->sub)
+			->setParameter(0, (int)$this->getTokenPayload()->sub)
 			->execute()
 			->fetch();
 
@@ -26,7 +26,7 @@ class GetUserInfo extends BaseController
 			->select('name, key_code, shift, ctrl, alt')
 			->from('shortcuts')
 			->where('fk_user = ?')
-			->setParameter(0, $this->getTokenPayload()->sub)
+			->setParameter(0, (int)$this->getTokenPayload()->sub)
 			->execute()
 			->fetchAll();
 

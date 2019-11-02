@@ -39,7 +39,7 @@ class UploadPicture extends BaseController
 			->select('profile_image')
 			->from('users')
 			->where('pk_id = ?')
-			->setParameter(0, $this->getTokenPayload()->sub)
+			->setParameter(0, (int)$this->getTokenPayload()->sub)
 			->execute()
 			->fetch()['profile_image'];
 
@@ -50,7 +50,7 @@ class UploadPicture extends BaseController
 				->update('users')
 				->set('profile_image', ':image')
 				->where('pk_id = :id')
-				->setParameter('id', $this->getTokenPayload()->sub)
+				->setParameter('id', (int)$this->getTokenPayload()->sub)
 				->setParameter('image', $fileName)
 				->execute();
 		}

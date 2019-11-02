@@ -16,7 +16,7 @@ class UpdateProjectInfo extends BaseController
 	{
 		$body = $request->getParsedBody();
 
-		$project = $this->container->get('ProjectService')->getProjectInfo($args['id'], $this->getTokenPayload()->sub);
+		$project = $this->container->get('ProjectService')->getProjectInfo($args['id'], (int)$this->getTokenPayload()->sub);
 		if(!$project)
 			throw new HttpBadRequestException($request, self::ERROR_RESOURCE_NOT_FOUND);
 
@@ -33,7 +33,7 @@ class UpdateProjectInfo extends BaseController
 
 		$query->where('pk_id = :id and fk_user = :fk_user')
 			->setParameter('id', $args['id'])
-			->setParameter('fk_user', $this->getTokenPayload()->sub)
+			->setParameter('fk_user', (int)$this->getTokenPayload()->sub)
 			->execute();
 
 		return ApiHelper::createJsonResponse($response, ['success' => true]);

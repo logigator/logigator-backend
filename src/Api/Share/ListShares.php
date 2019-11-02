@@ -23,7 +23,7 @@ class ListShares extends BaseController
 			->leftJoin('links', 'link_permits', 'permits', 'permits.fk_link = links.pk_id')
 			->leftJoin('permits', 'users', 'users', 'users.pk_id = permits.fk_user')
 			->where('projects.fk_user = :user')
-			->setParameter('user', $this->getTokenPayload()->sub)
+			->setParameter('user', (int)$this->getTokenPayload()->sub)
 			->execute()
 			->fetchAll();
 

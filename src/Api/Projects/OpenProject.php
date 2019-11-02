@@ -19,7 +19,7 @@ class OpenProject extends BaseController
 {
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args)
 	{
-		$project = $this->container->get('ProjectService')->getProjectInfo($args['id'], $this->getTokenPayload()->sub);
+		$project = $this->container->get('ProjectService')->getProjectInfo($args['id'], (int)$this->getTokenPayload()->sub);
 
 		if (!$project)
             throw new HttpBadRequestException($request, self::ERROR_RESOURCE_NOT_FOUND);

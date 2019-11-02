@@ -18,7 +18,7 @@ class DeleteShare extends BaseController
 			->join('links', 'projects', 'projects', 'links.fk_project = projects.pk_id')
 			->where('links.address = :address and projects.fk_user = :user')
 			->setParameter('address', $args['address'])
-			->setParameter('user', $this->getTokenPayload()->sub)
+			->setParameter('user', (int)$this->getTokenPayload()->sub)
 			->execute()
 			->fetch()['pk_id'];
 

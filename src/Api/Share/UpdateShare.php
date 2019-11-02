@@ -19,7 +19,7 @@ class UpdateShare extends BaseController
 			->from('links')
 			->join('links', 'projects', 'projects', 'links.fk_project = projects.pk_id')
 			->where('projects.fk_user = :user and links.address = :link')
-			->setParameter('user', $this->getTokenPayload()->sub)
+			->setParameter('user', (int)$this->getTokenPayload()->sub)
 			->setParameter('link', $args['address'])
 			->execute()
 			->fetch();
@@ -39,8 +39,8 @@ class UpdateShare extends BaseController
 
 		$warnings = [];
 		if (isset($body->users)) {
-			$project = $this->container->get('ProjectService')->getProjectInfo($share['fk_project'], $this->getTokenPayload()->sub);
-			$user = $this->container->get('UserService')->fetchUser($this->getTokenPayload()->sub);
+			$project = $this->container->get('ProjectService')->getProjectInfo($share['fk_project'], (int)$this->getTokenPayload()->sub);
+			$user = $this->container->get('UserService')->fetchUser((int)$this->getTokenPayload()->sub);
 
 			$this->getDbalQueryBuilder()
 				->delete('link_permits')

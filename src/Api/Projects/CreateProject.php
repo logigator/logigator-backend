@@ -32,7 +32,7 @@ class CreateProject extends BaseController
 			->setValue('description', '?')
 			->setParameter(0, $body->name)
 			->setParameter(1, $body->isComponent)
-			->setParameter(2, $this->getTokenPayload()->sub)
+			->setParameter(2, (int)$this->getTokenPayload()->sub)
 			->setParameter(3, $location)
 			->setParameter(4, $description);
 
