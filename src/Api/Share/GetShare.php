@@ -13,7 +13,7 @@ class GetShare extends BaseController
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args)
 	{
 		if($this->isUserAuthenticated())
-            $share = $this->container->get("ProjectService")->fetchShare($args['address'], $this->getTokenPayload()->sub);
+            $share = $this->container->get("ProjectService")->fetchShare($args['address'], (int)$this->getTokenPayload()->sub);
 		else
 			$share = $this->container->get("ProjectService")->fetchShare($args['address'], 0, true);
 

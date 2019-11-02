@@ -41,7 +41,7 @@ class UpdateUser extends BaseController
 		}
 
 		if($dirty === true)
-			$query->where('pk_id = :pk_id')->setParameter('pk_id', $this->getTokenPayload()->sub)->execute();
+			$query->where('pk_id = :pk_id')->setParameter('pk_id', (int)$this->getTokenPayload()->sub)->execute();
 
 		if (isset($body->shortcuts)) {
 			foreach ($body->shortcuts as $key => $value) {
@@ -49,7 +49,7 @@ class UpdateUser extends BaseController
 					->select('pk_id')
 					->from('shortcuts')
 					->where('fk_user = :user and name = :shortcut')
-					->setParameter('user', $this->getTokenPayload()->sub)
+					->setParameter('user', (int)$this->getTokenPayload()->sub)
 					->setParameter('shortcut', $key)
 					->execute()
 					->fetch()) {
@@ -64,7 +64,7 @@ class UpdateUser extends BaseController
 						->setParameter('shift', $value->shift)
 						->setParameter('ctrl', $value->ctrl)
 						->setParameter('alt', $value->alt)
-						->setParameter('user', $this->getTokenPayload()->sub)
+						->setParameter('user', (int)$this->getTokenPayload()->sub)
 						->setParameter('shortcut', $key)
 						->execute();
 				} else {
@@ -80,7 +80,7 @@ class UpdateUser extends BaseController
 						->setParameter('shift', $value->shift)
 						->setParameter('ctrl', $value->ctrl)
 						->setParameter('alt', $value->alt)
-						->setParameter('user', $this->getTokenPayload()->sub)
+						->setParameter('user', (int)$this->getTokenPayload()->sub)
 						->setParameter('shortcut', $key)
 						->execute();
 				}

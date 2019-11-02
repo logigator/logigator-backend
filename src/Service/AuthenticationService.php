@@ -7,7 +7,7 @@ use Firebase\JWT\JWT;
 
 class AuthenticationService extends BaseService
 {
-	public function setUserAuthenticated(string $userId, string $loginType) {
+	public function setUserAuthenticated(int $userId, string $loginType) {
 		$expireTime = time() + (60 * 60 * 24 * 7);
 		$keyPayload = [
 			'iss' => 'logigator',
