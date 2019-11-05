@@ -13,8 +13,27 @@ class DeleteProject extends BaseController
 {
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args)
 	{
-		if(!$this->container->get('ProjectService')->deleteProject($args['id'], (int)$this->getTokenPayload()->sub))
-		    throw new HttpBadRequestException($request, self::ERROR_RESOURCE_NOT_FOUND);
+		$project = $this->getDbalQueryBuilder()
+			->select('*')
+			->from('projects')
+			->where('pk_id = ? and fk_user = ?')
+			->setParameter(0, $args['id'], \Doctrine\DBAL\ParameterType::INTEGER)
+			->setParameter(1, (int)$this->getTokenPayload()->sub, \Doctrine\DBAL\ParameterType::INTEGER)
+			->execute()
+			->fetch();
+
+		if(!$project)
+			throw new HttpBadRequestException($request, self::ERROR_RESOURCE_NOT_FOUND);
+
+		if(file_exists(ApiHelper::getProjectPath($this->container, $project['location'])))
+			unlink(ApiHelper::getProjectPath($this->container, $project['location']));
+
+		$this->getDbalQueryBuilder()
+			->delete('projects')
+			->where('pk_id = ? and fk_user = ?')
+			->setParameter(0, $project['pk_id'], \Doctrine\DBAL\ParameterType::INTEGER)
+			->setParameter(1, (int)$this->getTokenPayload()->sub, \Doctrine\DBAL\ParameterType::INTEGER)
+			->execute();
 
 		return ApiHelper::createJsonResponse($response, ['success' => true]);
 	}
