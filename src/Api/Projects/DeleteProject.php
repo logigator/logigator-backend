@@ -32,6 +32,7 @@ class DeleteProject extends BaseController
 			->delete('projects')
 			->where('pk_id = ? and fk_user = ?')
 			->setParameter(0, $project['pk_id'], \Doctrine\DBAL\ParameterType::INTEGER)
+			->setParameter(1, (int)$this->getTokenPayload()->sub, \Doctrine\DBAL\ParameterType::INTEGER)
 			->execute();
 
 		return ApiHelper::createJsonResponse($response, ['success' => true]);
