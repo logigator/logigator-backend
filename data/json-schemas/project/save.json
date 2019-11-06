@@ -70,7 +70,7 @@
 										"type": "integer"
 									}
 								},
-								"required": [ "id", "typeId", "numOutputs", "numInputs", "pos", "endPos", "rotation" ],
+								"required": [ "id", "typeId", "numOutputs", "numInputs", "pos", "rotation" ],
 								"additionalProperties": false
 							},
 							"required": [ "elements" ],
