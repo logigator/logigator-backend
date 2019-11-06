@@ -13,3 +13,18 @@ insert into users (
     'local',
     'abc'
 );
+
+insert into projects (
+    name,
+    is_component,
+    fk_user,
+    description,
+    location
+) values (
+    'testProject',
+    false ,
+    1000,
+    'description',
+    'test-project-location'
+);
+
