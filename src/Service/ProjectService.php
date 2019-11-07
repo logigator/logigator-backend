@@ -88,7 +88,8 @@ class ProjectService extends BaseService
                 project.is_component as "project.is_component", 
                 project.location as "project.location", 
                 user.username as "user.username",
-                user.profile_image as "user.profile_image"')
+                user.profile_image as "user.profile_image",
+                user.pk_id as "user.pk_id"')
 			->from('links', 'link')
 			->join('link', 'projects', 'project', 'link.fk_project = project.pk_id')
 			->join('project', 'users', 'user', 'user.pk_id = project.fk_user')
