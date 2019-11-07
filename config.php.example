@@ -13,10 +13,7 @@ $config = [
         'user' => '--',
         'password' => 'password',
         'host' => 'localhost',
-        'driver' => 'pdo_mysql',
-        'driverOptions' => array (
-            PDO::ATTR_EMULATE_PREPARES => false
-        )
+        'driver' => 'mysqli'
     ],
     'smtp' => [
      	'{accountName}' => [
