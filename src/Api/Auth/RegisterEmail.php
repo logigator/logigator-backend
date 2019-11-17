@@ -36,11 +36,14 @@ class RegisterEmail extends BaseController
 	        ]
         ])));
 
-        if (!$recaptcha || !isset($recaptcha->success))
+        if (!$recaptcha || !isset($recaptcha->success) || !isset($recaptcha->action))
         	throw new \Exception('Could not verify ReCaptcha.');
 
-        if($recaptcha->success !== true)
+        if($recaptcha->success !== true || $recaptcha->action !== 'register')
         	throw new HttpForbiddenException($request, 'ReCaptcha is invalid.');
+
+        if($recaptcha->score < 0.5)
+        	throw new HttpForbiddenException($request, 'Trust score is not high enough.');
 
 		$this->container->get('UserService')->createUser($body->username, null, $body->email, 'local', $body->password);
 		$this->container->get('AuthenticationService')->setUserAuthenticated($this->container->get('UserService')->fetchUserIdPerEmail($body->email), 'local');

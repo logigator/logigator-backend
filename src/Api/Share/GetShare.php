@@ -37,9 +37,9 @@ class GetShare extends BaseController
 				continue;
 
 			$compData = $this->getDbalQueryBuilder()
-				->select('pk_id, name, description, symbol, last_edited, created_on, is_component, location')
+				->select('pk_id, name, description, symbol, last_edited, created_on, is_component, location, num_inputs, num_outputs')
 				->from('projects')
-				->where('pk_id = ? and fk_user = ?')
+				->where('pk_id = ? and is_component = 1 and fk_user = ?')
 				->setParameter(0, $compId->database, \Doctrine\DBAL\ParameterType::INTEGER)
 				->setParameter(1, $user, \Doctrine\DBAL\ParameterType::INTEGER)
 				->execute()
