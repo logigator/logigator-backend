@@ -57,7 +57,7 @@ class HttpErrorHandler extends ErrorHandler
 			],
 		];
 
-		$payload = json_encode($error, JSON_PRETTY_PRINT);
+		$payload = json_encode($error);
 		$response = $this->responseFactory->createResponse($statusCode);
 		$response->getBody()->write($payload);
 

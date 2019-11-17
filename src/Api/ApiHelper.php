@@ -24,7 +24,7 @@ class ApiHelper
 		if($warnings !== null)
 		    $obj['warnings'] = $warnings;
 
-		$payload = json_encode($obj, JSON_PRETTY_PRINT);
+		$payload = json_encode($obj);
 		$response->getBody()->write($payload);
 		return $response;
 	}
