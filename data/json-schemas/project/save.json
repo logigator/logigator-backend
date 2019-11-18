@@ -50,7 +50,7 @@
 										"required": [ "x", "y" ],
 										"additionalProperties": false
 									},
-										"endPos": {
+									"endPos": {
 										"type": "object",
 										"properties": {
 											"x": {
@@ -68,6 +68,15 @@
 									},
 									"plugIndex": {
 										"type": "integer"
+									},
+									"options": {
+										"type": "array",
+										"items": {
+											"type": "number"
+										}
+									},
+									"data": {
+										"type": {}
 									}
 								},
 								"required": [ "id", "typeId", "numOutputs", "numInputs", "pos", "rotation" ],
