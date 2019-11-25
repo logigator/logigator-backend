@@ -32,7 +32,7 @@ class CloneProject extends BaseController
 	private function clone(int $id, int $oldUser, array $mappings): array {
 		$project = $this->container->get('ProjectService')->getProjectInfo($id);
 
-		if (!$project) {
+		if (!$project || $project['fk_user'] !== $oldUser) {
 			$mappings[$id] = 0;
 			return $mappings;
 		}
@@ -50,10 +50,10 @@ class CloneProject extends BaseController
 			->setValue('created_on', '?')
 			->setParameter(0, $project['name'], \Doctrine\DBAL\ParameterType::STRING)
 			->setParameter(1, $project['is_component'], \Doctrine\DBAL\ParameterType::BOOLEAN)
-			->setParameter(2, (int)$this->getTokenPayload()->sub, \Doctrine\DBAL\ParameterType::STRING)
+			->setParameter(2, (int)$this->getTokenPayload()->sub, \Doctrine\DBAL\ParameterType::INTEGER)
 			->setParameter(3, $location, \Doctrine\DBAL\ParameterType::STRING)
 			->setParameter(4, $project['description'], \Doctrine\DBAL\ParameterType::STRING)
-			->setParameter(5, $oldUser, \Doctrine\DBAL\ParameterType::INTEGER)
+			->setParameter(5, $project['pk_id'], \Doctrine\DBAL\ParameterType::INTEGER)
 			->setParameter(6, $project['created_on'], \Doctrine\DBAL\ParameterType::STRING);
 
 		if($project['is_component']) {
