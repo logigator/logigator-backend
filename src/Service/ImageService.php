@@ -33,22 +33,22 @@ class ImageService
 			$this->calculateEndPos($element);
 
 			// calculate borders
-			if ($element->pos->x < $offsetX)
-				$offsetX = $element->pos->x;
-			if ($element->pos->y < $offsetY)
-				$offsetY = $element->pos->y;
-			if ($element->endPos->x > $w)
-				$w = $element->endPos->x;
-			if ($element->endPos->y > $h)
-				$h = $element->endPos->y;
+			if (($element->typeId === 0 ? $element->pos->x + 0.5 : $element->pos->x) < $offsetX)
+				$offsetX = $element->typeId === 0 ? $element->pos->x + 0.5 : $element->pos->x;
+			if (($element->typeId === 0 ? $element->pos->y + 0.5 : $element->pos->y) < $offsetY)
+				$offsetY = $element->typeId === 0 ? $element->pos->y + 0.5 : $element->pos->y;
+			if (($element->typeId === 0 ? $element->endPos->x + 0.5 : $element->endPos->x) > $w)
+				$w = $element->typeId === 0 ? $element->endPos->x + 0.5 : $element->endPos->x;
+			if (($element->typeId === 0 ? $element->endPos->y + 0.5 : $element->endPos->y) > $h)
+				$h = $element->typeId === 0 ? $element->endPos->y + 0.5 : $element->endPos->y;
 		}
 
 		// calculate variables so it gets scaled correctly
-		$w = ($w - $offsetX) * self::GRID_SIZE;
-		$h = ($h - $offsetY) * self::GRID_SIZE;
+		$w = ($w - $offsetX) * self::GRID_SIZE + 1;
+		$h = ($h - $offsetY) * self::GRID_SIZE + 1;
 		$scaleFactor = ($height / $h > $width / $w) ? $width / $w : $height / $h;
-		$offsetX -= ($width - $w * $scaleFactor) / self::GRID_SIZE / 2;
-		$offsetY -= ($height - $h * $scaleFactor) / self::GRID_SIZE / 2;
+		$offsetX -= ($width - $w * $scaleFactor) / self::GRID_SIZE / $scaleFactor / 2;
+		$offsetY -= ($height - $h * $scaleFactor) / self::GRID_SIZE / $scaleFactor / 2;
 
 		// color definitions
 		$image = imagecreatetruecolor($width, $height);
