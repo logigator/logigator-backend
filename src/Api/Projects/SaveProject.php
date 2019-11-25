@@ -26,11 +26,11 @@ class SaveProject extends BaseController
 		if(!$project)
 			throw new HttpBadRequestException($request, self::ERROR_RESOURCE_NOT_FOUND);
 
-		if($project['is_component']) {
+		if ($project['is_component']) {
 			if(!isset($body->num_inputs) || !isset($body->num_outputs))
 				throw new HttpBadRequestException($request, self::ERROR_MISSING_ARGUMENTS);
 
-			$this->container->get('DbalService')->getQueryBuilder()
+			$this->getDbalQueryBuilder()
 				->update('projects')
 				->set('num_inputs', '?')
 				->set('num_outputs', '?')
@@ -42,8 +42,20 @@ class SaveProject extends BaseController
 				->execute();
 		}
 
-		if(file_put_contents(ApiHelper::getProjectPath($this->container, $project['location']), json_encode($body->data)) === false)
+		if (file_put_contents(ApiHelper::getProjectPath($this->container, $project['location']), json_encode($body->data)) === false)
 			throw new \Exception();
+
+		$this->getDbalQueryBuilder()
+			->update('projects')
+			->set('last_edited', 'now()')
+			->where('pk_id = ? and fk_user = ?')
+			->setParameter(0, $args['id'], \Doctrine\DBAL\ParameterType::INTEGER)
+			->setParameter(1, (int)$this->getTokenPayload()->sub, \Doctrine\DBAL\ParameterType::INTEGER)
+			->execute();
+
+		$preview = $this->container->get('ImageService')->generateProjectImage(ApiHelper::getProjectPath($this->container, $project['location']), 512, 512);
+		if ($preview)
+			imagepng($preview, ApiHelper::getProjectPreviewPath($this->container, $project['location']), 9);
 
 		return ApiHelper::createJsonResponse($response, ['success' => true]);
 	}
