@@ -15,7 +15,7 @@ class GetAllComponentsInfo extends BaseController
 		$data = $this->container->get('ProjectService')->getAllComponentsInfo((int)$this->getTokenPayload()->sub);
 		for ($i = 0; $i < count($data); $i++) {
 			if ($data[$i]['last_edited'] === $data[$i]['created_on']) {
-				$data[$i]['location'] = 'default';
+				$data[$i]['location'] = $this->container->get('ConfigService')->getConfig('project_default_image');
 			}
 		}
 		return ApiHelper::createJsonResponse($response, $data);
