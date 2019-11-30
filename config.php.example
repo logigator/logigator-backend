@@ -18,31 +18,34 @@ $config = [
     ],
     'smtp' => [
      	'{accountName}' => [
-        'emailAddress' => 'noreply@yourdomain.com',
-  	    'displayName' => 'noreply',
-  	    'hostname' => 'mail.yourdomain.com',
-  	    'port' => '587',
-  	    'secure' => 'tls',
-  	    'authentication' => true,
-  	    'username' => '',
-  	    'password' => ''
+            'emailAddress' => 'noreply@yourdomain.com',
+  	        'displayName' => 'noreply',
+  	        'hostname' => 'mail.yourdomain.com',
+  	        'port' => '587',
+  	        'secure' => 'tls',
+  	        'authentication' => true,
+  	        'username' => '',
+  	        'password' => ''
       ]
     ]
 ];
 
-define('TWITTER_CALLBACK_URL', 'http://localhost:4200/auth-callback');
-define('TWITTER_CONSUMER_SECRET', '--SECRET--');
-define('TWITTER_CONSUMER_KEY', '--KEY--');
+define('TWITTER_CONSUMER_SECRET', '');
+define('TWITTER_CONSUMER_KEY', '');
 
-define('GOOGLE_CALLBACK_URL', 'http://localhost:4200/auth-callback');
-define('GOOGLE_APPLICATION_NAME', '--NAME--');
-define('GOOGLE_CLIENT_ID', '--ID--');
-define('GOOGLE_CLIENT_SECRET', '--SECRET--');
+define('GOOGLE_APPLICATION_NAME', '');
+define('GOOGLE_CLIENT_ID', '');
+define('GOOGLE_CLIENT_SECRET', '');
 
-//for development
-define('ROOT_DOMAIN', 'logigator-local-dev.com');
 
-//for production
-#define('ROOT_DOMAIN', 'logigator.com');
+#DEVELOPMENT
+define('ROOT_DOMAIN', '.logigator-local-dev.com');
+define('GOOGLE_CALLBACK_URL', 'http://logigator-local-dev.com/auth-callback');
+define('TWITTER_CALLBACK_URL', 'http://logigator-local-dev.com/auth-callback');
 
-define('JWT_SECRET_KEY', '--KEY--');
+#PRODUCTION
+#define('ROOT_DOMAIN', '.logigator.com');
+#define('GOOGLE_CALLBACK_URL', 'https://logigator.com/auth-callback');
+#define('TWITTER_CALLBACK_URL', 'https://logigator.com/auth-callback');
+
+define('JWT_SECRET_KEY', '');
