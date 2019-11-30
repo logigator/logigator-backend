@@ -110,6 +110,12 @@
 				},
 				"num_outputs": {
 					"type": "integer"
+				},
+				"labels": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					}
 				}
 			},
 			"required": [ "data" ],
