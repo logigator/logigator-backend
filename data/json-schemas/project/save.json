@@ -76,7 +76,8 @@
 										}
 									},
 									"data": {
-										"type": {}
+										"type": "string",
+										"maxLength": 32768
 									}
 								},
 								"required": [ "id", "typeId", "numOutputs", "numInputs", "pos", "rotation" ],
@@ -113,8 +114,11 @@
 				},
 				"labels": {
 					"type": "array",
+					"maxLength": 512,
 					"items": {
-						"type": "string"
+						"type": "string",
+						"maxLength": 5,
+						"pattern": "^[a-zA-Z0-9_\\-]+$"
 					}
 				}
 			},

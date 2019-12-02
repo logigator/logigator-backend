@@ -37,7 +37,7 @@ class GetShare extends BaseController
 				continue;
 
 			$compData = $this->getDbalQueryBuilder()
-				->select('pk_id, name, description, symbol, last_edited, created_on, is_component, location, num_inputs, num_outputs')
+				->select('pk_id, name, description, symbol, last_edited, created_on, is_component, location, num_inputs, num_outputs, labels')
 				->from('projects')
 				->where('pk_id = ? and is_component = 1 and fk_user = ?')
 				->setParameter(0, $compId->database, \Doctrine\DBAL\ParameterType::INTEGER)
@@ -46,6 +46,7 @@ class GetShare extends BaseController
 				->fetch();
 
 			if ($compData) {
+				$compData['labels'] = explode(';', $compData['labels']);
 				$components[$compId->database] = $compData;
 				if(file_exists(ApiHelper::getProjectPath($this->container, $compData['location']))) {
 					$json = json_decode(file_get_contents(ApiHelper::getProjectPath($this->container, $compData['location'])));

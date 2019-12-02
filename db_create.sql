@@ -49,6 +49,7 @@ create table projects
     symbol             varchar(10),
     num_inputs         int,
     num_outputs        int,
+    labels             varchar(3072),
 
     constraint constraint_projects_check_symbol
         check (is_component = 0 or symbol is not null),
@@ -56,6 +57,8 @@ create table projects
         check (is_component = 0 or num_inputs is not null),
     constraint constraint_projects_check_num_outputs
         check (is_component = 0 or num_outputs is not null),
+    constraint constraint_projects_check_labels
+        check (is_component = 0 or labels is not null),
 
     constraint constraint_projects_fk_user
         foreign key (fk_user) references users (pk_id)

@@ -16,7 +16,7 @@ class CreateProject extends BaseController
 	{
 		$body = $request->getParsedBody();
 
-		if($body->isComponent && !isset($body->symbol))
+		if($body->isComponent && (!isset($body->symbol)))
 			throw new HttpBadRequestException($request, self::ERROR_MISSING_ARGUMENTS);
 
 		$description = !isset($body->description) ? '' : $body->description;
@@ -40,6 +40,7 @@ class CreateProject extends BaseController
 			$query = $query->setValue('symbol', '?')->setParameter(5, $body->symbol, \Doctrine\DBAL\ParameterType::STRING);
 			$query = $query->setValue('num_inputs', '?')->setParameter(6, 0, \Doctrine\DBAL\ParameterType::INTEGER);
 			$query = $query->setValue('num_outputs', '?')->setParameter(7, 0, \Doctrine\DBAL\ParameterType::INTEGER);
+			$query = $query->setValue('labels', '?')->setParameter(8, '', \Doctrine\DBAL\ParameterType::STRING);
 		}
 
 		$query->execute();

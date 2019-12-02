@@ -27,18 +27,20 @@ class SaveProject extends BaseController
 			throw new HttpBadRequestException($request, self::ERROR_RESOURCE_NOT_FOUND);
 
 		if ($project['is_component']) {
-			if(!isset($body->num_inputs) || !isset($body->num_outputs))
+			if(!isset($body->num_inputs) || !isset($body->num_outputs) || !isset($body->labels))
 				throw new HttpBadRequestException($request, self::ERROR_MISSING_ARGUMENTS);
 
 			$this->getDbalQueryBuilder()
 				->update('projects')
 				->set('num_inputs', '?')
 				->set('num_outputs', '?')
+				->set('labels', '?')
 				->where('pk_id = ? and fk_user = ?')
 				->setParameter(0, $body->num_inputs, \Doctrine\DBAL\ParameterType::INTEGER)
 				->setParameter(1, $body->num_outputs, \Doctrine\DBAL\ParameterType::INTEGER)
-				->setParameter(2, $args['id'], \Doctrine\DBAL\ParameterType::INTEGER)
-				->setParameter(3, (int)$this->getTokenPayload()->sub, \Doctrine\DBAL\ParameterType::INTEGER)
+				->setParameter(2, implode(';', $body->labels), \Doctrine\DBAL\ParameterType::STRING)
+				->setParameter(3, $args['id'], \Doctrine\DBAL\ParameterType::INTEGER)
+				->setParameter(4, (int)$this->getTokenPayload()->sub, \Doctrine\DBAL\ParameterType::INTEGER)
 				->execute();
 		}
 

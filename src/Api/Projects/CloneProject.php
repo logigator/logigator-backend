@@ -59,7 +59,8 @@ class CloneProject extends BaseController
 		if($project['is_component']) {
 			$query = $query->setValue('symbol', '?')->setParameter(7, $project['symbol'], \Doctrine\DBAL\ParameterType::STRING)
 				->setValue('num_inputs', '?')->setParameter(8, $project['num_inputs'], \Doctrine\DBAL\ParameterType::INTEGER)
-				->setValue('num_outputs', '?')->setParameter(9, $project['num_outputs'], \Doctrine\DBAL\ParameterType::INTEGER);
+				->setValue('num_outputs', '?')->setParameter(9, $project['num_outputs'], \Doctrine\DBAL\ParameterType::INTEGER)
+				->setValue('labels', '?')->setParameter(10, $project['labels'], \Doctrine\DBAL\ParameterType::STRING);
 		}
 
 		$query->execute();
