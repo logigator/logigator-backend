@@ -118,7 +118,7 @@
 					"items": {
 						"type": "string",
 						"maxLength": 5,
-						"pattern": "^[a-zA-Z0-9_\\-]+$"
+						"pattern": "^[a-zA-Z0-9_\\-]*$"
 					}
 				}
 			},
