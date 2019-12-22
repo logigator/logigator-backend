@@ -22,7 +22,7 @@ class ProjectService extends BaseService
 	public function getAllProjectsInfo(int $userId): array
 	{
 		return $this->container->get('DbalService')->getQueryBuilder()
-			->select('pk_id, name, description, last_edited, created_on')
+			->select('pk_id, name, description, last_edited, created_on, location')
 			->from('projects')
 			->where('fk_user = ? and is_component = false')
 			->orderBy('last_edited', 'DESC')
@@ -52,14 +52,21 @@ class ProjectService extends BaseService
 
 	public function getAllComponentsInfo(int $userId): array
 	{
-		return $this->container->get('DbalService')->getQueryBuilder()
-			->select('pk_id, name, description, symbol, last_edited, created_on, num_inputs, num_outputs')
+		$components = $this->container->get('DbalService')->getQueryBuilder()
+			->select('pk_id, name, description, symbol, last_edited, created_on, location, num_inputs, num_outputs, labels')
 			->from('projects')
 			->where('fk_user = ? and is_component = true')
 			->orderBy('last_edited', 'DESC')
 			->setParameter(0, $userId, \Doctrine\DBAL\ParameterType::INTEGER)
 			->execute()
 			->fetchAll();
+
+		$components = array_map(function($x) {
+			$x['labels'] = explode(';', $x['labels']);
+			return $x;
+		}, $components);
+
+		return $components;
 	}
 
 	public function fetchProjectId($location, $userId): int

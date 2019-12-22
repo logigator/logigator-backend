@@ -50,7 +50,7 @@
 										"required": [ "x", "y" ],
 										"additionalProperties": false
 									},
-										"endPos": {
+									"endPos": {
 										"type": "object",
 										"properties": {
 											"x": {
@@ -68,6 +68,16 @@
 									},
 									"plugIndex": {
 										"type": "integer"
+									},
+									"options": {
+										"type": "array",
+										"items": {
+											"type": "number"
+										}
+									},
+									"data": {
+										"type": "string",
+										"maxLength": 32768
 									}
 								},
 								"required": [ "id", "typeId", "numOutputs", "numInputs", "pos", "rotation" ],
@@ -101,6 +111,15 @@
 				},
 				"num_outputs": {
 					"type": "integer"
+				},
+				"labels": {
+					"type": "array",
+					"maxLength": 512,
+					"items": {
+						"type": "string",
+						"maxLength": 5,
+						"pattern": "^[a-zA-Z0-9_\\-]*$"
+					}
 				}
 			},
 			"required": [ "data" ],

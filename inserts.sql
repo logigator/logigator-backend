@@ -22,7 +22,7 @@ insert into projects (
     location
 ) values (
     'testProject',
-    false ,
+    false,
     1000,
     'description',
     'test-project-location'

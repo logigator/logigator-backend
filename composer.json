@@ -19,6 +19,7 @@
 		"ext-json": "*",
 		"justinrainbow/json-schema": "^5.2",
 		"ext-exif": "*",
-		"ext-pdo": "*"
+		"ext-pdo": "*",
+		"ext-gd": "*"
 	}
 }

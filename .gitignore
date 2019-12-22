@@ -1,3 +1,10 @@
 /vendor
 .idea
 config.php
+/images/profile/*
+/images/thumbnails/*
+/projects
+
+!.gitkeep
+!/images/profile/default.svg
+!/images/thumbnails/default.svg
