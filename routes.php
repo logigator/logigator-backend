@@ -9,6 +9,7 @@ function createRoutes(Slim\App $app, $authenticationMiddleware) {
 		$group->post('/verify-twitter-credentials', \Logigator\Api\Auth\VerifyTwitterCredentials::class);
 
 		$group->post('/register-email', \Logigator\Api\Auth\RegisterEmail::class);
+		$group->get('/verify-email/{token}', \Logigator\Api\Auth\VerifyEmail::class);
 		$group->post('/login-email', \Logigator\Api\Auth\LoginEmail::class);
 
 		$group->get('/logout', \Logigator\Api\Auth\Logout::class)->add($authenticationMiddleware);

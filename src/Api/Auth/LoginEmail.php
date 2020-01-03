@@ -14,7 +14,7 @@ class LoginEmail extends BaseController
 		$body = $request->getParsedBody();
 
         $user = $this->getDbalQueryBuilder()
-            ->select('pk_id, password')
+            ->select('pk_id, password, login_type')
             ->from('users')
             ->where('email = ? or username = ?')
             ->setParameter(0, $body->user, \Doctrine\DBAL\ParameterType::STRING)
@@ -24,6 +24,10 @@ class LoginEmail extends BaseController
 
 		if (!$user)
 			throw new HttpUnauthorizedException($request, 'User not found.');
+
+		if ($user['login_type'] == 'local_not_verified') {
+			throw new HttpUnauthorizedException($request, 'Email address is not verified');
+		}
 
 		if (!$user['password'] || !password_verify($body->password, $user['password']))
 			throw new HttpUnauthorizedException($request, 'Password is incorrect.');

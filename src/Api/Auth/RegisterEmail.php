@@ -9,6 +9,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpForbiddenException;
+use Slim\Exception\HttpInternalServerErrorException;
 
 class RegisterEmail extends BaseController
 {
@@ -45,8 +46,24 @@ class RegisterEmail extends BaseController
         if($recaptcha->score < 0.5)
         	throw new HttpForbiddenException($request, 'Trust score is not high enough.');
 
-		$this->container->get('UserService')->createUser($body->username, null, $body->email, 'local', $body->password);
-		$this->container->get('AuthenticationService')->setUserAuthenticated($this->container->get('UserService')->fetchUserIdPerEmail($body->email), 'local');
+		$this->container->get('UserService')->createUser($body->username, null, $body->email, 'local_not_verified', $body->password);
+
+		$userId = $this->container->get('UserService')->fetchUserIdPerEmail($body->email);
+		$emailVerifyToken = $this->container->get('AuthenticationService')->getEmailVerificationToken($userId);
+		$user =  $this->container->get('UserService')->fetchUser($userId);
+		try {
+			$this->container->get('SmtpService')->sendMail(
+				'noreply',
+				[$body->email],
+				'Welcome to Logigator!',
+				$this->container->get('SmtpService')->loadTemplate('email-verification.html', [
+					'recipient' => $user['username'],
+					'verifyLink' => 'https://api.logigator.com/auth/verify-email/' . $emailVerifyToken //should be some site in frontend and then call this url
+				])
+			);
+		} catch (\Exception $e) {
+			throw new HttpInternalServerErrorException($request, 'Unable to send email-verification Mail');
+		}
 
 		return ApiHelper::createJsonResponse($response, ['success' => true]);
 	}

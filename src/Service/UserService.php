@@ -29,6 +29,16 @@ class UserService extends BaseService
 		return $this->container->get('DbalService')->getConnection()->lastInsertId();
 	}
 
+	public function setEmailVerified($userId) {
+		$this->container->get('DbalService')->getQueryBuilder()
+			->update('users')
+			->set('login_type', ':local')
+			->where('pk_id = :id')
+			->setParameter('local', 'local', \Doctrine\DBAL\ParameterType::STRING)
+			->setParameter('id', $userId, \Doctrine\DBAL\ParameterType::INTEGER)
+			->execute();
+	}
+
 	public function fetchUser($id) {
 		return $this->container->get('DbalService')->getQueryBuilder()
 			->select('*')
