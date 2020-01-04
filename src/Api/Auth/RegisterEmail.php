@@ -18,11 +18,11 @@ class RegisterEmail extends BaseController
 		$body = $request->getParsedBody();
 
         if ($this->container->get('UserService')->fetchUserIdPerEmail($body->email) != null) {
-			throw new HttpBadRequestException($request, 'Email has already been taken.');
+			throw new HttpBadRequestException($request, 'EMAIL_TAKEN');
 		}
 
         if ($this->container->get('UserService')->fetchUserIdPerUsername($body->username) != null) {
-            throw new HttpBadRequestException($request, 'Username has already been taken.');
+            throw new HttpBadRequestException($request, 'USERNAME_TAKEN');
         }
 
         $recaptcha = json_decode(file_get_contents('https://www.google.com/recaptcha/api/siteverify', false, stream_context_create([
@@ -58,7 +58,7 @@ class RegisterEmail extends BaseController
 				'Welcome to Logigator!',
 				$this->container->get('SmtpService')->loadTemplate('email-verification.html', [
 					'recipient' => $user['username'],
-					'verifyLink' => 'https://api.logigator.com/auth/verify-email/' . $emailVerifyToken //should be some site in frontend and then call this url
+					'verifyLink' => 'https://logigator.com/verify-email/' . $emailVerifyToken
 				])
 			);
 		} catch (\Exception $e) {
