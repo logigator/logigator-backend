@@ -16,10 +16,10 @@ class UpdateUser extends BaseController
 		$body = $request->getParsedBody();
 
 		if(isset($body->username) && $this->container->get('UserService')->fetchUserIdPerUsername($body->username))
-				throw new HttpBadRequestException($request, 'Username has already been taken.');
+				throw new HttpBadRequestException($request, 'USERNAME_TAKEN');
 
 		if(isset($body->email) && $this->container->get('UserService')->fetchUserIdPerEmail($body->email))
-			throw new HttpBadRequestException($request, 'Email has already been taken.');
+			throw new HttpBadRequestException($request, 'EMAIL_TAKEN');
 
 		$query = $this->getDbalQueryBuilder()->update('users');
 
