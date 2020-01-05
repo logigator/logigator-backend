@@ -3,7 +3,6 @@
 
 namespace Logigator\Api\User;
 
-
 use Logigator\Api\ApiHelper;
 use Logigator\Api\BaseController;
 use Psr\Http\Message\ResponseInterface;
@@ -31,8 +30,18 @@ class UpdateUser extends BaseController
 		}
 
 		if(isset($body->email)) {
-			$query = $query->set('email', ':email')->setParameter('email', $body->email, \Doctrine\DBAL\ParameterType::STRING);
-			$dirty = true;
+			$emailVerifyToken = $this->container->get('AuthenticationService')->getEmailVerificationToken((int)$this->getTokenPayload()->sub, $body->email);
+			$user =  $this->container->get('UserService')->fetchUser((int)$this->getTokenPayload()->sub);
+
+			$this->container->get('SmtpService')->sendMail(
+				'noreply',
+				[$body->email],
+				'Verify your Email',
+				$this->container->get('SmtpService')->loadTemplate('email-verification.html', [
+					'recipient' => $user['username'],
+					'verifyLink' => 'https://logigator.com/verify-email/' . $emailVerifyToken
+				])
+			);
 		}
 
 		if(isset($body->password)) {

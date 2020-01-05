@@ -9,7 +9,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpForbiddenException;
-use Slim\Exception\HttpInternalServerErrorException;
 
 class RegisterEmail extends BaseController
 {
@@ -49,21 +48,17 @@ class RegisterEmail extends BaseController
 		$this->container->get('UserService')->createUser($body->username, null, $body->email, 'local_not_verified', $body->password);
 
 		$userId = $this->container->get('UserService')->fetchUserIdPerEmail($body->email);
-		$emailVerifyToken = $this->container->get('AuthenticationService')->getEmailVerificationToken($userId);
+		$emailVerifyToken = $this->container->get('AuthenticationService')->getEmailVerificationToken($userId, $body->email);
 		$user =  $this->container->get('UserService')->fetchUser($userId);
-		try {
-			$this->container->get('SmtpService')->sendMail(
-				'noreply',
-				[$body->email],
-				'Welcome to Logigator!',
-				$this->container->get('SmtpService')->loadTemplate('email-verification.html', [
-					'recipient' => $user['username'],
-					'verifyLink' => 'https://logigator.com/verify-email/' . $emailVerifyToken
-				])
-			);
-		} catch (\Exception $e) {
-			throw new HttpInternalServerErrorException($request, 'Unable to send email-verification Mail');
-		}
+		$this->container->get('SmtpService')->sendMail(
+			'noreply',
+			[$body->email],
+			'Welcome to Logigator!',
+			$this->container->get('SmtpService')->loadTemplate('email-verification.html', [
+				'recipient' => $user['username'],
+				'verifyLink' => 'https://logigator.com/verify-email/' . $emailVerifyToken
+			])
+		);
 
 		return ApiHelper::createJsonResponse($response, ['success' => true]);
 	}

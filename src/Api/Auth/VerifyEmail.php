@@ -6,7 +6,7 @@ use Logigator\Api\ApiHelper;
 use Logigator\Api\BaseController;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Slim\Exception\HttpUnauthorizedException;
+use Slim\Exception\HttpBadRequestException;
 
 class VerifyEmail extends BaseController
 {
@@ -14,10 +14,12 @@ class VerifyEmail extends BaseController
 		$tokenPayload = $this->container->get('AuthenticationService')->verifyEmailToken($args['token']);
 
 		if (!$tokenPayload) {
-			throw new HttpUnauthorizedException($request, 'Token is invalid');
+			throw new HttpBadRequestException($request, 'Token is invalid');
 		}
 
-		$this->container->get('UserService')->setEmailVerified((int)$tokenPayload->sub);
+		if ($this->container->get('UserService')->setEmailVerified((int)$tokenPayload->sub, $tokenPayload->mail) === false) {
+			throw new HttpBadRequestException($request, 'EMAIL_TAKEN');
+		};
 
 		return ApiHelper::createJsonResponse($response, ['success' => true]);
 	}

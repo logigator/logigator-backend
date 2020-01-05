@@ -49,13 +49,14 @@ class AuthenticationService extends BaseService
 		setcookie('isLoggedIn', '', time() - 3600, '/', ROOT_DOMAIN, false, false);
 	}
 
-	public function getEmailVerificationToken(int $userId): string {
+	public function getEmailVerificationToken(int $userId, string $mail): string {
 		$expireTime = time() + (60 * 60); // 1h
 		$keyPayload = [
 			'iss' => 'logigator',
 			'iat' => time(),
 			'exp' => $expireTime,
 			'sub' => $userId,
+			'mail' => $mail,
 			'type' => 'email-verify'
 		];
 		return JWT::encode($keyPayload, JWT_SECRET_KEY, 'HS512');
