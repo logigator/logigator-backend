@@ -37,7 +37,7 @@ class UpdateUser extends BaseController
 				'noreply',
 				[$body->email],
 				'Verify your Email',
-				$this->container->get('SmtpService')->loadTemplate('email-verification.html', [
+				$this->container->get('SmtpService')->loadTemplate('email-verification-change.html', [
 					'recipient' => $user['username'],
 					'verifyLink' => 'https://logigator.com/verify-email/' . $emailVerifyToken
 				])

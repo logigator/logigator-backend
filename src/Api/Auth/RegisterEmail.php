@@ -54,7 +54,7 @@ class RegisterEmail extends BaseController
 			'noreply',
 			[$body->email],
 			'Welcome to Logigator!',
-			$this->container->get('SmtpService')->loadTemplate('email-verification.html', [
+			$this->container->get('SmtpService')->loadTemplate('email-verification-register.html', [
 				'recipient' => $user['username'],
 				'verifyLink' => 'https://logigator.com/verify-email/' . $emailVerifyToken
 			])
