@@ -12,6 +12,8 @@ function createRoutes(Slim\App $app, $authenticationMiddleware) {
 		$group->get('/verify-email/{token}', \Logigator\Api\Auth\VerifyEmail::class);
 		$group->post('/login-email', \Logigator\Api\Auth\LoginEmail::class);
 
+		$group->post('/resend-verification-mail', \Logigator\Api\Auth\ResendVerificationEmail::class);
+
 		$group->get('/logout', \Logigator\Api\Auth\Logout::class)->add($authenticationMiddleware);
 	});
 
