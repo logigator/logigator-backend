@@ -3,7 +3,14 @@
 config.php
 /images/profile/*
 /images/thumbnails/*
-/projects
+/projects/*
+!/projects/9c3e4df9-e98c-4756-a107-b181b8fe25ed
+!/projects/88b4d774-d94f-4bcd-bac2-49d81f5465c1
+!/projects/161e0526-3eb5-4ede-8654-314f4d67255d
+!/projects/9251f9b3-15ae-4f6e-a32d-0d637edb2ce0
+!/projects/bc65d4dd-1777-4841-a906-97f1010068b7
+!/projects/c116eab3-398a-4a1d-ba2c-2d53ab4ce30c
+!/projects/d01148d7-7b80-4cb1-b257-a9ced3085a9e
 
 !.gitkeep
 !/images/profile/default.svg
