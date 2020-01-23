@@ -17,11 +17,11 @@ class RegisterEmail extends BaseController
 		$body = $request->getParsedBody();
 
         if ($this->container->get('UserService')->fetchUserIdPerEmail($body->email) != null) {
-			throw new HttpBadRequestException($request, 'Email has already been taken.');
+			throw new HttpBadRequestException($request, 'EMAIL_TAKEN');
 		}
 
         if ($this->container->get('UserService')->fetchUserIdPerUsername($body->username) != null) {
-            throw new HttpBadRequestException($request, 'Username has already been taken.');
+            throw new HttpBadRequestException($request, 'USERNAME_TAKEN');
         }
 
         $recaptcha = json_decode(file_get_contents('https://www.google.com/recaptcha/api/siteverify', false, stream_context_create([
@@ -45,8 +45,20 @@ class RegisterEmail extends BaseController
         if($recaptcha->score < 0.5)
         	throw new HttpForbiddenException($request, 'Trust score is not high enough.');
 
-		$this->container->get('UserService')->createUser($body->username, null, $body->email, 'local', $body->password);
-		$this->container->get('AuthenticationService')->setUserAuthenticated($this->container->get('UserService')->fetchUserIdPerEmail($body->email), 'local');
+		$this->container->get('UserService')->createUser($body->username, null, $body->email, 'local_not_verified', $body->password);
+
+		$userId = $this->container->get('UserService')->fetchUserIdPerEmail($body->email);
+		$emailVerifyToken = $this->container->get('AuthenticationService')->getEmailVerificationToken($userId, $body->email);
+		$user =  $this->container->get('UserService')->fetchUser($userId);
+		$this->container->get('SmtpService')->sendMail(
+			'noreply',
+			[$body->email],
+			'Welcome to Logigator!',
+			$this->container->get('SmtpService')->loadTemplate('email-verification-register.html', [
+				'recipient' => $user['username'],
+				'verifyLink' => 'https://logigator.com/verify-email/' . $emailVerifyToken
+			])
+		);
 
 		return ApiHelper::createJsonResponse($response, ['success' => true]);
 	}

@@ -11,11 +11,11 @@ create table users
     password         varchar(100),
     social_media_key varchar(100),
     email            varchar(100) not null unique,
-    login_type       enum ('local', 'google', 'twitter') not null,
+    login_type       enum ('local', 'local_not_verified', 'google', 'twitter') not null,
     profile_image    varchar(100),
 
     constraint constraint_check_login
-        check ( (login_type = 'local' and password is not null) or (login_type != 'local' and social_media_key is not null) )
+        check ( ((login_type = 'local' or login_type = 'local_not_verified') and password is not null) or (login_type != 'local' and login_type != 'local_not_verified' and social_media_key is not null) )
 ) AUTO_INCREMENT=1000;
 
 create table shortcuts
@@ -23,7 +23,8 @@ create table shortcuts
     pk_id int auto_increment primary key,
     fk_user int not null,
     name enum ('copy', 'paste', 'cut', 'delete', 'undo', 'redo', 'zoom100', 'zoomIn', 'zoomOut',
-               'fullscreen', 'connWireMode', 'wireMode', 'selectMode', 'newComp', 'textMode', 'save') not null,
+               'fullscreen', 'connWireMode', 'wireMode', 'selectMode', 'newComp', 'textMode', 'save',
+               'openProj', 'newProj', 'cutSelectMode') not null,
     key_code varchar(10) not null,
     shift bit not null default 0,
     ctrl bit not null default 0,

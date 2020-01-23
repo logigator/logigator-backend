@@ -29,6 +29,46 @@ class UserService extends BaseService
 		return $this->container->get('DbalService')->getConnection()->lastInsertId();
 	}
 
+	public function setEmailVerified($userId, $email) {
+		if($this->container->get('DbalService')->getQueryBuilder()
+			->select('pk_id')
+			->from('users')
+			->where('email = :email and pk_id != :id')
+			->setParameter('email', $email, \Doctrine\DBAL\ParameterType::STRING)
+			->setParameter('id', $userId, \Doctrine\DBAL\ParameterType::STRING)
+			->execute()
+			->fetch()['pk_id'] != null)
+			return false;
+
+		$login_type = $this->container->get('DbalService')->getQueryBuilder()
+			->select('login_type')
+			->from('users')
+			->where('pk_id = ?')
+			->setParameter(0, $userId, \Doctrine\DBAL\ParameterType::INTEGER)
+			->execute()
+			->fetch()['login_type'];
+
+		if ($login_type === 'local_not_verified') {
+			$this->container->get('DbalService')->getQueryBuilder()
+				->update('users')
+				->set('login_type', ':local')
+				->where('pk_id = :id')
+				->setParameter('local', 'local', \Doctrine\DBAL\ParameterType::STRING)
+				->setParameter('id', $userId, \Doctrine\DBAL\ParameterType::INTEGER)
+				->execute();
+		}
+
+		$this->container->get('DbalService')->getQueryBuilder()
+			->update('users')
+			->set('email', ':email')
+			->where('pk_id = :id')
+			->setParameter('email', $email, \Doctrine\DBAL\ParameterType::STRING)
+			->setParameter('id', $userId, \Doctrine\DBAL\ParameterType::INTEGER)
+			->execute();
+
+		return true;
+	}
+
 	public function fetchUser($id) {
 		return $this->container->get('DbalService')->getQueryBuilder()
 			->select('*')

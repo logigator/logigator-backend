@@ -2,18 +2,24 @@
 
 namespace Logigator\Service;
 
-class ImageService
+class ImageService extends BaseService
 {
 	const GRID_SIZE = 16;
-	const DEFAULT_COMP_WIDTH = 2;
+	const DEFAULT_COMP_WIDTH = 3;
 	const COMP_WIDTH = [
 		0 => 0,
+		1 => 2,
+		2 => 2,
+		3 => 2,
+		4 => 2,
+		5 => 2,
 		7 => 0,
 		100 => 1,
 		101 => 1,
 		102 => 1,
 		200 => 1,
-		201 => 1
+		201 => 1,
+		202 => 1
 	];
 
 	public function generateProjectImage(string $projectPath, int $width = 256, int $height = 256) {
@@ -33,14 +39,14 @@ class ImageService
 			$this->calculateEndPos($element);
 
 			// calculate borders
-			if (($element->typeId === 0 ? $element->pos->x + 0.5 : $element->pos->x) < $offsetX)
-				$offsetX = $element->typeId === 0 ? $element->pos->x + 0.5 : $element->pos->x;
-			if (($element->typeId === 0 ? $element->pos->y + 0.5 : $element->pos->y) < $offsetY)
-				$offsetY = $element->typeId === 0 ? $element->pos->y + 0.5 : $element->pos->y;
-			if (($element->typeId === 0 ? $element->endPos->x + 0.5 : $element->endPos->x) > $w)
-				$w = $element->typeId === 0 ? $element->endPos->x + 0.5 : $element->endPos->x;
-			if (($element->typeId === 0 ? $element->endPos->y + 0.5 : $element->endPos->y) > $h)
-				$h = $element->typeId === 0 ? $element->endPos->y + 0.5 : $element->endPos->y;
+			if ($element->pos->x < $offsetX)
+				$offsetX = $element->pos->x;
+			if ($element->pos->y < $offsetY)
+				$offsetY = $element->pos->y;
+			if ($element->endPos->x + 0.5 > $w)
+				$w = $element->endPos->x + 0.5;
+			if ($element->endPos->y + 0.5 > $h)
+				$h = $element->endPos->y + 0.5;
 		}
 
 		// calculate variables so it gets scaled correctly
@@ -54,6 +60,7 @@ class ImageService
 		$image = imagecreatetruecolor($width, $height);
 		$background = imagecolorallocatealpha($image, 0, 0, 0, 127);
 		$lineColor = imagecolorallocatealpha($image, 39, 174, 96, $scaleFactor > 1 / self::GRID_SIZE ? 0 : 64);
+		$font = imagecolorallocate($image, 255, 255, 255);
 
 		imagealphablending($image, true);
 		imagesavealpha($image, true);
@@ -66,7 +73,7 @@ class ImageService
 			$element->endPos->x -= $offsetX;
 			$element->endPos->y -= $offsetY;
 
-			$this->drawElement($element, $image, $lineColor, $scaleFactor);
+			$this->drawElement($element, $image, $lineColor, $font, $scaleFactor);
 		}
 
 		return $image;
@@ -74,7 +81,7 @@ class ImageService
 
 	private function calculateEndPos($element) {
 		if (!isset($element->endPos)) {
-			if ($element->rotation === 0 || $element->rotation === 2) {
+			if ($element->rotation % 2 === 0) {
 				$element->endPos = (object) [
 					'x' => $element->pos->x + (isset(self::COMP_WIDTH[$element->typeId]) ? self::COMP_WIDTH[$element->typeId] : self::DEFAULT_COMP_WIDTH),
 					'y' => $element->pos->y + (($element->numInputs > $element->numOutputs) ? $element->numInputs : $element->numOutputs)
@@ -88,7 +95,64 @@ class ImageService
 		}
 	}
 
-	private function drawElement($element, $image, $lineColor, $scale) {
+	private function drawElement($element, $image, $lineColor, $font, $scale) {
+		if ($scale > 0.2) {
+			$coords = [
+				0 => [
+					'x' => $element->pos->x * self::GRID_SIZE,
+					'y' => $element->pos->y * self::GRID_SIZE + self::GRID_SIZE / 2,
+					'x2' => $element->pos->x * self::GRID_SIZE - self::GRID_SIZE / 2,
+					'y2' => $element->pos->y * self::GRID_SIZE + self::GRID_SIZE / 2
+				],
+				1 => [
+					'x' => $element->endPos->x * self::GRID_SIZE - self::GRID_SIZE / 2,
+					'y' => $element->pos->y * self::GRID_SIZE,
+					'x2' => $element->endPos->x * self::GRID_SIZE - self::GRID_SIZE / 2,
+					'y2' => $element->pos->y * self::GRID_SIZE - self::GRID_SIZE / 2
+				],
+				2 => [
+					'x' => $element->endPos->x * self::GRID_SIZE,
+					'y' => $element->endPos->y * self::GRID_SIZE - self::GRID_SIZE / 2,
+					'x2' => $element->endPos->x * self::GRID_SIZE + self::GRID_SIZE / 2,
+					'y2' => $element->endPos->y * self::GRID_SIZE - self::GRID_SIZE / 2
+				],
+				3 => [
+					'x' => $element->pos->x * self::GRID_SIZE + self::GRID_SIZE / 2,
+					'y' => $element->endPos->y * self::GRID_SIZE,
+					'x2' => $element->pos->x * self::GRID_SIZE + self::GRID_SIZE / 2,
+					'y2' => $element->endPos->y * self::GRID_SIZE + self::GRID_SIZE / 2
+				]
+			];
+
+			switch ($element->typeId) {
+				case 0:
+				case 7:
+					break;
+				default:
+					for ($i = 0; $i < $element->numInputs; $i++) {
+						imageline(
+							$image,
+							($coords[$element->rotation]['x'] + self::GRID_SIZE * $i * (($element->rotation - 2) % 2)) * $scale,
+							($coords[$element->rotation]['y'] + self::GRID_SIZE * $i * -(($element->rotation - 1) % 2)) * $scale,
+							($coords[$element->rotation]['x2'] + self::GRID_SIZE * $i * (($element->rotation - 2) % 2)) * $scale,
+							($coords[$element->rotation]['y2'] + self::GRID_SIZE * $i * -(($element->rotation - 1) % 2)) * $scale,
+							$lineColor
+						);
+					}
+					for ($i = 0; $i < $element->numOutputs; $i++) {
+						imageline(
+							$image,
+							($coords[($element->rotation + 2 * (($element->rotation + 1) % 2)) % 4]['x'] + self::GRID_SIZE * $i * (($element->rotation - 2) % 2)) * $scale,
+							($coords[($element->rotation + 2 * ($element->rotation % 2)) % 4]['y'] + self::GRID_SIZE * $i * -(($element->rotation - 1) % 2)) * $scale,
+							($coords[($element->rotation + 2 * (($element->rotation + 1) % 2)) % 4]['x2'] + self::GRID_SIZE * $i * (($element->rotation - 2) % 2)) * $scale,
+							($coords[($element->rotation + 2 * ($element->rotation % 2)) % 4]['y2'] + self::GRID_SIZE * $i * -(($element->rotation - 1) % 2)) * $scale,
+							$lineColor
+						);
+					}
+					break;
+			}
+		}
+
 		switch ($element->typeId) {
 			case 0:
 				imageline(
@@ -100,37 +164,79 @@ class ImageService
 					$lineColor
 				);
 				break;
+			case 7:
+				imagefilledrectangle(
+					$image,
+					($element->pos->x * self::GRID_SIZE + self::GRID_SIZE / 2 - 2.5) * $scale,
+					($element->pos->y * self::GRID_SIZE + self::GRID_SIZE / 2 - 2.5) * $scale,
+					($element->pos->x * self::GRID_SIZE + self::GRID_SIZE / 2 + 2.5) * $scale,
+					($element->pos->y * self::GRID_SIZE + self::GRID_SIZE / 2 + 2.5) * $scale,
+					$lineColor
+				);
+				imagettftext(
+					$image,
+					$scale * (self::GRID_SIZE - 3),
+					0,
+					($element->pos->x * self::GRID_SIZE + self::GRID_SIZE) * $scale,
+					($element->pos->y * self::GRID_SIZE + self::GRID_SIZE - 1.5) * $scale,
+					$font,
+					$_SERVER['DOCUMENT_ROOT'] . '/data/Roboto-Regular.ttf',
+					$element->data
+				);
+				break;
+			case 200:
+				imagerectangle(
+					$image,
+					$element->pos->x * self::GRID_SIZE * $scale,
+					$element->pos->y * self::GRID_SIZE * $scale,
+					$element->endPos->x * self::GRID_SIZE * $scale,
+					$element->endPos->y * self::GRID_SIZE * $scale,
+					$lineColor
+				);
+				imagerectangle(
+					$image,
+					($element->pos->x * self::GRID_SIZE + 3) * $scale,
+					($element->pos->y * self::GRID_SIZE + 3) * $scale,
+					($element->endPos->x * self::GRID_SIZE - 3) * $scale,
+					($element->endPos->y * self::GRID_SIZE - 3) * $scale,
+					$lineColor
+				);
+				break;
+			case 201:
+				imagerectangle(
+					$image,
+					$element->pos->x * self::GRID_SIZE * $scale,
+					$element->pos->y * self::GRID_SIZE * $scale,
+					$element->endPos->x * self::GRID_SIZE * $scale,
+					$element->endPos->y * self::GRID_SIZE * $scale,
+					$lineColor
+				);
+				imageline(
+					$image,
+					($element->pos->x * self::GRID_SIZE) * $scale,
+					($element->endPos->y * self::GRID_SIZE - 4) * $scale,
+					($element->endPos->x * self::GRID_SIZE) * $scale,
+					($element->endPos->y * self::GRID_SIZE - 4) * $scale,
+					$lineColor
+				);
+				break;
+			case 202:
+				imagefilledellipse(
+					$image,
+					($element->pos->x * self::GRID_SIZE + self::GRID_SIZE / 2) * $scale,
+					($element->pos->y * self::GRID_SIZE + self::GRID_SIZE / 2) * $scale,
+					self::GRID_SIZE * $scale,
+					self::GRID_SIZE * $scale,
+					$lineColor
+				);
+				break;
 			default:
-				imageline(
+				imagerectangle(
 					$image,
 					$element->pos->x * self::GRID_SIZE * $scale,
 					$element->pos->y * self::GRID_SIZE * $scale,
 					$element->endPos->x * self::GRID_SIZE * $scale,
-					$element->pos->y * self::GRID_SIZE * $scale,
-					$lineColor
-				);
-				imageline(
-					$image,
-					$element->pos->x * self::GRID_SIZE * $scale,
-					$element->pos->y * self::GRID_SIZE * $scale,
-					$element->pos->x * self::GRID_SIZE * $scale,
 					$element->endPos->y * self::GRID_SIZE * $scale,
-					$lineColor
-				);
-				imageline(
-					$image,
-					$element->endPos->x * self::GRID_SIZE * $scale,
-					$element->endPos->y * self::GRID_SIZE * $scale,
-					$element->pos->x * self::GRID_SIZE * $scale,
-					$element->endPos->y * self::GRID_SIZE * $scale,
-					$lineColor
-				);
-				imageline(
-					$image,
-					$element->endPos->x * self::GRID_SIZE * $scale,
-					$element->endPos->y * self::GRID_SIZE * $scale,
-					$element->endPos->x * self::GRID_SIZE * $scale,
-					$element->pos->y * self::GRID_SIZE * $scale,
 					$lineColor
 				);
 				break;

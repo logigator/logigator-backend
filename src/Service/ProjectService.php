@@ -83,17 +83,17 @@ class ProjectService extends BaseService
 
 	public function fetchShare(string $address, int $userId, $anonymous = false) {
 		$share = $this->container->get('DbalService')->getQueryBuilder()
-			->select('link.address as "link.address", 
+			->select('link.address as "link.address",
                 link.is_public as "link.is_public",
                 link.pk_id as "link.pk_id",
                 project.pk_id as "project.id",
                 project.name as "project.name",
                 project.description as "project.description",
-                project.symbol as "project.symbol", 
+                project.symbol as "project.symbol",
                 project.last_edited as "project.last_edited",
-                project.created_on as "project.created_on", 
-                project.is_component as "project.is_component", 
-                project.location as "project.location", 
+                project.created_on as "project.created_on",
+                project.is_component as "project.is_component",
+                project.location as "project.location",
                 user.username as "user.username",
                 user.profile_image as "user.profile_image",
                 user.pk_id as "user.pk_id"')
@@ -162,9 +162,8 @@ class ProjectService extends BaseService
 			if($invitations === true) {
 				try {
 					$this->container->get('SmtpService')->sendMail(
-						'noreply', [
-						$userData['email']
-					],
+						'noreply',
+						[$userData['email']],
 						'Someone shared his project with you!',
 						$this->container->get('SmtpService')->loadTemplate('share-invitation.html', [
 							'recipient' => $userData['username'],

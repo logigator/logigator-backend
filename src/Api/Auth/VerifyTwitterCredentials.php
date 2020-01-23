@@ -31,7 +31,7 @@ class VerifyTwitterCredentials extends BaseController
 			$username = ApiHelper::removeSpecialCharacters($content->screen_name);
 
 			if($this->container->get('UserService')->fetchUserIdPerEmail($content->email))
-				throw new HttpBadRequestException($request, "Email has already been taken.");
+				throw new HttpBadRequestException($request, "EMAIL_TAKEN");
 
 			if($this->container->get('UserService')->fetchUserIdPerUsername($username))
 				$username = $username . '_' . ApiHelper::generateRandomString(4);

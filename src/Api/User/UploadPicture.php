@@ -24,13 +24,13 @@ class UploadPicture extends BaseController
 		$picture = $picture['picture'];
 
 		if($picture->getError() === UPLOAD_ERR_INI_SIZE)
-			throw new HttpBadRequestException($request, 'Max file size exceeded.');
+			throw new HttpBadRequestException($request, 'MAX_FILE_SIZE');
 
 		if($picture->getError() !== UPLOAD_ERR_OK)
 			throw new \Exception('getError() returned error code: ' . $picture->getError());
 
 		if($picture->getSize() > 1024 * 1024 * 2)
-			throw new HttpBadRequestException($request, 'Max file size exceeded.');
+			throw new HttpBadRequestException($request, 'MAX_FILE_SIZE');
 
 		if(!in_array(exif_imagetype($_FILES['picture']['tmp_name']), $ALLOWED_FILETYPES))
 			throw new HttpBadRequestException($request, 'File type not supported.');

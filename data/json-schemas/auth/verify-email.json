@@ -1,38 +1,22 @@
 {
 	"$schema": "http://json-schema.org/schema#",
-	"$id": "/project/update",
+	"$id": "/auth/verify-email",
 
 	"type": "object",
 	"properties": {
 		"arguments": {
 			"type": "object",
 			"properties": {
-				"id": {
-					"type": "integer"
+				"token": {
+					"type": "string"
 				}
 			},
-			"required": [ "id" ],
+			"required": [ "token" ],
 			"additionalProperties": false
 		},
 		"body": {
 			"type": "object",
 			"properties": {
-				"name": {
-					"type": "string",
-					"minLength": 2,
-					"maxLength": 20,
-					"pattern": "^.+$"
-				},
-				"description": {
-					"type": "string",
-					"maxLength": 1000
-				},
-				"symbol": {
-					"type": "string",
-					"minLength": 1,
-					"maxLength": 5,
-					"pattern": "^.+$"
-				}
 			},
 			"required": [ ],
 			"additionalProperties": false
