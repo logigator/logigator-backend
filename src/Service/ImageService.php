@@ -81,7 +81,7 @@ class ImageService extends BaseService
 
 	private function calculateEndPos($element) {
 		if (!isset($element->endPos)) {
-			if ($element->rotation === 0 || $element->rotation === 2) {
+			if ($element->rotation % 2 === 0) {
 				$element->endPos = (object) [
 					'x' => $element->pos->x + (isset(self::COMP_WIDTH[$element->typeId]) ? self::COMP_WIDTH[$element->typeId] : self::DEFAULT_COMP_WIDTH),
 					'y' => $element->pos->y + (($element->numInputs > $element->numOutputs) ? $element->numInputs : $element->numOutputs)
@@ -105,16 +105,16 @@ class ImageService extends BaseService
 					'y2' => $element->pos->y * self::GRID_SIZE + self::GRID_SIZE / 2
 				],
 				1 => [
-					'x' => $element->pos->x * self::GRID_SIZE + self::GRID_SIZE / 2,
+					'x' => $element->endPos->x * self::GRID_SIZE - self::GRID_SIZE / 2,
 					'y' => $element->pos->y * self::GRID_SIZE,
-					'x2' => $element->pos->x * self::GRID_SIZE + self::GRID_SIZE / 2,
+					'x2' => $element->endPos->x * self::GRID_SIZE - self::GRID_SIZE / 2,
 					'y2' => $element->pos->y * self::GRID_SIZE - self::GRID_SIZE / 2
 				],
 				2 => [
 					'x' => $element->endPos->x * self::GRID_SIZE,
-					'y' => $element->pos->y * self::GRID_SIZE + self::GRID_SIZE / 2,
+					'y' => $element->endPos->y * self::GRID_SIZE - self::GRID_SIZE / 2,
 					'x2' => $element->endPos->x * self::GRID_SIZE + self::GRID_SIZE / 2,
-					'y2' => $element->pos->y * self::GRID_SIZE + self::GRID_SIZE / 2
+					'y2' => $element->endPos->y * self::GRID_SIZE - self::GRID_SIZE / 2
 				],
 				3 => [
 					'x' => $element->pos->x * self::GRID_SIZE + self::GRID_SIZE / 2,
@@ -132,20 +132,20 @@ class ImageService extends BaseService
 					for ($i = 0; $i < $element->numInputs; $i++) {
 						imageline(
 							$image,
-							($coords[$element->rotation]['x'] + (($element->rotation % 2 === 1) ? self::GRID_SIZE * $i : 0)) * $scale,
-							($coords[$element->rotation]['y'] + (($element->rotation % 2 === 0) ? self::GRID_SIZE * $i : 0)) * $scale,
-							($coords[$element->rotation]['x2'] + (($element->rotation % 2 === 1) ? self::GRID_SIZE * $i : 0)) * $scale,
-							($coords[$element->rotation]['y2'] + (($element->rotation % 2 === 0) ? self::GRID_SIZE * $i : 0)) * $scale,
+							($coords[$element->rotation]['x'] + self::GRID_SIZE * $i * (($element->rotation - 2) % 2)) * $scale,
+							($coords[$element->rotation]['y'] + self::GRID_SIZE * $i * -(($element->rotation - 1) % 2)) * $scale,
+							($coords[$element->rotation]['x2'] + self::GRID_SIZE * $i * (($element->rotation - 2) % 2)) * $scale,
+							($coords[$element->rotation]['y2'] + self::GRID_SIZE * $i * -(($element->rotation - 1) % 2)) * $scale,
 							$lineColor
 						);
 					}
 					for ($i = 0; $i < $element->numOutputs; $i++) {
 						imageline(
 							$image,
-							($coords[($element->rotation + 2) % 4]['x'] + (($element->rotation % 2 === 1) ? self::GRID_SIZE * $i : 0)) * $scale,
-							($coords[($element->rotation + 2) % 4]['y'] + (($element->rotation % 2 === 0) ? self::GRID_SIZE * $i : 0)) * $scale,
-							($coords[($element->rotation + 2) % 4]['x2'] + (($element->rotation % 2 === 1) ? self::GRID_SIZE * $i : 0)) * $scale,
-							($coords[($element->rotation + 2) % 4]['y2'] + (($element->rotation % 2 === 0) ? self::GRID_SIZE * $i : 0)) * $scale,
+							($coords[($element->rotation + 2 * (($element->rotation + 1) % 2)) % 4]['x'] + self::GRID_SIZE * $i * (($element->rotation - 2) % 2)) * $scale,
+							($coords[($element->rotation + 2 * ($element->rotation % 2)) % 4]['y'] + self::GRID_SIZE * $i * -(($element->rotation - 1) % 2)) * $scale,
+							($coords[($element->rotation + 2 * (($element->rotation + 1) % 2)) % 4]['x2'] + self::GRID_SIZE * $i * (($element->rotation - 2) % 2)) * $scale,
+							($coords[($element->rotation + 2 * ($element->rotation % 2)) % 4]['y2'] + self::GRID_SIZE * $i * -(($element->rotation - 1) % 2)) * $scale,
 							$lineColor
 						);
 					}
