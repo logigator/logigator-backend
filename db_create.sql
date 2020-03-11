@@ -23,7 +23,7 @@ create table shortcuts
     pk_id int auto_increment primary key,
     fk_user int not null,
     name enum ('copy', 'paste', 'cut', 'delete', 'undo', 'redo', 'zoom100', 'zoomIn', 'zoomOut',
-               'fullscreen', 'connWireMode', 'wireMode', 'selectMode', 'newComp', 'textMode', 'save',
+               'fullscreen', 'connWireMode', 'wireMode', 'selectMode', 'newComp', 'textMode', 'eraserMode', 'save',
                'openProj', 'newProj', 'cutSelectMode') not null,
     key_code varchar(10) not null,
     shift bit not null default 0,
