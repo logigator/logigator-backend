@@ -24,7 +24,7 @@ create table shortcuts
     fk_user int not null,
     name enum ('copy', 'paste', 'cut', 'delete', 'undo', 'redo', 'zoom100', 'zoomIn', 'zoomOut',
                'fullscreen', 'connWireMode', 'wireMode', 'selectMode', 'newComp', 'textMode', 'eraserMode', 'save',
-               'openProj', 'newProj', 'cutSelectMode') not null,
+               'openProj', 'newProj', 'cutSelectMode', 'enterSim', 'leaveSim') not null,
     key_code varchar(10) not null,
     shift bit not null default 0,
     ctrl bit not null default 0,
