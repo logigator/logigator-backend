@@ -41,14 +41,6 @@ class HttpErrorHandler extends ErrorHandler
 			}
 		}
 
-		if (
-			!($exception instanceof \Slim\Exception\HttpException)
-			&& ($exception instanceof \Exception || $exception instanceof \Throwable)
-			&& $this->displayErrorDetails
-		) {
-			$description = $exception->getMessage();
-		}
-
 		$error = [
 			'status' => $statusCode,
 			'error' => [
@@ -56,6 +48,15 @@ class HttpErrorHandler extends ErrorHandler
 				'description' => $description,
 			],
 		];
+
+		if (
+			!($exception instanceof \Slim\Exception\HttpException)
+			&& ($exception instanceof \Exception || $exception instanceof \Throwable)
+			&& $this->displayErrorDetails
+		) {
+			$error['error']['description'] = $exception->getMessage();
+			$error['error']['stack'] = $exception->getTrace();
+		}
 
 		$payload = json_encode($error);
 		$response = $this->responseFactory->createResponse($statusCode);

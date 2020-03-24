@@ -3,14 +3,23 @@
 
 namespace Logigator\Service;
 
-class UserService extends BaseService
+use DI\Annotation\Inject;
+
+class UserService
 {
+
+	/**
+	 * @Inject
+	 * @var DbalService
+	 */
+	private $dbalService;
+
 	public function createUser($username, $socialMediaKey, $email, $loginType, $password = null, $profile_image = null): int
 	{
 	    if($password !== null)
 	        $password = password_hash($password, PASSWORD_DEFAULT);
 
-		$this->container->get('DbalService')->getQueryBuilder()
+		$this->dbalService->getQueryBuilder()
 			->insert('users')
 			->setValue('username', '?')
 			->setValue('password', '?')
@@ -26,11 +35,11 @@ class UserService extends BaseService
 			->setParameter(5, $socialMediaKey, \Doctrine\DBAL\ParameterType::STRING)
 			->execute();
 
-		return $this->container->get('DbalService')->getConnection()->lastInsertId();
+		return $this->dbalService->getConnection()->lastInsertId();
 	}
 
 	public function setEmailVerified($userId, $email) {
-		if($this->container->get('DbalService')->getQueryBuilder()
+		if($this->dbalService->getQueryBuilder()
 			->select('pk_id')
 			->from('users')
 			->where('email = :email and pk_id != :id')
@@ -40,7 +49,7 @@ class UserService extends BaseService
 			->fetch()['pk_id'] != null)
 			return false;
 
-		$login_type = $this->container->get('DbalService')->getQueryBuilder()
+		$login_type = $this->dbalService->getQueryBuilder()
 			->select('login_type')
 			->from('users')
 			->where('pk_id = ?')
@@ -49,7 +58,7 @@ class UserService extends BaseService
 			->fetch()['login_type'];
 
 		if ($login_type === 'local_not_verified') {
-			$this->container->get('DbalService')->getQueryBuilder()
+			$this->dbalService->getQueryBuilder()
 				->update('users')
 				->set('login_type', ':local')
 				->where('pk_id = :id')
@@ -58,7 +67,7 @@ class UserService extends BaseService
 				->execute();
 		}
 
-		$this->container->get('DbalService')->getQueryBuilder()
+		$this->dbalService->getQueryBuilder()
 			->update('users')
 			->set('email', ':email')
 			->where('pk_id = :id')
@@ -70,7 +79,7 @@ class UserService extends BaseService
 	}
 
 	public function fetchUser($id) {
-		return $this->container->get('DbalService')->getQueryBuilder()
+		return $this->dbalService->getQueryBuilder()
 			->select('*')
 			->from('users')
 			->where('pk_id = ?')
@@ -81,7 +90,7 @@ class UserService extends BaseService
 
 	public function fetchUserIdPerKey($key, $login_type)
 	{
-		return $this->container->get('DbalService')->getQueryBuilder()
+		return $this->dbalService->getQueryBuilder()
 			->select('pk_id')
 			->from('users')
 			->where('social_media_key = ? and login_type = ?')
@@ -93,7 +102,7 @@ class UserService extends BaseService
 
     public function fetchUserIdPerUsername($username)
     {
-        return $this->container->get('DbalService')->getQueryBuilder()
+        return $this->dbalService->getQueryBuilder()
             ->select('pk_id')
             ->from('users')
             ->where('username = ?')
@@ -104,7 +113,7 @@ class UserService extends BaseService
 
 	public function fetchUserIdPerEmail($email)
 	{
-		return $this->container->get('DbalService')->getQueryBuilder()
+		return $this->dbalService->getQueryBuilder()
 			->select('pk_id')
 			->from('users')
 			->where('email = ?')

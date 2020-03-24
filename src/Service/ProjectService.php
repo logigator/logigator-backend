@@ -2,14 +2,26 @@
 
 namespace Logigator\Service;
 
-use Logigator\Api\ApiHelper;
-use Ramsey\Uuid\Uuid;
+use DI\Annotation\Inject;
 
-class ProjectService extends BaseService
+class ProjectService
 {
+
+	/**
+	 * @Inject
+	 * @var DbalService
+	 */
+	private $dbalService;
+
+	/**
+	 * @Inject
+	 * @var SmtpService
+	 */
+	private $smtpService;
+
 	public function fetchLocation(int $projectId, int $userId)
 	{
-		return $this->container->get('DbalService')->getQueryBuilder()
+		return $this->dbalService->getQueryBuilder()
 			->select('location')
 			->from('projects')
 			->where('pk_id = ? and fk_user = ?')
@@ -21,7 +33,7 @@ class ProjectService extends BaseService
 
 	public function getAllProjectsInfo(int $userId): array
 	{
-		return $this->container->get('DbalService')->getQueryBuilder()
+		return $this->dbalService->getQueryBuilder()
 			->select('pk_id, name, description, last_edited, created_on, location')
 			->from('projects')
 			->where('fk_user = ? and is_component = false')
@@ -33,7 +45,7 @@ class ProjectService extends BaseService
 
 	public function getProjectInfo(int $projectId, int $userId = null)
 	{
-		$query = $this->container->get('DbalService')->getQueryBuilder()
+		$query = $this->dbalService->getQueryBuilder()
 			->select('*')
 			->from('projects');
 
@@ -52,7 +64,7 @@ class ProjectService extends BaseService
 
 	public function getAllComponentsInfo(int $userId): array
 	{
-		$components = $this->container->get('DbalService')->getQueryBuilder()
+		$components = $this->dbalService->getQueryBuilder()
 			->select('pk_id, name, description, symbol, last_edited, created_on, location, num_inputs, num_outputs, labels')
 			->from('projects')
 			->where('fk_user = ? and is_component = true')
@@ -71,7 +83,7 @@ class ProjectService extends BaseService
 
 	public function fetchProjectId($location, $userId): int
 	{
-		return $this->container->get('DbalService')->getQueryBuilder()
+		return $this->dbalService->getQueryBuilder()
 			->select('pk_id')
 			->from('projects')
 			->where('location = ? and fk_user = ?')
@@ -82,7 +94,7 @@ class ProjectService extends BaseService
 	}
 
 	public function fetchShare(string $address, int $userId, $anonymous = false) {
-		$share = $this->container->get('DbalService')->getQueryBuilder()
+		$share = $this->dbalService->getQueryBuilder()
 			->select('link.address as "link.address",
                 link.is_public as "link.is_public",
                 link.pk_id as "link.pk_id",
@@ -114,7 +126,7 @@ class ProjectService extends BaseService
 		if($anonymous)
 			return false;
 
-		if(!$this->container->get('DbalService')->getQueryBuilder()
+		if(!$this->dbalService->getQueryBuilder()
 			->select('fk_user, fk_link')
 			->from('link_permits')
 			->where('fk_user = ? and fk_link = ?')
@@ -131,7 +143,7 @@ class ProjectService extends BaseService
 		$warnings = ['not_found' => [], 'duplicates' => []];
 		$added = [];
 		foreach($users as $u) {
-			$userData = $this->container->get('DbalService')->getQueryBuilder()
+			$userData = $this->dbalService->getQueryBuilder()
 				->select('*')
 				->from('users')
 				->where('username = ? or email = ?')
@@ -151,7 +163,7 @@ class ProjectService extends BaseService
 			}
 			$added[] = $userData['pk_id'];
 
-			$this->container->get('DbalService')->getQueryBuilder()
+			$this->dbalService->getQueryBuilder()
 				->insert('link_permits')
 				->setValue('fk_user', '?')
 				->setValue('fk_link', '?')
@@ -161,11 +173,11 @@ class ProjectService extends BaseService
 
 			if($invitations === true) {
 				try {
-					$this->container->get('SmtpService')->sendMail(
+					$this->smtpService->sendMail(
 						'noreply',
 						[$userData['email']],
 						'Someone shared his project with you!',
-						$this->container->get('SmtpService')->loadTemplate('share-invitation.html', [
+						$this->smtpService->loadTemplate('share-invitation.html', [
 							'recipient' => $userData['username'],
 							'invitor' => $invitor,
 							'project' => $project_name,

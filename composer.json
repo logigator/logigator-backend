@@ -20,6 +20,7 @@
 		"justinrainbow/json-schema": "^5.2",
 		"ext-exif": "*",
 		"ext-pdo": "*",
-		"ext-gd": "*"
+		"ext-gd": "*",
+		"doctrine/annotations": "^1.8"
 	}
 }

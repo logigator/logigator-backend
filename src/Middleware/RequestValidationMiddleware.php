@@ -2,9 +2,10 @@
 
 namespace Logigator\Middleware;
 
+use DI\Annotation\Inject;
 use JsonSchema\Constraints\Constraint;
-use Logigator\Api\ApiHelper;
-use Psr\Container\ContainerInterface;
+use Logigator\Helpers\PathHelper;
+use Logigator\Service\ConfigService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -13,12 +14,12 @@ use Slim\Routing\RouteContext;
 
 class RequestValidationMiddleware
 {
-	private $container;
 
-	public function __construct(ContainerInterface $container)
-	{
-		$this->container = $container;
-	}
+	/**
+	 * @Inject
+	 * @var ConfigService
+	 */
+	private $configService;
 
 	public function __invoke(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
 		$route = RouteContext::fromRequest($request)->getRoute();
@@ -39,7 +40,7 @@ class RequestValidationMiddleware
 
 		$pattern = trim(explode('[', explode('{', $route->getPattern())[0])[0], ' /');
 
-		$path = ApiHelper::getPath($this->container->get('ConfigService')->getConfig('json_schemas'), $pattern . '.json');
+		$path = PathHelper::getPath($this->configService->getConfig('json_schemas'), $pattern . '.json');
 		if(!file_exists($path))
 			throw new HttpBadRequestException($request, 'Invalid data received: Failed to validate input');
 

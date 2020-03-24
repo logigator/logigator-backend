@@ -1,7 +1,10 @@
 <?php
 
-function createRoutes(Slim\App $app, $authenticationMiddleware) {
-	$app->group('/auth', function (\Slim\Routing\RouteCollectorProxy $group) use ($authenticationMiddleware) {
+use \Slim\App;
+use \Slim\Routing\RouteCollectorProxy;
+
+function createRoutes(App $app, $authenticationMiddleware) {
+	$app->group('/auth', function (RouteCollectorProxy $group) use ($authenticationMiddleware) {
 		$group->get('/google-auth-url', \Logigator\Api\Auth\GetGoogleAuthUrl::class);
 		$group->post('/verify-google-credentials', \Logigator\Api\Auth\VerifyGoogleCredentials::class);
 
@@ -17,7 +20,7 @@ function createRoutes(Slim\App $app, $authenticationMiddleware) {
 		$group->get('/logout', \Logigator\Api\Auth\Logout::class)->add($authenticationMiddleware);
 	});
 
-	$app->group('/project', function(\Slim\Routing\RouteCollectorProxy $group) {
+	$app->group('/project', function(RouteCollectorProxy $group) {
 		$group->post('/create', \Logigator\Api\Projects\CreateProject::class);
 		$group->get('/open/{id}', \Logigator\Api\Projects\OpenProject::class);
 		$group->get('/delete/{id}', \Logigator\Api\Projects\DeleteProject::class);
@@ -28,7 +31,7 @@ function createRoutes(Slim\App $app, $authenticationMiddleware) {
 		$group->get('/get-all-components-info', \Logigator\Api\Projects\GetAllComponentsInfo::class);
 	})->add($authenticationMiddleware);
 
-	$app->group('/share', function(\Slim\Routing\RouteCollectorProxy $group) use ($authenticationMiddleware) {
+	$app->group('/share', function(RouteCollectorProxy $group) use ($authenticationMiddleware) {
         $group->get('/get/{address}', \Logigator\Api\Share\GetShare::class);
         $group->post('/create', \Logigator\Api\Share\CreateShare::class)->add($authenticationMiddleware);
         $group->get('/get', \Logigator\Api\Share\ListShares::class)->add($authenticationMiddleware);
@@ -36,7 +39,7 @@ function createRoutes(Slim\App $app, $authenticationMiddleware) {
 		$group->get('/delete/{address}', \Logigator\Api\Share\DeleteShare::class)->add($authenticationMiddleware);
 	});
 
-	$app->group('/user', function(\Slim\Routing\RouteCollectorProxy $group) {
+	$app->group('/user', function(RouteCollectorProxy $group) {
 		$group->get('/get', \Logigator\Api\User\GetUserInfo::class);
 		$group->post('/upload-picture', \Logigator\Api\User\UploadPicture::class);
 		$group->post('/update', \Logigator\Api\User\UpdateUser::class);

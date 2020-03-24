@@ -2,7 +2,7 @@
 
 namespace Logigator\Service;
 
-class ImageService extends BaseService
+class ImageService
 {
 	const GRID_SIZE = 16;
 	const DEFAULT_COMP_WIDTH = 3;

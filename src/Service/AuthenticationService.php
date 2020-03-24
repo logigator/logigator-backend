@@ -3,10 +3,34 @@
 namespace Logigator\Service;
 
 
+use DI\Annotation\Inject;
 use Firebase\JWT\JWT;
 
-class AuthenticationService extends BaseService
+class AuthenticationService
 {
+
+	/**
+	 * @Inject
+	 * @var ConfigService
+	 */
+	private $configService;
+
+	private $tokenPayload;
+	private $checkedToken;
+
+	public function isUserAuthenticated(): bool {
+		if(!$this->checkedToken) {
+			$this->tokenPayload = $this->verifyToken();
+			$this->checkedToken = true;
+		}
+		return $this->tokenPayload != null;
+	}
+
+	public function getTokenPayload(): ?object {
+		$this->isUserAuthenticated();
+		return $this->tokenPayload;
+	}
+
 	public function setUserAuthenticated(int $userId, string $loginType) {
 		$expireTime = time() + (60 * 60 * 24 * 7); // 7 days
 		$keyPayload = [
@@ -17,9 +41,9 @@ class AuthenticationService extends BaseService
 			'login_type' => $loginType,
 			'type' => 'auth'
 		];
-		$token = JWT::encode($keyPayload, JWT_SECRET_KEY, 'HS512');
-		setcookie('auth-token', $token, $expireTime, '/', ROOT_DOMAIN, false, true);
-		setcookie('isLoggedIn', 'true', $expireTime, '/', ROOT_DOMAIN, false, false);
+		$token = JWT::encode($keyPayload, $this->configService->getConfig('jwt_secret_key'), 'HS512');
+		setcookie('auth-token', $token, $expireTime, '/', $this->configService->getConfig('root_domain'), false, true);
+		setcookie('isLoggedIn', 'true', $expireTime, '/', $this->configService->getConfig('root_domain'), false, false);
 	}
 
 	public function verifyToken(): ?object {
@@ -29,7 +53,7 @@ class AuthenticationService extends BaseService
 		}
 
 		try {
-			$decoded = JWT::decode($token, JWT_SECRET_KEY, ['HS512']);
+			$decoded = JWT::decode($token, $this->configService->getConfig('jwt_secret_key'), ['HS512']);
 			if ($decoded->type !== 'auth') return null;
 			return $decoded;
 		} catch (\Exception $exception) {
@@ -45,8 +69,8 @@ class AuthenticationService extends BaseService
 	}
 
 	public function logoutUser(string $token) {
-		setcookie('auth-token', '', time() - 3600, '/', ROOT_DOMAIN, false, true);
-		setcookie('isLoggedIn', '', time() - 3600, '/', ROOT_DOMAIN, false, false);
+		setcookie('auth-token', '', time() - 3600, '/', $this->configService->getConfig('root_domain'), false, true);
+		setcookie('isLoggedIn', '', time() - 3600, '/', $this->configService->getConfig('root_domain'), false, false);
 	}
 
 	public function getEmailVerificationToken(int $userId, string $mail): string {
@@ -59,7 +83,7 @@ class AuthenticationService extends BaseService
 			'mail' => $mail,
 			'type' => 'email-verify'
 		];
-		return JWT::encode($keyPayload, JWT_SECRET_KEY, 'HS512');
+		return JWT::encode($keyPayload, $this->configService->getConfig('jwt_secret_key'), 'HS512');
 	}
 
 	public function verifyEmailToken(string $token): ?object {
@@ -68,7 +92,7 @@ class AuthenticationService extends BaseService
 		}
 
 		try {
-			$decoded = JWT::decode($token, JWT_SECRET_KEY, ['HS512']);
+			$decoded = JWT::decode($token, $this->configService->getConfig('jwt_secret_key'), ['HS512']);
 			if ($decoded->type !== 'email-verify') return null;
 			return $decoded;
 		} catch (\Exception $exception) {

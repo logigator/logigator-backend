@@ -3,16 +3,24 @@
 namespace Logigator\Api\Auth;
 
 
-use Logigator\Api\ApiHelper;
-use Logigator\Api\BaseController;
+use DI\Annotation\Inject;
+use Logigator\Helpers\ApiHelper;
+use Logigator\Service\AuthenticationService;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class Logout extends BaseController
+class Logout
 {
+
+	/**
+	 * @Inject
+	 * @var AuthenticationService
+	 */
+	private $authService;
+
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args) {
 		$token = $this->getUserToken();
-		$this->container->get('AuthenticationService')->logoutUser($token);
+		$this->authService->logoutUser($token);
 		return ApiHelper::createJsonResponse($response, ['success' => true]);
 	}
 }

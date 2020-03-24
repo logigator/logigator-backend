@@ -3,17 +3,25 @@
 namespace Logigator\Api\Auth;
 
 
-use Logigator\Api\BaseController;
+use DI\Annotation\Inject;
 use Abraham\TwitterOAuth\TwitterOAuth;
-use Logigator\Api\ApiHelper;
+use Logigator\Helpers\ApiHelper;
+use Logigator\Service\ConfigService;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class GetTwitterAuthUrl extends BaseController
+class GetTwitterAuthUrl
 {
+
+	/**
+	 * @Inject
+	 * @var ConfigService
+	 */
+	private $configService;
+
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args) {
-		$connection = new TwitterOAuth(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET);
-		$request_token = $connection->oauth('oauth/request_token', array('oauth_callback' => TWITTER_CALLBACK_URL));
+		$connection = new TwitterOAuth($this->configService->getConfig('twitter_consumer_key'), $this->configService->getConfig('twitter_consumer_secret'));
+		$request_token = $connection->oauth('oauth/request_token', array('oauth_callback' => $this->configService->getConfig('twitter_callback_url')));
 
 		$url = $connection->url('oauth/authorize', array('oauth_token' => $request_token['oauth_token']));
 

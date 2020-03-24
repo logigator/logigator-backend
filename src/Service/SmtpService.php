@@ -1,19 +1,21 @@
 <?php
 namespace Logigator\Service;
 
-use Logigator\Api\ApiHelper;
+use DI\Annotation\Inject;
+use Logigator\Helpers\PathHelper;
 use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-use Psr\Container\ContainerInterface;
 
-class SmtpService extends BaseService
+class SmtpService
 {
-	public function __construct(ContainerInterface $container, $config) {
-		parent::__construct($container, $config);
-	}
+
+	/**
+	 * @Inject
+	 * @var ConfigService
+	 */
+	private $configService;
 
 	public function loadTemplate(string $filename, array $keyValuePairs): string {
-		$content = file_get_contents(ApiHelper::getPath($this->container->get('ConfigService')->getConfig('email_templates_path'), $filename));
+		$content = file_get_contents(PathHelper::getPath($this->configService->getConfig('email_templates_path'), $filename));
 		foreach ($keyValuePairs as $key => $value) {
 			$content = str_replace('%%' . $key . '%%', $value, $content);
 		}
@@ -31,16 +33,16 @@ class SmtpService extends BaseService
 
 		//Server settings
 		$mail->isSMTP();                                            // Set mailer to use SMTP
-		$mail->Host       = $this->config["smtp"][$account]["hostname"];          // Specify SMTP server
-		$mail->SMTPAuth   = $this->config["smtp"][$account]["authentication"];    // Enable SMTP authentication
-		$mail->Username   = $this->config["smtp"][$account]["username"];          // SMTP username
-		$mail->Password   = $this->config["smtp"][$account]["password"];          // SMTP password
-		if((bool)$this->config["smtp"][$account]["secure"] && $this->config["smtp"][$account]["secure"] != 'false')
-			$mail->SMTPSecure = $this->config["smtp"][$account]["secure"];        // Enable TLS encryption, `ssl` also accepted
-		$mail->Port       = $this->config["smtp"][$account]["port"];              // TCP port to connect to
+		$mail->Host       = $this->configService->getConfig("smtp")->{$account}->{"hostname"};          // Specify SMTP server
+		$mail->SMTPAuth   = $this->configService->getConfig("smtp")->{$account}->{"authentication"};    // Enable SMTP authentication
+		$mail->Username   = $this->configService->getConfig("smtp")->{$account}->{"username"};          // SMTP username
+		$mail->Password   = $this->configService->getConfig("smtp")->{$account}->{"password"};          // SMTP password
+		if((bool)$this->configService->getConfig("smtp")->{$account}->{"secure"} && $this->configService->getConfig("smtp")->{$account}->{"secure"} != 'false')
+			$mail->SMTPSecure = $this->configService->getConfig("smtp")->{$account}->{"secure"};        // Enable TLS encryption, `ssl` also accepted
+		$mail->Port       = $this->configService->getConfig("smtp")->{$account}->{"port"};              // TCP port to connect to
 		$mail->CharSet = 'utf-8';
 		//Recipients
-		$mail->setFrom($this->config["smtp"][$account]["emailAddress"], $this->config["smtp"][$account]["displayName"]);
+		$mail->setFrom($this->configService->getConfig("smtp")->{$account}->{"emailAddress"}, $this->configService->getConfig("smtp")->{$account}->{"displayName"});
 		foreach ($recipients as $recipient) {
 			$mail->addAddress($recipient);
 		}

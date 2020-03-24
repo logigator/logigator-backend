@@ -1,6 +1,6 @@
 <?php
 
-namespace Logigator\Api;
+namespace Logigator\Helpers;
 
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -55,45 +55,6 @@ class ApiHelper
         $string = str_replace(' ', '-', $string); // Replaces all spaces with hyphens.
 
         return preg_replace('/[^A-Za-z0-9\-\_]/', '', $string); // Removes special chars.
-    }
-
-    public static function getProjectPath(ContainerInterface $container, string $filename): string {
-        return self::getPath($container->get('ConfigService')->getConfig('project_path'), $filename);
-    }
-
-    public static function getProjectPreviewPath(ContainerInterface $container, string $filename): string {
-        return self::getPath($container->get('ConfigService')->getConfig('project_preview_path'), $filename);
-    }
-
-    public static function getProfileImagePath(ContainerInterface $container, string $filename): string {
-        return self::getPath($container->get('ConfigService')->getConfig('profile_image_path'), $filename);
-    }
-
-    public static function getPath(string $config_path, string $filename): string {
-        $absolute = false;
-
-        // Optional wrapper(s).
-        $regExp = '%^(?<wrappers>(?:[[:print:]]{2,}://)*)';
-        // Optional root prefix.
-        $regExp .= '(?<root>(?:[[:alpha:]]:/|/)?)';
-        // Actual path.
-        $regExp .= '(?<path>(?:[[:print:]]*))$%';
-        $parts = [];
-        if (!preg_match($regExp, $config_path, $parts)) {
-            throw new \DomainException('Path configured in config is invalid: '. $config_path);
-        }
-        if ('' !== $parts['root']) {
-            $absolute = true;
-        }
-
-        $last = substr($config_path, strlen($config_path) - 1, 1);
-        if($last !== '/' && $last !== '\\')
-            $config_path .= '/';
-
-        if($absolute)
-            return $config_path . $filename;
-        else
-            return $_SERVER['DOCUMENT_ROOT'] . '/' . $config_path . $filename;
     }
 
 	public static function generateRandomString(int $length = 8, string $charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789') {

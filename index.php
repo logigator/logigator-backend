@@ -1,23 +1,34 @@
 <?php
 
 require_once 'vendor/autoload.php';
-require_once 'config.php';
-require_once 'services.php';
 require_once 'routes.php';
 
-$container = new \DI\Container();
+use \DI\ContainerBuilder;
+use Logigator\Middleware\RequestValidationMiddleware;
+use \Slim\Factory\AppFactory;
+use \Logigator\Middleware\LoginValidationMiddleware;
+use \Logigator\Middleware\HeaderMiddleware;
+use \Logigator\HttpErrorHandler;
 
-\Slim\Factory\AppFactory::setContainer($container);
-$app = \Slim\Factory\AppFactory::create();
-$authenticationMiddleware = new \Logigator\Middleware\LoginValidationMiddleware($container);
+$containerBuilder = new ContainerBuilder();
+$containerBuilder->useAnnotations(true);
+$container = $containerBuilder->build();
 
-createServices($container, $config);
+
+$app = AppFactory::createFromContainer($container);
+
+$authenticationMiddleware = new LoginValidationMiddleware();
+$container->injectOn($authenticationMiddleware);
+
 createRoutes($app, $authenticationMiddleware);
 
-$app->add(new \Logigator\Middleware\RequestValidationMiddleware($container));
+$requestValidation = new RequestValidationMiddleware();
+$container->injectOn($requestValidation);
+$app->add($requestValidation);
+
 $app->addRoutingMiddleware();
-$app->addErrorMiddleware($config['configuration'] == 'debug', false, false)
-	->setDefaultErrorHandler(new \Logigator\HttpErrorHandler($app->getCallableResolver(), $app->getResponseFactory()));
-$app->add(new \Logigator\Middleware\HeaderMiddleware());
+$app->addErrorMiddleware(true, false, false)
+	->setDefaultErrorHandler(new HttpErrorHandler($app->getCallableResolver(), $app->getResponseFactory()));
+$app->add(new HeaderMiddleware());
 
 $app->run();

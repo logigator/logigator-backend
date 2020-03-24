@@ -2,14 +2,22 @@
 
 namespace Logigator\Api\Auth;
 
-use Logigator\Api\ApiHelper;
-use Logigator\Api\BaseController;
+use DI\Annotation\Inject;
+use Logigator\Helpers\ApiHelper;
+use Logigator\Service\AuthenticationService;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Exception\HttpUnauthorizedException;
 
-class LoginEmail extends BaseController
+class LoginEmail
 {
+
+	/**
+	 * @Inject
+	 * @var AuthenticationService
+	 */
+	private $authService;
+
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args) {
 		$body = $request->getParsedBody();
 
@@ -32,7 +40,7 @@ class LoginEmail extends BaseController
 		if (!$user['password'] || !password_verify($body->password, $user['password']))
 			throw new HttpUnauthorizedException($request, 'INVALID_PW');
 
-		$this->container->get('AuthenticationService')->setUserAuthenticated($user['pk_id'], 'email');
+		$this->authService->setUserAuthenticated($user['pk_id'], 'email');
 		return ApiHelper::createJsonResponse($response, ['success' => true]);
 	}
 }

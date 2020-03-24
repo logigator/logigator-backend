@@ -4,19 +4,42 @@
 namespace Logigator\Api\Auth;
 
 
-use Logigator\Api\ApiHelper;
-use Logigator\Api\BaseController;
+use DI\Annotation\Inject;
+use Logigator\Helpers\ApiHelper;
+use Logigator\Service\AuthenticationService;
+use Logigator\Service\ConfigService;
+use Logigator\Service\DbalService;
+use Logigator\Service\SmtpService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpUnauthorizedException;
 
-class ResendVerificationEmail extends BaseController
+class ResendVerificationEmail
 {
+
+	/**
+	 * @Inject
+	 * @var SmtpService
+	 */
+	private $smtpService;
+
+	/**
+	 * @Inject
+	 * @var AuthenticationService
+	 */
+	private $authService;
+
+	/**
+	 * @Inject
+	 * @var DbalService
+	 */
+	private $dbalService;
+
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args) {
 		$body = $request->getParsedBody();
 
-		$user = $this->getDbalQueryBuilder()
+		$user = $this->dbalService->getQueryBuilder()
 			->select('pk_id, password, login_type, email, username')
 			->from('users')
 			->where('email = ? or username = ?')
@@ -35,12 +58,12 @@ class ResendVerificationEmail extends BaseController
 			throw new HttpBadRequestException($request, 'EMAIL_ALREADY_VERIFIED');
 		}
 
-		$emailVerifyToken = $this->container->get('AuthenticationService')->getEmailVerificationToken($user['pk_id'], $user['email']);
-		$this->container->get('SmtpService')->sendMail(
+		$emailVerifyToken = $this->authService->getEmailVerificationToken($user['pk_id'], $user['email']);
+		$this->smtpService->sendMail(
 			'noreply',
 			[$user['email']],
 			'Welcome to Logigator!',
-			$this->container->get('SmtpService')->loadTemplate('email-verification-register.html', [
+			$this->smtpService->loadTemplate('email-verification-register.html', [
 				'recipient' => $user['username'],
 				'verifyLink' => 'https://logigator.com/verify-email/' . $emailVerifyToken
 			])

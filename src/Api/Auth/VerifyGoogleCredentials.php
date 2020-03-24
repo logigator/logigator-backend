@@ -3,29 +3,51 @@
 namespace Logigator\Api\Auth;
 
 
+use DI\Annotation\Inject;
 use Exception;
 use Google_Client;
 use Google_Service_Oauth2;
-use Logigator\Api\ApiHelper;
-use Logigator\Api\BaseController;
+use Logigator\Helpers\ApiHelper;
+use Logigator\Helpers\PathHelper;
+use Logigator\Service\AuthenticationService;
+use Logigator\Service\ConfigService;
+use Logigator\Service\UserService;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Ramsey\Uuid\Uuid;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpUnauthorizedException;
 
-class VerifyGoogleCredentials extends BaseController
+class VerifyGoogleCredentials
 {
+
+	/**
+	 * @Inject
+	 * @var ConfigService
+	 */
+	private $configService;
+
+	/**
+	 * @Inject
+	 * @var UserService
+	 */
+	private $userService;
+
+	/**
+	 * @Inject
+	 * @var AuthenticationService
+	 */
+	private $authService;
 
 	public function __invoke(ServerRequestInterface $request, ResponseInterface $response, array $args)
 	{
 		$body = $request->getParsedBody();
 
 		$client = new Google_Client();
-		$client->setApplicationName(GOOGLE_APPLICATION_NAME);
-		$client->setClientId(GOOGLE_CLIENT_ID);
-		$client->setClientSecret(GOOGLE_CLIENT_SECRET);
-		$client->setRedirectUri(GOOGLE_CALLBACK_URL);
+		$client->setApplicationName($this->configService->getConfig('google_application_name'));
+		$client->setClientId($this->configService->getConfig('google_client_id'));
+		$client->setClientSecret($this->configService->getConfig('google_application_name'));
+		$client->setRedirectUri($this->configService->getConfig('google_callback_url'));
 
 		try {
 			$serviceOAuth = new Google_Service_Oauth2($client);
@@ -36,22 +58,22 @@ class VerifyGoogleCredentials extends BaseController
 			throw new HttpUnauthorizedException($request, 'Error verifying oauth-tokens');
 		}
 
-		$id = $this->container->get('UserService')->fetchUserIdPerKey($content['id'], 'google');
+		$id = $this->userService->fetchUserIdPerKey($content['id'], 'google');
 		if (!$id) {
 			$username = ApiHelper::removeSpecialCharacters($content['name']);
 
-			if ($this->container->get('UserService')->fetchUserIdPerEmail($content['email']))
+			if ($this->userService->fetchUserIdPerEmail($content['email']))
 				throw new HttpBadRequestException($request, "EMAIL_TAKEN");
 
-			if ($this->container->get('UserService')->fetchUserIdPerUsername($username))
+			if ($this->userService->fetchUserIdPerUsername($username))
 				$username = $username . '_' . ApiHelper::generateRandomString(4);
 
 			$profile_url = Uuid::uuid4()->toString();
-			$id = $this->container->get('UserService')->createUser($username, $content['id'], $content['email'], 'google', null, $profile_url);
-			file_put_contents(ApiHelper::getProfileImagePath($this->container, $profile_url), fopen($content['picture'], 'r'));
+			$id = $this->userService->createUser($username, $content['id'], $content['email'], 'google', null, $profile_url);
+			file_put_contents(PathHelper::getProfileImagePath($this->configService, $profile_url), fopen($content['picture'], 'r'));
 		}
 
-		$this->container->get('AuthenticationService')->setUserAuthenticated($id, 'google');
+		$this->authService->setUserAuthenticated($id, 'google');
 		return ApiHelper::createJsonResponse($response, ['success' => true]);
 	}
 }
