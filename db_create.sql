@@ -51,6 +51,7 @@ create table projects
     num_inputs         int,
     num_outputs        int,
     labels             varchar(3072),
+    version            int default 0 not null,
 
     constraint constraint_projects_check_symbol
         check (is_component = 0 or symbol is not null),

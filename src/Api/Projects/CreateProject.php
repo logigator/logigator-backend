@@ -44,6 +44,6 @@ class CreateProject extends BaseController
 		}
 
 		$query->execute();
-		return ApiHelper::createJsonResponse($response, ['id' => $this->getDbalConnection()->lastInsertId()]);
+		return ApiHelper::createJsonResponse($response, ['id' => $this->getDbalConnection()->lastInsertId(), 'version' => 0]);
 	}
 }
