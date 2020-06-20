@@ -15,7 +15,7 @@ class SaveProject extends BaseController
 		$body = $request->getParsedBody();
 
 		$project = $this->getDbalQueryBuilder()
-			->select('location, is_component')
+			->select('location, is_component', 'version')
 			->from('projects')
 			->where('pk_id = ? and fk_user = ?')
 			->setParameter(0, $args['id'], \Doctrine\DBAL\ParameterType::INTEGER)
@@ -25,6 +25,9 @@ class SaveProject extends BaseController
 
 		if(!$project)
 			throw new HttpBadRequestException($request, self::ERROR_RESOURCE_NOT_FOUND);
+
+		if ($project['version'] !== $body->version)
+			throw new HttpBadRequestException($request, '[VERSION_ERROR] Version mismatch, the project was updated by someone else.');
 
 		if ($project['is_component']) {
 			if(!isset($body->num_inputs) || !isset($body->num_outputs) || !isset($body->labels))
@@ -47,18 +50,22 @@ class SaveProject extends BaseController
 		if (file_put_contents(ApiHelper::getProjectPath($this->container, $project['location']), json_encode($body->data)) === false)
 			throw new \Exception();
 
+		$newVersion = intval($project['version']) + 1;
+
 		$this->getDbalQueryBuilder()
 			->update('projects')
 			->set('last_edited', 'now()')
+			->set('version', '?')
 			->where('pk_id = ? and fk_user = ?')
-			->setParameter(0, $args['id'], \Doctrine\DBAL\ParameterType::INTEGER)
-			->setParameter(1, (int)$this->getTokenPayload()->sub, \Doctrine\DBAL\ParameterType::INTEGER)
+			->setParameter(0, $newVersion, \Doctrine\DBAL\ParameterType::INTEGER)
+			->setParameter(1, $args['id'], \Doctrine\DBAL\ParameterType::INTEGER)
+			->setParameter(2, (int)$this->getTokenPayload()->sub, \Doctrine\DBAL\ParameterType::INTEGER)
 			->execute();
 
 		$preview = $this->container->get('ImageService')->generateProjectImage(ApiHelper::getProjectPath($this->container, $project['location']), 512, 512);
 		if ($preview)
 			imagepng($preview, ApiHelper::getProjectPreviewPath($this->container, $project['location']), 9);
 
-		return ApiHelper::createJsonResponse($response, ['success' => true]);
+		return ApiHelper::createJsonResponse($response, ['success' => true, 'version' => $newVersion]);
 	}
 }

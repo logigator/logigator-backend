@@ -17,6 +17,9 @@
 		"body": {
 			"type": "object",
 			"properties": {
+				"version": {
+					"type": "integer"
+				},
 				"data": {
 					"type": "object",
 					"properties": {
@@ -122,7 +125,7 @@
 					}
 				}
 			},
-			"required": [ "data" ],
+			"required": [ "data", "version" ],
 			"additionalProperties": false
 		}
 	},
