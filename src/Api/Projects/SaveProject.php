@@ -42,8 +42,8 @@ class SaveProject extends BaseController
 				->setParameter(0, $body->num_inputs, \Doctrine\DBAL\ParameterType::INTEGER)
 				->setParameter(1, $body->num_outputs, \Doctrine\DBAL\ParameterType::INTEGER)
 				->setParameter(2, implode(';', $body->labels), \Doctrine\DBAL\ParameterType::STRING)
-				->setParameter(4, $args['id'], \Doctrine\DBAL\ParameterType::INTEGER)
-				->setParameter(5, (int)$this->getTokenPayload()->sub, \Doctrine\DBAL\ParameterType::INTEGER)
+				->setParameter(3, $args['id'], \Doctrine\DBAL\ParameterType::INTEGER)
+				->setParameter(4, (int)$this->getTokenPayload()->sub, \Doctrine\DBAL\ParameterType::INTEGER)
 				->execute();
 		}
 
