@@ -82,7 +82,8 @@ class CloneProject extends BaseController
 			$json->mappings[$i]->database = $mappings[$json->mappings[$i]->database];
 		}
 
-		copy(ApiHelper::getProjectPreviewPath($this->container, $project['location']), ApiHelper::getProjectPreviewPath($this->container, $location));
+		if (file_exists(ApiHelper::getProjectPreviewPath($this->container, $project['location'])))
+			copy(ApiHelper::getProjectPreviewPath($this->container, $project['location']), ApiHelper::getProjectPreviewPath($this->container, $location));
 		file_put_contents(ApiHelper::getProjectPath($this->container, $location), json_encode($json));
 
 		return $mappings;
