@@ -28,6 +28,9 @@ class DeleteProject extends BaseController
 		if(file_exists(ApiHelper::getProjectPath($this->container, $project['location'])))
 			unlink(ApiHelper::getProjectPath($this->container, $project['location']));
 
+		if(file_exists(ApiHelper::getProjectPreviewPath($this->container, $project['location'])))
+			unlink(ApiHelper::getProjectPreviewPath($this->container, $project['location']));
+
 		$this->getDbalQueryBuilder()
 			->delete('projects')
 			->where('pk_id = ? and fk_user = ?')
